@@ -4,8 +4,25 @@
 #include <cstdlib>
 #include <iostream>
 #include <string.h>
+#include <cstring>
+#include <cstdio>
 
 using namespace std;
+
+#define HELP_PROMPT "\
+Usage: -i <path to picture or directory> -o <output directory> [args]\n\
+Requiered argument:\n\
+\t- -i or --input:  The path to the input file or directory.\n\
+\t- -o or --output: The path to the output directory. Will be created if doesn't exist.\n\
+Optional argument:\n\
+\t- -h or --help:           Displays this screen.\n\
+\t- -l or --save-log:       The path to a file where all the logs will be saved.Will be created if doesn't exist.\n\
+\t- -a or --out-name-addon: The name addon for every blured picture (default: '_rendered').\n\
+\t- -t or --timeout:        A timeout in seconds.\n\
+\t- -p or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
+\t- -v or --verbose:        Whether or not informations has to be displayed. This does not affect the logs.\n\
+\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n\
+"
 
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,
@@ -62,8 +79,13 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 
     // Setting variables if necessary
     if (options[0].count){
-        cout << "see the manual\n"; //TODO: doc
+        cout << HELP_PROMPT;
         exit(EXIT_SUCCESS);
+    }
+
+    if (!options[2].count || !options[3].count){
+        cerr << "Input path and output directory needs to be specified.\nPlease use -i and -o.\n";
+        exit(EXIT_FAILURE);
     }
 
     if (options[1].count){

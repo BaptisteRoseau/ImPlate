@@ -36,7 +36,7 @@ ofstream log_ostream; // To make log-file available everywhere
 	- Fix Stack Smashing
 	- Find 4 corners
 	- Fix "respect original path"
-	- Better blur
+	- Better blur (or use OpenCV's blur)
  */
 int process(const char* in_path, const char* out_dir,
 			const char *output_name_addon,
@@ -155,15 +155,14 @@ int process(const char* in_path, const char* out_dir,
 void usage(char* name){
 	cout << 
 	format("\
-Usage: %s -i <path to video or directory>\
+Usage: %s -i <path to picture or directory>\
 -o <output directory>\n\
 Type -h or --help for more information.\n", name);
 }
 
-#define PARAM 2
 int main(int argc, char** argv)
 {
-	if (argc < PARAM+1){
+	if (argc == 1){
 		usage(argv[0]);
 		return -1;
 	}
@@ -242,8 +241,25 @@ int main(int argc, char** argv)
 
     // Setting variables if necessary
     if (options[0].count){
-        cout << "see the manual\n"; //TODO: doc
+        cout << "\
+Usage: blur -i <path to video or directory> -o <output directory> [args]\n\
+Requiered argument:\n\
+\t- -i or --input:  The path to the input file or directory.\n\
+\t- -o or --output: The path to the output directory. Will be created if doesn't exist.\n\
+Optional argument:\n\
+\t- -h or --help:           Displays this screen.\n\
+\t- -l or --save-log:       The path to a file where all the logs will be saved.Will be created if doesn't exist.\n\
+\t- -a or --out-name-addon: The name addon for every blured picture (default: '_rendered').\n\
+\t- -t or --timeout:        A timeout in seconds.\n\
+\t- -p or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
+\t- -v or --verbose:        Whether or not informations has to be displayed. This does not affect the logs.\n\
+\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.\n\
+";
         exit(EXIT_SUCCESS);
+    }
+	if (!options[2].count || !options[3].count){
+        cerr << "Input path and output directory needs to be specified.\n";
+        exit(EXIT_FAILURE);
     }
     if (options[1].count){
         save_log = true;

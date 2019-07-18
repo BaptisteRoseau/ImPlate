@@ -135,6 +135,7 @@ string select_output_dir(const string out_dir, const string in_path, const strin
 	// Respect the original path into input directory if necessayr
 	if (respect_input_path){
 		fs::path path = fs::path(filepath).relative_path();
+		cout << path << endl;
 		string buffer = root;
 		int i = 0;
 		for (const auto& part : path){
