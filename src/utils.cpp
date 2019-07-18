@@ -93,10 +93,6 @@ void save_picture(const Mat &picture, string dir, string name){
 	}
 }
 
-string get_filename(const string &filepath){
-	return fs::path(filepath).filename().replace_extension("");
-}
-
 string str_normalize(string &s){
 	for (size_t i = 0; i < s.length(); i++){
 		switch (s[i]){
@@ -125,6 +121,32 @@ int build_dir(const char *path){
 	return EXIT_SUCCESS;
 }
 
+string get_filename(const string &filepath){
+	return fs::path(filepath).stem();
+}
+
 string get_file_extension(const string &filepath){
-    return (string) fs::directory_entry(filepath).path().extension();
+    return fs::path(filepath).extension();
+}
+
+//TODO
+string select_output_dir(const string out_dir, const string in_path, const string filepath, const bool respect_input_path){
+	string root = out_dir+(string) "/"; 
+	// Respect the original path into input directory if necessayr
+	if (respect_input_path){
+		fs::path path = fs::path(filepath).relative_path();
+		string buffer = root;
+		int i = 0;
+		for (const auto& part : path){
+			if (i != 0){
+				buffer += (string) part.stem()+"/";
+			}
+			i++;
+		}
+		cout << buffer << endl;
+		return root+get_filename(filepath);
+	}
+
+	// Else, return only the filename
+	return root+get_filename(filepath);
 }

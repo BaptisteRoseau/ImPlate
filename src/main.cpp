@@ -32,6 +32,12 @@ bool verbose;
 bool save_log;
 ofstream log_ostream; // To make log-file available everywhere
 
+/* TODO:
+	- Fix Stack Smashing
+	- Find 4 corners
+	- Fix "respect original path"
+	- Better blur
+ */
 int process(const char* in_path, const char* out_dir,
 			const char *output_name_addon,
 			const double timeout,
@@ -74,8 +80,8 @@ int process(const char* in_path, const char* out_dir,
 		loop_idx++;
 
 		// Displaying script advancement
-		DISPLAY(format("\nPicture: %u out of %u (%.2f %%)",
-		 		loop_idx, nb_files, (double) 100*loop_idx/nb_files))
+		DISPLAY(format("\nPicture: %u out of %u (%.2f %%): ",
+		 		loop_idx, nb_files, (double) 100*loop_idx/nb_files) << filename)
 
 		// Opening picture
 		picture = open_picture(filepath);
@@ -96,21 +102,15 @@ int process(const char* in_path, const char* out_dir,
 		if (blured.empty()){
 			DISPLAY_ERR("Couldn't blur " << filename);
 			picture.release();
-			blured.release();
 			failed_pictures.push(filename);
 			continue;
 		}
 
 		/* ==== PLATE DETECTION AND BLUR END ==== */
 
-		// Building prefix for images writing
-		string file_out_dir = out_dir+(string) "/"+filename;
-		fs::directory_entry dir_entry = fs::directory_entry(file_out_dir);
-
-
 		// Creating directory if doesn't exist
-		savedir = out_dir+(string) "/"+filename;
-		dir_entry = fs::directory_entry(savedir);
+		savedir = select_output_dir(out_dir, in_path, filepath, respect_input_path);
+		fs::directory_entry dir_entry = fs::directory_entry(savedir);
 		if (dir_entry.exists()){
 			DISPLAY("Removing " << dir_entry.path());
 			fs::remove_all(dir_entry.path());
@@ -147,7 +147,7 @@ int process(const char* in_path, const char* out_dir,
 	// Cleaning memory
 	delete stack_files;
 
-	DISPLAY("Exited successfully.");
+	DISPLAY(format("Exited successfully (%.2f seconds)", (difftime(time(NULL), t0))));
 
 	return EXIT_SUCCESS;
 }
