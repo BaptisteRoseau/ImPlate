@@ -38,7 +38,7 @@ bool in_area(int i, int j, const std::vector<cv::Point> &corners);
  * @param filter_size the size of the square which pixel's mean value is used for the blur effect. (default: 60)
  * @return cv::Mat a copy of the initial picture, with the blured area.
  */
-cv::Mat blur(const cv::Mat picture, const std::vector<cv::Point> &corners,
-             unsigned int filter_size);
+int blur(const cv::Mat picture, cv::Mat blured, const std::vector<cv::Point> &corners,
+         unsigned int filter_size);
 
 #endif

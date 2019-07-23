@@ -13,12 +13,14 @@
  * @param blur_filter_size the filter size used for blur (see blur_pixel function)
  * @param verbose whether or not text has to be printed
  * @param respect_input_path whether or not the pictures in the input directory will have a similar path in the output directory.
+ * @param country the country code for the plate detection
  */
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,
 	double &timeout,
 	unsigned int &blur_filter_size,
 	bool &verbose,
-	bool &respect_input_path);
+	bool &respect_input_path,
+    char *country);
 
 #endif

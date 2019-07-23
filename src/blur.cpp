@@ -1,5 +1,5 @@
-#include "utils.hpp"
-#include "blur.hpp"
+#include "utils.h"
+#include "blur.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/mat.hpp>
@@ -54,9 +54,9 @@ void blur_pixel(Mat picture, unsigned int filter_size, int i, int j, int k){
 bool in_area(int i, int j, const vector<Point> &corners){
     // j <=> x (col) and i <=> y (row)
     Point pt_tl = corners[0];
-    Point pt_br = corners[1];
-    Point pt_bl = corners[2];
-    Point pt_tr = corners[3];
+    Point pt_tr = corners[1];
+    Point pt_br = corners[2];
+    Point pt_bl = corners[3];
 
     double slope;
     // Left Area
@@ -89,9 +89,9 @@ bool in_area(int i, int j, const vector<Point> &corners){
 void blur_margin(Mat picture, const vector<Point> &corners, unsigned int filter_size){ //TODO
     // j <=> x (col) and i <=> y (row)
     Point pt_tl = corners[0];
-    Point pt_br = corners[1];
-    Point pt_bl = corners[2];
-    Point pt_tr = corners[3];
+    Point pt_tr = corners[1];
+    Point pt_br = corners[2];
+    Point pt_bl = corners[3];
 
     //TODO: Blur le cadre avec un filtre de moins en moins puissant sur genre 10 pixels
 
@@ -157,28 +157,27 @@ void blur_margin(Mat picture, const vector<Point> &corners, unsigned int filter_
     }
 }
 
-//corners: [TOPLEFT, BOTRIGHT, BOTLEFT, TOPRIGHT]
-Mat blur(const Mat picture, const vector<Point> &corners,
+//corners: [TOPLEFT, TOPRIGHT, BOTRIGHT, BOTLEFT]
+int blur(const Mat picture, Mat blured, const vector<Point> &corners,
          unsigned int filter_size = 45){
     assert(corners.size() == 4);
     assert((int) filter_size < _min(picture.rows, picture.cols));
 
     // Getting corners
-    Point pt_tl   = corners[0];
-    Point pt_br   = corners[1];
-    Point pt_bl  = corners[2];
-    Point pt_tr = corners[3];
+    Point pt_tl = corners[0];
+    Point pt_tr = corners[1];
+    Point pt_br = corners[2];
+    Point pt_bl = corners[3];
     int top   = _min(pt_tl.y, pt_tr.y);
     int bot   = _max(pt_br.y, pt_bl.y);
     int left  = _min(pt_tl.x, pt_bl.x);
     int right = _max(pt_tr.x, pt_br.x);
     if (top >= bot || left >= right || bot >= picture.rows || right >= picture.cols){
         DISPLAY_ERR("Invalid corners.");
-        return Mat(); //Empty matrix
+        return EXIT_FAILURE;
     }
 
     // Copying picture and blur area
-    Mat blured = picture.clone();
     for (int i = top; i < bot; i++){
         for(int j = left; j < right; j++){
             for(int k = 0; k < 3; k++){
@@ -190,6 +189,5 @@ Mat blur(const Mat picture, const vector<Point> &corners,
     }
 
     //blur_margin(blured, corners, filter_size);
-
-    return blured;
+    return EXIT_SUCCESS;
 }

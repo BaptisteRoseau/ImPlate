@@ -1,10 +1,11 @@
-#include "utils.hpp"
-#include "blur.hpp"
-#include "options.hpp"
+#include "utils.h"
+#include "blur.h"
+#include "options.h"
 #include "gopt/gopt.h"
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/mat.hpp>
+#include "../alpr/src/openalpr/alpr.h"
 
 #include <filesystem>
 #include <sys/types.h>
@@ -22,6 +23,8 @@
 
 using namespace std;
 using namespace cv;
+using namespace alpr;
+
 namespace fs = filesystem;
 
 #define DFLT_OUTPUT_ADDON "_blured"
@@ -37,13 +40,38 @@ ofstream log_ostream; // To make log-file available everywhere
 	- Find 4 corners
 	- Fix "respect original path"
 	- Better blur (or use OpenCV's blur)
+	- Cmake
+	- ajouter option "pays", "sauvegarder detections", "numero de plaque"
+	- Ajouter dans la doc les options dispo pour le pays de la plaque
+
+	Pour OpenCV et OpenALPR: les compiler à part, et linker directement les .so
+
  */
+
+
+
+
+void plateCorners(const vector<AlprPlateResult> &results,
+				 vector<vector<Point> > &corners,
+				 vector<string> &numbers){
+	size_t i, j;
+	cout << results.size() << endl;
+	for (i = 0; i < results.size(); i++){
+		for (j = 0; j < 4; j++){
+			corners[i][j].x = results[i].plate_points[j].x;
+			corners[i][j].y = results[i].plate_points[j].y;
+		}
+		numbers[i] = results[i].bestPlate.characters;
+	}
+}
+
 int process(const char* in_path, const char* out_dir,
 			const char *output_name_addon,
 			const double timeout,
 			const unsigned int blur_filter_size,
 			const bool respect_input_path,
-			const char *log_file){
+			const char *log_file,
+			const char *country){
 
 	// Retrieving video file paths into stack_files
 	stack<string> *stack_files = list_files(in_path);
@@ -70,6 +98,7 @@ int process(const char* in_path, const char* out_dir,
 	unsigned int loop_idx = 0;
 	unsigned int nb_files = stack_files->size();
 	double t0 = time(NULL);
+	int error;
 
 	// Main loop
 	while (!stack_files->empty()){
@@ -96,12 +125,31 @@ int process(const char* in_path, const char* out_dir,
 		//TODO: s'il y a plusieurs voitures, toutes les flouter
 		//TODO: Trouve les 4 coins via une api et les sauvegader dans un fichier
 
-		vector<Point> corners = {{238,490}, {857, 585}, {330, 786}, {821, 318}}; //IMG
-		//vector<Point> corners = {{173,507}, {338, 567}, {172, 547}, {338, 526}}; //voit1
-		blured = blur(picture, corners, blur_filter_size);
-		if (blured.empty()){
-			DISPLAY_ERR("Couldn't blur " << filename);
+		// ALPR buffers variables
+		vector<vector<Point> > corners = vector<vector<Point> >();
+		vector<string> numbers = vector<string>();
+		
+		// Getting picture's plate informations
+		vector<AlprPlateResult> results = Alpr(country).recognize(filepath).plates;
+		plateCorners(results, corners, numbers);
+		if (corners.size() == 0){
+			DISPLAY_ERR("No plate detected on " << filename);
 			picture.release();
+			failed_pictures.push(filename);
+			continue;
+		}
+
+		//vector<Point> corners = {{238,490}, {821, 318}, {857, 585}, {330, 786}}; //IMG
+		//vector<Point> corners = {{173,507}, {338, 526}, {338, 567}, {172, 547}}; //voit1
+		blured = picture.clone();
+			cout << corners.size() << endl;
+		for (auto&& corn: corners){
+			error = _max(blur(picture, blured, corn, blur_filter_size), error);
+		}
+		if (error){
+			DISPLAY_ERR("Couldn't blur every plate on " << filename);
+			picture.release();
+			blured.release();
 			failed_pictures.push(filename);
 			continue;
 		}
@@ -174,12 +222,14 @@ int main(int argc, char** argv)
 	// Argument declaration and defaul value
 	char* in_path = new char[BUFFSIZE];
 	char* out_dir = new char[BUFFSIZE];
+	char *log_file = new char[BUFFSIZE];
 	char *output_name_addon = new char[BUFFSIZE];
 	strcpy(output_name_addon, DFLT_OUTPUT_ADDON);
+	char *country = new char[BUFFSIZE];
+	strcpy(country, "eu");
 	double timeout = 0;
 	unsigned int blur_filter_size = DFLT_BLUR;
 	bool respect_input_path = false;
-	char *log_file = new char[BUFFSIZE];
 
 	/* // Parsing command line
 	parse_argv(argv, in_path, out_dir,
@@ -189,13 +239,14 @@ int main(int argc, char** argv)
 	verbose,
 	respect_input_path,
 	save_log,
-	log_file); */
+	log_file,
+	country); */
 
 	/*============================ BEGIN PARSING ============================*/
 
 	//FIXME: Stack Smashing on exit function having a "struct opttion"
 
-	struct option options[9];
+	struct option options[10];
 
     // Retrieving argument
     options[0].long_name  = "help";
@@ -234,7 +285,11 @@ int main(int argc, char** argv)
     options[8].short_name = 'r';
     options[8].flags      = GOPT_ARGUMENT_FORBIDDEN;
 
-    options[9].flags      = GOPT_LAST;
+	options[9].long_name  = "country";
+    options[9].short_name = 'c';
+    options[9].flags      = GOPT_ARGUMENT_REQUIRED;
+
+    options[10].flags      = GOPT_LAST;
 
     gopt (argv, options);
     gopt_errors (argv[0], options);
@@ -272,6 +327,7 @@ Optional argument:\n\
     if (options[6].count) blur_filter_size = atoi(options[6].argument);
     if (options[7].count) verbose = true;
     if (options[8].count) respect_input_path = true;
+	if (options[9].count) strcpy(country, options[9].argument);;
 
 	/*============================ END PARSING ============================*/
 
@@ -281,12 +337,14 @@ Optional argument:\n\
 			timeout,
 			blur_filter_size,
 			respect_input_path,
-			log_file);
+			log_file,
+			country);
 
 	delete[] in_path;
 	delete[] out_dir;
 	delete[] output_name_addon;
 	delete[] log_file;
+	delete[] country;
 
     return EXIT_SUCCESS;
 }

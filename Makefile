@@ -22,9 +22,11 @@ LIBS   		= -L /usr/local/lib/ \
 -lopencv_flann \
 -lstdc++fs
 INCLUDE		= -I /usr/local/include/opencv4/ \
-			  -I ${SRC_DIR}
+			  ${SRC_DIR}
 
-SRC_FILES	= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/gopt/*.cpp)
+
+ALPR_LIB    = alpr/build/openalpr/libopenalpr.so
+SRC_FILES	= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(shell find $(SRC_DIR)/ -type f -name '*.cpp')
 OBJ_FILES	= $(SRC_FILES:%.cpp=%.o) 
 
 BINARY	 	= blur
@@ -76,7 +78,7 @@ help:
 build: --prebuild $(OBJ_FILES) --build_end
 
 --build_end: $(OBJ_FILES)
-	$(CC) $(CPPFLAGS) $(OBJ_FILES) -o $(BLD_DIR)/$(BINARY) $(LIBS)
+	$(CC) $(CPPFLAGS) $(OBJ_FILES) -o $(BLD_DIR)/$(BINARY) $(LIBS) $(ALPR_LIB)
 
 #######################################################
 ###				MAKE INSTALL
@@ -100,7 +102,7 @@ run:
 
 vrun:
 	@echo Running program with valgrind...
-	@valgrind --leak-check=full --show-leak-kinds=all ./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
+	@valgrind --leak-check=full ./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
 
 #######################################################
 ###				MAKE DOCUMENTATION

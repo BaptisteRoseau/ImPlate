@@ -1,4 +1,4 @@
-#include "options.hpp"
+#include "options.h"
 #include "gopt/gopt.h"
 
 #include <cstdlib>
@@ -31,9 +31,10 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 	bool &verbose,
 	bool &respect_input_path,
     bool &save_log,
-	char *log_file){
+	char *log_file,
+    char *country){
     
-    struct option options[9];
+	struct option options[10];
 
     // Retrieving argument
     options[0].long_name  = "help";
@@ -72,7 +73,11 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[8].short_name = 'r';
     options[8].flags      = GOPT_ARGUMENT_FORBIDDEN;
 
-    options[9].flags      = GOPT_LAST;
+	options[9].long_name  = "country";
+    options[9].short_name = 'c';
+    options[9].flags      = GOPT_ARGUMENT_REQUIRED;
+
+    options[10].flags     = GOPT_LAST;
 
     gopt (argv, options);
     gopt_errors (argv[0], options);
@@ -82,46 +87,22 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
         cout << HELP_PROMPT;
         exit(EXIT_SUCCESS);
     }
-
-    if (!options[2].count || !options[3].count){
-        cerr << "Input path and output directory needs to be specified.\nPlease use -i and -o.\n";
+	if (!options[2].count || !options[3].count){
+        cerr << "Input path and output directory needs to be specified.\n";
         exit(EXIT_FAILURE);
     }
-
     if (options[1].count){
         save_log = true;
         strcpy(log_file, options[1].argument); 
     }
-
-    if (options[2].count){
-        strcpy(in_path, options[2].argument);
-    }
-
-    if (options[3].count){
-        strcpy(out_dir, options[3].argument);
-    }
-
-    if (options[4].count){
-        strcpy(output_name_addon, options[4].argument);
-    }
-
-    if (options[5].count){
-        //TODO: is_number double
-        timeout = atof(options[5].argument);
-    }
-
-    if (options[6].count){
-        //TODO: is_number integer
-        blur_filter_size = atoi(options[6].argument);
-    }
-
-    if (options[7].count){
-        verbose = true;
-    }
-
-    if (options[8].count){
-        respect_input_path = true;
-    }
+    if (options[2].count) strcpy(in_path, options[2].argument);
+    if (options[3].count) strcpy(out_dir, options[3].argument);
+    if (options[4].count) strcpy(output_name_addon, options[4].argument);
+    if (options[5].count) timeout = atof(options[5].argument);
+    if (options[6].count) blur_filter_size = atoi(options[6].argument);
+    if (options[7].count) verbose = true;
+    if (options[8].count) respect_input_path = true;
+	if (options[9].count) strcpy(country, options[9].argument);;
 
     /* cout <<  in_path  << endl;
     cout << out_dir << endl;
