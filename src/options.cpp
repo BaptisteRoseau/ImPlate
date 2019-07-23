@@ -34,7 +34,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *log_file,
     char *country){
     
-	struct option options[10];
+	struct option *options = new option[10];
 
     // Retrieving argument
     options[0].long_name  = "help";
@@ -104,12 +104,5 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     if (options[8].count) respect_input_path = true;
 	if (options[9].count) strcpy(country, options[9].argument);;
 
-    /* cout <<  in_path  << endl;
-    cout << out_dir << endl;
-	cout << output_name_addon << endl;
-	cout << timeout << endl;
-	cout << blur_filter_size << endl;
-	cout << verbose << endl;
-	cout << respect_input_path << endl; */ //OK
-    cout << "Parsing end\n"; //TODO REMOVE ME after fixing stack smashing
+    //delete[] options;
 }

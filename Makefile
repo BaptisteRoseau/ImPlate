@@ -96,13 +96,22 @@ install: build
 run:
 	./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
 
+
+#######################################################
+###				MAKE RUN WITH GDB
+#######################################################
+
+grun:
+	@echo Running program with gdb...
+	@gdb -ex run --args ./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
+
 #######################################################
 ###				MAKE RUN WITH VALGRING
 #######################################################
 
 vrun:
 	@echo Running program with valgrind...
-	@valgrind --leak-check=full ./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
+	@valgrind --leak-check=full --track-origins=yes ./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
 
 #######################################################
 ###				MAKE DOCUMENTATION

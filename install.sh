@@ -21,3 +21,4 @@ cmake ../src/ #TODO: Specifier le path to opencv
 make -j4
 
 cd $ROOT
+mv openalpr-opencv4 alpr
