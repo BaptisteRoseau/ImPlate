@@ -14,6 +14,7 @@
  * @param verbose whether or not text has to be printed
  * @param respect_input_path whether or not the pictures in the input directory will have a similar path in the output directory.
  * @param country the country code for the plate detection
+ * @param save_plate_info whether or not the plate's information have to be saved
  */
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,

@@ -43,7 +43,6 @@ ofstream log_ostream; // To make log-file available everywhere
 	- Fix "respect original path"
 	- Better blur (or use OpenCV's blur)
 	- Cmake
-	- ajouter "sauvegarder detections", "numero de plaque"
 	- Ajouter dans la doc les options dispo pour le pays de la plaque
 
 	Pour OpenCV et OpenALPR: les compiler à part, et linker directement les .so

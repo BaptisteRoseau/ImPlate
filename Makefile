@@ -22,7 +22,7 @@ LIBS   		= -L /usr/local/lib/ \
 -lopencv_flann \
 -lstdc++fs
 INCLUDE		= -I /usr/local/include/opencv4/ \
-			  ${SRC_DIR}
+			  -I ${SRC_DIR}
 
 
 ALPR_LIB    = alpr/build/openalpr/libopenalpr.so

@@ -54,11 +54,13 @@ Optional argument:
 
 - `-h` or `--help`:           Displays this screen.
 - `-l` or `--save-log`:       The path to a file where all the output logs will be saved. Will be created if doesn't exist.
-- `-a` or `--out-name-addon`: The name addon for every blured picture (default: '_rendered').
+- `-a` or `--out-name-addon`: The name addon for every blured picture (default: '_blured').
 - `-t` or `--timeout`:        A timeout in seconds.
 - `-p` or `--blur-power`:     The size of the square box used to make a blur effect (default: 70).
 - `-v` or `--verbose`:        Whether or not information has to be displayed. This does not affect the logs.
 - `-r` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)
+- `-c` or `--counry`:         The country code of the car, to match the country's plate pattern. (default: "eu")
+- `-s` or `--save-info`:      Whether or not plate information sould be saved as well.
 
 # Improvement
 
@@ -75,9 +77,9 @@ Don't hesitate to check the code in [LPB/src/main.cpp](LPB/src/main.cpp) in orde
 
 # Requierement
 
-- OpenCV ver. 2.4 or higher
-- OpenALPR
+- Tesseract OCR v3.0.4 (https://github.com/tesseract-ocr/tesseract)
+- OpenCV v2.4.8+ (http://opencv.org/)
+- OpenALPR (https://github.com/openalpr/openalpr)
 
 Optional:
-
-- CUDA
+- CUDA (https://developer.nvidia.com/cuda-downloads)
