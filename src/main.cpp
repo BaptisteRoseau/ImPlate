@@ -35,9 +35,9 @@ namespace fs = filesystem;
 #define DFLT_RUNTIME_DIR "/home/broseau/ProgrammePapa/ImPlate/alpr/runtime_data"
 #define BUFFSIZE 200
 
-bool verbose;
-bool save_log;
-ofstream log_ostream; // To make log-file available everywhere
+bool verbose; /// Whether or not information should be displayed
+bool save_log; /// Whether or not logs should be saved (default: false)
+ofstream log_ostream; /// Stream to the file where the logs will be saved
 
 /* TODO:
 	- Fix "respect original path"
@@ -73,6 +73,20 @@ void plateCorners(const vector<AlprPlateResult> &results,
 	}
 }
 
+/**
+ * @brief Main process
+ * 
+ * @param in_path the path to the inpu directory or picture file
+ * @param out_dir the path to the inpu directory or picture file
+ * @param output_name_addon the characters added before the extensions on rendered images
+ * @param timeout a timeout in seconds
+ * @param blur_filter_size the size of the square area used to make the blur effect
+ * @param respect_input_path whether or not the initial input path should be resected
+ * @param log_file the path to the file containing all the logs (displayed text) for a given runtime
+ * @param country the country code for the plate detection
+ * @param save_plate_info whether or not alpr's plate recognition have to be saved (in json format).
+ * @return int 0 for success, 1 else
+ */
 int process(const char* in_path, const char* out_dir,
 			const char *output_name_addon,
 			const double timeout,

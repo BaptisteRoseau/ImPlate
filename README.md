@@ -6,6 +6,7 @@ This project's purpose is to automatically blur license plates.
 
 In order to use the software, OpenCV (and it's dependencies) and OpenALPR must be installed.
 For a faster runtime, install CUDA and recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks.
+
 Note: An NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
 
 An installation script `install.sh` is given in the present directory. What it basically does is:
@@ -30,11 +31,11 @@ If you wish to build the documentation, got into the LPB directory and run the c
 
 `make doc`
 
-or 
+or
 
 `doxygen Doxyfile`
 
-The documenation will be located at [LPB/doc/html/index.html](LPB/doc/html/index.html).
+The documenation will be located at [LPB/doc/html/index.html](LPB/doc/html/index.html). The details of the functions can be found on the headers files (*.h).
 If the code needs to be recompiled, go into the [LPB](LPB) directory and run the command `make`.
 
 # How to use
