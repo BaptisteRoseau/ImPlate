@@ -44,6 +44,7 @@ ofstream log_ostream; // To make log-file available everywhere
 	- Better blur (or use OpenCV's blur)
 	- Cmake
 	- Ajouter dans la doc les options dispo pour le pays de la plaque
+	- Formater le json pour que ce soit plus simple à lire..
 
 	Pour OpenCV et OpenALPR: les compiler à part, et linker directement les .so
  */
@@ -105,7 +106,8 @@ int process(const char* in_path, const char* out_dir,
 
 	// Parameters initialisation
 	stack<string> failed_pictures = stack<string>();
-	Mat picture, blured;
+	Mat picture = Mat();
+	Mat blured = Mat();
 	string filepath, filename, fileext, savedir, file_out_dir;
 	int error;
 	unsigned int loop_idx = 0;
@@ -147,11 +149,9 @@ int process(const char* in_path, const char* out_dir,
 		if (corners.size() == 0){
 			DISPLAY_ERR("No plate detected on " << filename
 			<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
-			picture.release();
 			failed_pictures.push(filename);
 			continue;
 		}
-
 
 		// Displaying the plates numbers
 		if (verbose || save_log){
@@ -170,8 +170,6 @@ int process(const char* in_path, const char* out_dir,
 		if (error){
 			DISPLAY_ERR("Couldn't blur" << error << " times out of " << corners.size() << " on " << filename);
 			if ((unsigned int) error == corners.size()){
-				picture.release();
-				blured.release();
 				failed_pictures.push(filename);
 				continue;
 			}
@@ -193,7 +191,7 @@ int process(const char* in_path, const char* out_dir,
 
 		// Saving the plate information if necessary
 		if (save_plate_info && !numbers.empty()){
-			string plate_file = savedir+filename+DFLT_JSON_ADDON+".json";
+			string plate_file = savedir+"/"+filename+DFLT_JSON_ADDON+".json";
 			ofstream plate_ostream;
 			plate_ostream.open(plate_file);
 			if (!plate_ostream){
@@ -208,16 +206,12 @@ int process(const char* in_path, const char* out_dir,
 		save_picture(blured, savedir, filename+output_name_addon+fileext);
 		
 		// Cleaning memory and exiting program if _timeout is reached
-		if (difftime(time(NULL), t0) > _timeout){
-			picture.release();
-			blured.release();
+		if (difftime(time(NULL), t0) > _timeout){			
 			delete stack_files;
 			DISPLAY("Timeout reached.");
 			return EXIT_SUCCESS;
 		}
-
-		picture.release();
-		blured.release();
+		
 	}
 
 	if ((verbose || save_log) && !failed_pictures.empty()){
