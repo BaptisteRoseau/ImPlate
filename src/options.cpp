@@ -32,9 +32,10 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 	bool &respect_input_path,
     bool &save_log,
 	char *log_file,
-    char *country){
+    char *country,
+    bool &save_plate_info){
     
-	struct option *options = new option[10];
+	struct option *options = new option[11];
 
     // Retrieving argument
     options[0].long_name  = "help";
@@ -77,7 +78,11 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[9].short_name = 'c';
     options[9].flags      = GOPT_ARGUMENT_REQUIRED;
 
-    options[10].flags     = GOPT_LAST;
+	options[10].long_name  = "save-info";
+    options[10].short_name = 's';
+    options[10].flags      = GOPT_ARGUMENT_REQUIRED;
+
+    options[11].flags     = GOPT_LAST;
 
     gopt (argv, options);
     gopt_errors (argv[0], options);
@@ -102,7 +107,8 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     if (options[6].count) blur_filter_size = atoi(options[6].argument);
     if (options[7].count) verbose = true;
     if (options[8].count) respect_input_path = true;
-	if (options[9].count) strcpy(country, options[9].argument);;
+	if (options[9].count) strcpy(country, options[9].argument);
+    if (options[10].count) save_plate_info = true;
 
-    //delete[] options;
+    //delete[] options; // Double free or corruption on this delete
 }

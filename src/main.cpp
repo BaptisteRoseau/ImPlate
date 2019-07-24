@@ -28,6 +28,7 @@ using namespace alpr;
 namespace fs = filesystem;
 
 #define DFLT_OUTPUT_ADDON "_blured"
+#define DFLT_JSON_ADDON "_info"
 #define DFLT_BLUR 70
 #define DFLT_COUNTRY "eu"
 #define DFLT_CONFIG_FILE "/home/broseau/ProgrammePapa/ImPlate/alpr/config/openalpr.conf.defaults"
@@ -78,13 +79,12 @@ int process(const char* in_path, const char* out_dir,
 			const unsigned int blur_filter_size,
 			const bool respect_input_path,
 			const char *log_file,
-			const char *country){
-
-	// Retrieving video file paths into stack_files
-	stack<string> *stack_files = list_files(in_path);
+			const char *country,
+			const bool save_plate_info){
 
 	// Building output directory if it doesn't exists
-	if (stack_files == NULL || build_dir(out_dir)){
+	if (build_dir(out_dir)){
+		cerr << "ERROR: Couldn't build output directory.\n";
 		exit(EXIT_FAILURE);
 	}
 
@@ -92,14 +92,21 @@ int process(const char* in_path, const char* out_dir,
 	if (save_log){
 		log_ostream.open(log_file);
 		if (!log_ostream){
-			DISPLAY_ERR(format("Couldn't open %s", log_file));
+			cerr << format("ERROR: Couldn't open %s\n", log_file);
 			exit(EXIT_FAILURE);
 		}
 	}
+
+	// Retrieving picture file paths into stack_files
+	stack<string> *stack_files = list_files(in_path);
+	if (stack_files == NULL){
+		cerr << "ERROR: Couldn't open any file.\n";
+		exit(EXIT_FAILURE);
+	}
+
 	// Parameters initialisation
 	stack<string> failed_pictures = stack<string>();
-	Mat picture;
-	Mat blured;
+	Mat picture, blured;
 	string filepath, filename, fileext, savedir, file_out_dir;
 	int error;
 	unsigned int loop_idx = 0;
@@ -112,7 +119,7 @@ int process(const char* in_path, const char* out_dir,
 		// Getting file path informations
 		filepath = stack_next(stack_files);
 		filename = get_filename(filepath);
-		fileext  = get_file_extension(filepath); //TODO
+		fileext  = get_file_extension(filepath);
 		loop_idx++;
 
 		// Displaying script advancement
@@ -129,12 +136,14 @@ int process(const char* in_path, const char* out_dir,
 
 		/* ==== PLATE DETECTION AND BLUR BEGIN ==== */
 
-		// ALPR buffers variables
+		// Buffers to get ALPR results
 		vector<vector<Point> > corners = vector<vector<Point> >();
 		vector<string> numbers = vector<string>();
 		
 		// Getting picture's plate informations
-		vector<AlprPlateResult> results = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR).recognize(filepath).plates;
+		Alpr detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
+		AlprResults alpr_results = detector.recognize(filepath);
+		vector<AlprPlateResult> results = alpr_results.plates;
 		plateCorners(results, corners, numbers);
 		if (corners.size() == 0){
 			DISPLAY_ERR("No plate detected on " << filename
@@ -144,11 +153,16 @@ int process(const char* in_path, const char* out_dir,
 			continue;
 		}
 
-		DISPLAY("Plates detected:")
-		for (auto&& num: numbers){
-			DISPLAY(num);
+
+		// Displaying the plates numbers
+		if (verbose || save_log){
+			DISPLAY("Plates detected:")
+			for (auto&& num: numbers){
+				DISPLAY(num);
+			}
 		}
 
+		// Bluring a copy of the initial picture
 		blured = picture.clone();
 		error = 0;
 		for (auto&& corn: corners){
@@ -178,7 +192,20 @@ int process(const char* in_path, const char* out_dir,
 			DISPLAY_ERR("Failed to create directory " << dir_entry.path());
 		}
 
-		// Writing frames into the directory
+		// Saving the plate information if necessary
+		if (save_plate_info && !numbers.empty()){
+			string plate_file = savedir+filename+DFLT_JSON_ADDON+".json";
+			ofstream plate_ostream;
+			plate_ostream.open(plate_file);
+			if (!plate_ostream){
+				DISPLAY_ERR("Couldn't open" << plate_file);
+			} else {
+				plate_ostream << detector.toJson(alpr_results);
+			}
+			plate_ostream.close();
+		}
+
+		// Writing blured picture into the directory
 		save_picture(blured, savedir, filename+output_name_addon+fileext);
 		
 		// Cleaning memory and exiting program if _timeout is reached
@@ -187,13 +214,14 @@ int process(const char* in_path, const char* out_dir,
 			blured.release();
 			delete stack_files;
 			DISPLAY("Timeout reached.");
-			return EXIT_FAILURE;
+			return EXIT_SUCCESS;
 		}
 
 		picture.release();
+		blured.release();
 	}
 
-	if (verbose && !failed_pictures.empty()){
+	if ((verbose || save_log) && !failed_pictures.empty()){
 		DISPLAY("\nSome pictures plate analysis or blur failed:")
 		while (!failed_pictures.empty())
 		{
@@ -240,26 +268,29 @@ int main(int argc, char** argv)
 	double timeout = 0;
 	unsigned int blur_filter_size = DFLT_BLUR;
 	bool respect_input_path = false;
+	bool save_plate_info = false;
 
 	// Parsing command line
 	parse_argv(argv, in_path, out_dir,
-	output_name_addon,
-	timeout,
-	blur_filter_size,
-	verbose,
-	respect_input_path,
-	save_log,
-	log_file,
-	country);
+			   output_name_addon,
+			   timeout,
+			   blur_filter_size,
+			   verbose,
+			   respect_input_path,
+			   save_log,
+			   log_file,
+			   country,
+			   save_plate_info);
 
 	// Executing main process
-	process(in_path, out_dir,
-			output_name_addon,
-			timeout,
-			blur_filter_size,
-			respect_input_path,
-			log_file,
-			country);
+	int ret = process(in_path, out_dir,
+					  output_name_addon,
+					  timeout,
+					  blur_filter_size,
+					  respect_input_path,
+					  log_file,
+					  country,
+					  save_plate_info);
 
 	delete[] in_path;
 	delete[] out_dir;
@@ -267,6 +298,6 @@ int main(int argc, char** argv)
 	delete[] output_name_addon;
 	delete[] country;
 
-    return EXIT_SUCCESS;
+    return ret;
 }
 

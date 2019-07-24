@@ -8,7 +8,7 @@ In order to use the software, OpenCV (and it's dependencies) and OpenALPR must b
 For a faster runtime, install CUDA and recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks.
 Note: An NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
 
-An installation script is given in the present directory. What it basically does is:
+An installation script `install.sh` is given in the present directory. What it basically does is:
 
 - Download and install OpenCV from source
 - Download and install OpenALPR from source
@@ -41,11 +41,9 @@ If the code needs to be recompiled, go into the [LPB](LPB) directory and run the
 
 Once installation is complete and path added to the Environment Variables, you can use the software with this command line:
 
-`blur -i <Input directory of picture> -o <Output directory>`
+`blur -i <path to picture or directory> -o <output directory> [args]`
 
-There are several options available:
-
-`Usage: -i <path to picture or directory> -o <output directory> [args]`
+Input and output path are requiered, and there are several options available:
 
 Requiered argument:
 
@@ -69,7 +67,7 @@ In order to improve the plate detection accuracy of ALPR, please refer to <http:
 
 # Documentation
 
-Don't hésitate to check the code in [LPB/src/main.cpp](LPB/src/main.cpp) in order to be able to make little changes if necessary.
+Don't hesitate to check the code in [LPB/src/main.cpp](LPB/src/main.cpp) in order to be able to make little changes if necessary.
 
 - OpenCV3: <https://docs.opencv.org/3.4.5/>
 - OpenALPR: <http://doc.openalpr.com/opensource.html>

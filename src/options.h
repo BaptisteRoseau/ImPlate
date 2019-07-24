@@ -21,6 +21,9 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 	unsigned int &blur_filter_size,
 	bool &verbose,
 	bool &respect_input_path,
-    char *country);
+    bool &save_log,
+	char *log_file,
+    char *country,
+    bool &save_plate_info);
 
 #endif

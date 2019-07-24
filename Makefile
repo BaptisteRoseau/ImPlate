@@ -30,7 +30,7 @@ SRC_FILES	= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(sh
 OBJ_FILES	= $(SRC_FILES:%.cpp=%.o) 
 
 BINARY	 	= blur
-TEST_ARGS 	= -v -i data -o test_dir -l log.txt
+TEST_ARGS 	= -s -v -i data -o test_dir -l log.txt
 
 #######################################################
 ###				COMMANDS CATEGORIES
