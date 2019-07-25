@@ -5,7 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/mat.hpp>
-#include <openalpr/alpr.h>
+#include <alpr.h>
 
 #include <filesystem>
 #include <sys/types.h>
@@ -71,6 +71,7 @@ void plateCorners(const vector<AlprPlateResult> &results,
 	}
 }
 
+// * @param respect_input_path whether or not the initial input path should be resected
 /**
  * @brief Main process
  * 
@@ -79,7 +80,6 @@ void plateCorners(const vector<AlprPlateResult> &results,
  * @param output_name_addon the characters added before the extensions on rendered images
  * @param timeout a timeout in seconds
  * @param blur_filter_size the size of the square area used to make the blur effect
- * @param respect_input_path whether or not the initial input path should be resected
  * @param log_file the path to the file containing all the logs (displayed text) for a given runtime
  * @param country the country code for the plate detection
  * @param save_plate_info whether or not alpr's plate recognition have to be saved (in json format).

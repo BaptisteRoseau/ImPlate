@@ -13,7 +13,7 @@ CPPFLAGS	= -std=c++17 -Wall -Wextra
 
 LIBS   		= \
 			$(wildcard $(OPENCV_DIR)/lib/*.so) \
-			$(wildcard $(OPENALPR_DIR)/lib/*.so) \
+			$(OPENALPR_DIR)/lib/libopenalpr.so \
 			-lstdc++fs
 			#-L $(OPENCV_DIR)/lib/ \
 			-L $(OPENALPR_DIR)/lib/ \

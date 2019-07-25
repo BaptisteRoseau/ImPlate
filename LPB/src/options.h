@@ -1,6 +1,8 @@
 #ifndef OPTIONS_HPP
 #define OPTIONS_HPP
 
+//* @param respect_input_path whether or not the pictures in the input directory will have a similar path in the output directory.
+
 /**
  * @brief Parse the command line to set the variable required by the main process.
  * The variable's default value must have been set before the function is called.
@@ -12,7 +14,6 @@
  * @param timeout the timeout variable (default: 0)
  * @param blur_filter_size the filter size used for blur (see blur_pixel function)
  * @param verbose whether or not text has to be printed
- * @param respect_input_path whether or not the pictures in the input directory will have a similar path in the output directory.
  * @param country the country code for the plate detection
  * @param save_plate_info whether or not the plate's information have to be saved
  */

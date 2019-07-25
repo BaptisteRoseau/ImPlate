@@ -21,10 +21,11 @@ Optional argument:\n\
 \t- -t or --timeout:        A timeout in seconds.\n\
 \t- -p or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
 \t- -v or --verbose:        Whether or not informations has to be displayed. This does not affect the logs.\n\
-\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n\
 \t- -c or --counry:         The country code of the car, to match the country's plate pattern. (default: \"eu\")\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
 "
+//\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n\
+
 
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,

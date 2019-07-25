@@ -47,7 +47,6 @@ stack<string> *list_files(const char *path){
 
 	// Directory
 	if (f.is_directory()){
-		double r;
 		for(auto& p: fs::recursive_directory_iterator(path)){
 			if (p.is_regular_file() && is_supported_file(p.path())){
                 file_paths->push((string) p.path());
@@ -131,6 +130,7 @@ string get_file_extension(const string &filepath){
 
 //TODO: Implement this
 string select_output_dir(const string out_dir, const string in_path, const string filepath, const bool respect_input_path){
+	(void) in_path;
 	string root = out_dir+(string) "/"; 
 	// Respect the original path into input directory if necessary
 	if (respect_input_path){
