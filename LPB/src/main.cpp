@@ -43,6 +43,7 @@ ofstream log_ostream; /// Stream to the file where the logs will be saved
 	- Fix "respect original path"
 	- Better blur (or use OpenCV's blur)
 	- Cmake
+	- installer
 	- Ajouter dans la doc les options dispo pour le pays de la plaque
 	- Formater le json pour que ce soit plus simple à lire..
 
