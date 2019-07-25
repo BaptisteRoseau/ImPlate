@@ -4,7 +4,7 @@
 ROOT_DIR=$(pwd)
 LPB_DIR=$ROOT_DIR/LPB
 
-OPENCV_VERSION=4.0.1
+OPENCV_VERSION=3.4.5
 OPENCV_INSTALL_DIR=$LPB_DIR/opencv     # Directory where OpenCV's librairies and headers will be installed
 OPENALPR_INSTALL_DIR=$LPB_DIR/openalpr # Directory where OpenALPR's librairies and headers will be installed
 
@@ -29,8 +29,9 @@ make -j4 install
 cd $ROOT_DIR
 
 ### Getting OpenAlpr
-git clone https://github.com/sunfic/openalpr-opencv4
-cd openalpr-opencv4/
+git clone https://github.com/sunfic/openalpr-opencv4 # Works with OpenCV 4.0.1 or higher
+#git clone https://github.com/openalpr/openalpr.git # Works with OpenCV 2.4.8, not higher
+cd openalpr-opencv4
 mkdir -p build
 cd build
 cmake -p -DOpenCV_DIR=$OPENCV_INSTALL_DIR \

@@ -5,7 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/mat.hpp>
-#include "../alpr/src/openalpr/alpr.h"
+#include <openalpr/alpr.h>
 
 #include <filesystem>
 #include <sys/types.h>
@@ -43,11 +43,8 @@ ofstream log_ostream; /// Stream to the file where the logs will be saved
 	- Fix "respect original path"
 	- Better blur (or use OpenCV's blur)
 	- Cmake
-	- installer
 	- Ajouter dans la doc les options dispo pour le pays de la plaque
 	- Formater le json pour que ce soit plus simple à lire..
-
-	Pour OpenCV et OpenALPR: les compiler à part, et linker directement les .so
  */
 
 /**

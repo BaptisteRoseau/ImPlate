@@ -30,7 +30,7 @@ bool is_supported_file(fs::path path){
 	}
 
 	string ext = path.extension();
-    //TODO
+    //TODO: Find supported extensions and add them here, then remove commentary
     return true;
 }
 
@@ -39,7 +39,7 @@ stack<string> *list_files(const char *path){
 	fs::directory_entry f = fs::directory_entry(path);
 
 	// File
-	if (f.is_regular_file() && is_supported_file(f.path())){
+	if (f.is_regular_file()){// && is_supported_file(f.path())){
 		file_paths->push((string) f.path());
 		DISPLAY("Added: " << f.path());
 		return file_paths;
@@ -129,10 +129,10 @@ string get_file_extension(const string &filepath){
     return fs::path(filepath).extension();
 }
 
-//TODO
+//TODO: Implement this
 string select_output_dir(const string out_dir, const string in_path, const string filepath, const bool respect_input_path){
 	string root = out_dir+(string) "/"; 
-	// Respect the original path into input directory if necessayr
+	// Respect the original path into input directory if necessary
 	if (respect_input_path){
 		fs::path path = fs::path(filepath).relative_path();
 		cout << path << endl;

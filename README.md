@@ -6,8 +6,7 @@ This project's purpose is to automatically blur license plates.
 
 In order to use the software, OpenCV (and it's dependencies) and OpenALPR must be installed.
 For a faster runtime, install CUDA and recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks.
-
-Note: An NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
+Note that an NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
 
 An installation script `install.sh` is given in the present directory. What it basically does is:
 
@@ -17,26 +16,23 @@ An installation script `install.sh` is given in the present directory. What it b
 - Compile the software source code
 
 The installation may take several minutes, and an internet connection is requiered.
-After runing this script, OpenCV and OpenALPR source directories will remain, but you can freely remove them if you don't plan on using it's features.
+After runing this script, OpenCV and OpenALPR source directories will remain, but you can freely remove them.
+Their installation path (for headers and librairies) is located at [LPB/openalpr](LPB/openalpr) and [LPB/opencv](LPB/opencv) if you plan on using it's features for another project.
 
-After installation, the binairy will be located at:
+After the installation, the binary will be located at:
 
 `LPB/build/blur`
 
 You can add this to your PATH Environment Variable in your `.profile` home directory to use it more conveniently:
 
-`PATH=$PATH:$pwd/LPB/build/blur`
+`PATH=$PATH:<path to>/LPB/build/blur`
 
 If you wish to build the documentation, got into the LPB directory and run the command:
 
-`make doc`
-
-or
-
-`doxygen Doxyfile`
+`make doc` or `doxygen Doxyfile`
 
 The documenation will be located at [LPB/doc/html/index.html](LPB/doc/html/index.html). The details of the functions can be found on the headers files (*.h).
-If the code needs to be recompiled, go into the [LPB](LPB) directory and run the command `make`.
+If the code needs to be recompiled, go into the [LPB](LPB) directory and run the command `make`. If you need to recompile OpenCV or OpenALPR, you can run `install.sh`, and comment the
 
 # How to use
 
