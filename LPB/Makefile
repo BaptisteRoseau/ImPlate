@@ -1,12 +1,10 @@
 ###				PARAMETERS
 
-ROOT_DIR = ..
-
 SRC_DIR = src
 BLD_DIR = build
 
-OPENCV_DIR   = $(ROOT_DIR)/opencv
-OPENALPR_DIR = $(ROOT_DIR)/openalpr
+OPENCV_DIR   = opencv
+OPENALPR_DIR = openalpr
 
 CC			= g++
 CPPFLAGS	= -std=c++17 -Wall -Wextra
@@ -34,7 +32,7 @@ LIBS   		= \
 			-lopencv_features2d \
 			-lopencv_objdetect \
 			-lopencv_flann
-INCLUDE		= -I $(OPENCV_DIR)/include \
+INCLUDE		= -I $(OPENCV_DIR)/include/opencv4 \
 			  -I $(OPENALPR_DIR)/include \
 			  -I ${SRC_DIR}
 
@@ -96,7 +94,6 @@ build: --prebuild $(OBJ_FILES) --build_end
 #######################################################
 
 install: build
-	@mkdir -p $(BLD_DIR)
 	@rm -rf $(OBJ_FILES)
 
 
