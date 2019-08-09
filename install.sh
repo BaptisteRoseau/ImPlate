@@ -11,19 +11,19 @@ OPENALPR_INSTALL_DIR=$LPB_DIR/openalpr # Directory where OpenALPR's librairies a
 #=================== OPENCV
 cd $ROOT_DIR
 
-## Getting OpenCV from source
-wget https://github.com/opencv/opencv/archive/$OPENCV_VERSION.zip
-unzip $OPENCV_VERSION.zip
-rm -f $OPENCV_VERSION.zip
-
-# Compiling and installing OpenCV
-mkdir -p opencv-$OPENCV_VERSION/build
-cd opencv-$OPENCV_VERSION/build
-cmake -p -DCMAKE_BUILD_TYPE=RELEASE \
-         -DCMAKE_INSTALL_PREFIX=$OPENCV_INSTALL_DIR \
-         $ROOT_DIR/opencv-$OPENCV_VERSION/
-make -j4
-make -j4 install
+### Getting OpenCV from source
+#wget https://github.com/opencv/opencv/archive/$OPENCV_VERSION.zip
+#unzip $OPENCV_VERSION.zip
+#rm -f $OPENCV_VERSION.zip
+#
+## Compiling and installing OpenCV
+#mkdir -p opencv-$OPENCV_VERSION/build
+#cd opencv-$OPENCV_VERSION/build
+#cmake -p -DCMAKE_BUILD_TYPE=RELEASE \
+#         -DCMAKE_INSTALL_PREFIX=$OPENCV_INSTALL_DIR \
+#         $ROOT_DIR/opencv-$OPENCV_VERSION/
+#make -j4
+#make -j4 install
 
 #=================== OPEN ALPR
 cd $ROOT_DIR
@@ -34,12 +34,12 @@ git clone https://github.com/sunfic/openalpr-opencv4 # Works with OpenCV 4.0.1 o
 cd openalpr-opencv4
 mkdir -p build
 cd build
-cmake -p -DOpenCV_DIR=$OPENCV_INSTALL_DIR \
-         -DOpenCV_VERSION=$OPENCV_VERSION \
-         -DCMAKE_INSTALL_PREFIX=$OPENALPR_INSTALL_DIR \
-         ../src/
+#cmake -p -DOpenCV_DIR=$OPENCV_INSTALL_DIR \
+#         -DOpenCV_VERSION=$OPENCV_VERSION \
+#         -DCMAKE_INSTALL_PREFIX=$OPENALPR_INSTALL_DIR \
+#         ../src/
 make -j4
-make -j4 install
+make -j4 install #TODO: regler ce probleme de /etc...
 
 
 #=================== $LPB_DIR

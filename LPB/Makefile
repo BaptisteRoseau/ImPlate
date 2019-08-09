@@ -3,8 +3,8 @@
 SRC_DIR = src
 BLD_DIR = build
 
-OPENCV_DIR   = opencv
-OPENALPR_DIR = openalpr
+OPENCV_DIR   = ../opencv
+OPENALPR_DIR = ../openalpr_install
 
 CC			= g++
 CPPFLAGS	= -std=c++17 -Wall -Wextra
@@ -12,10 +12,7 @@ CPPFLAGS	= -std=c++17 -Wall -Wextra
 ###				SOURCES
 
 LIBS   		= \
-			$(wildcard $(OPENCV_DIR)/lib/*.so) \
-			$(OPENALPR_DIR)/lib/libopenalpr.so \
-			-lstdc++fs
-			#-L $(OPENCV_DIR)/lib/ \
+			-L $(OPENCV_DIR)/lib/ \
 			-L $(OPENALPR_DIR)/lib/ \
 			-L /usr/local/lib/ \
 			-lopencv_gapi \
@@ -31,10 +28,16 @@ LIBS   		= \
 			-lopencv_ml \
 			-lopencv_features2d \
 			-lopencv_objdetect \
-			-lopencv_flann
-INCLUDE		= -I $(OPENCV_DIR)/include/opencv4 \
+			-lopencv_flann \
+			-lstdc++fs \
+			-lopenalpr
+			#$(wildcard $(OPENCV_DIR)/lib/*.so*) \
+			$(OPENALPR_DIR)/lib/libopenalpr.so \
+			-lstdc++fs
+INCLUDE		= -I ${SRC_DIR} \
+			  -I /usr/local/include/ \
+			  -I $(OPENCV_DIR)/include/ \
 			  -I $(OPENALPR_DIR)/include \
-			  -I ${SRC_DIR}
 
 SRC_FILES	= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(shell find $(SRC_DIR)/ -type f -name '*.cpp')
 OBJ_FILES	= $(SRC_FILES:%.cpp=%.o) 

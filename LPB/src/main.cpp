@@ -3,8 +3,10 @@
 #include "options.h"
 #include "gopt/gopt.h"
 
+#include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/core/mat.hpp>
+#include <opencv2/core/core.hpp>
 #include <opencv2/opencv.hpp>
-#include <opencv2/core/mat.hpp>
 #include <alpr.h>
 
 #include <filesystem>
@@ -41,7 +43,7 @@ ofstream log_ostream; /// Stream to the file where the logs will be saved
 
 /* TODO:
 	- Fix "respect original path"
-	- Better blur (or use OpenCV's blur)
+	- Better blur (or use OpenCV's blur) (Nope, this one does the job)
 	- Cmake
 	- Ajouter dans la doc les options dispo pour le pays de la plaque
 	- Formater le json pour que ce soit plus simple à lire..
@@ -54,7 +56,7 @@ ofstream log_ostream; /// Stream to the file where the logs will be saved
  * @param corners a buffer where to write corners (from top-left following the chonological order)
  * @param numbers a buffer where to write the detected plates
  */
-void plateCorners(const vector<AlprPlateResult> &results,
+void plate_corners(const vector<AlprPlateResult> &results,
 				 vector<vector<Point> > &corners,
 				 vector<string> &numbers){
 	size_t i, j;
@@ -92,10 +94,14 @@ int process(const char* in_path, const char* out_dir,
 			const bool respect_input_path,
 			const char *log_file,
 			const char *country,
-			const bool save_plate_info){
+			const bool save_plate_info,
+			const bool blur_only,
+			const char *blur_only_location){
 
 	// Building output directory if it doesn't exists
 	if (build_dir(out_dir)){
+		//Don't use DISPLAY_ERR 
+		// you want to see this message even without verbose
 		cerr << "ERROR: Couldn't build output directory.\n";
 		exit(EXIT_FAILURE);
 	}
@@ -104,7 +110,7 @@ int process(const char* in_path, const char* out_dir,
 	if (save_log){
 		log_ostream.open(log_file);
 		if (!log_ostream){
-			cerr << format("ERROR: Couldn't open %s\n", log_file);
+			cerr << "ERROR: Couldn't open " << log_file << endl;
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -119,13 +125,23 @@ int process(const char* in_path, const char* out_dir,
 	// Parameters initialisation
 	stack<string> failed_pictures = stack<string>();
 	Mat picture = Mat();
-	Mat blured = Mat();
+	Mat blured  = Mat();
 	string filepath, filename, fileext, savedir, file_out_dir;
 	int error;
 	unsigned int loop_idx = 0;
 	unsigned int nb_files = stack_files->size();
 	double _timeout = timeout == 0 ? DBL_MAX : timeout; 
 	double t0 = time(NULL);
+
+	/*TODO: Blur only testing here (1 FILE only (not dire)) + retrieving areas location + testing good areas */
+	/* Rajouter tout ça dans utils.h */
+
+	if (blur_only){
+		if (stack_files->size() != 1 || !fs::directory_entry(in_path).is_regular_file()){
+			cerr << "ERROR: Only 1 file can be given for blur only.\n";
+			exit(EXIT_FAILURE);
+		}
+	}
 
 	// Main loop
 	while (!stack_files->empty()){
@@ -136,8 +152,8 @@ int process(const char* in_path, const char* out_dir,
 		loop_idx++;
 
 		// Displaying script advancement
-		DISPLAY(format("\nPicture: %u out of %u (%.2f %%): ",
-		 		loop_idx, nb_files, (double) 100*loop_idx/nb_files) << filename)
+		DISPLAY("\nPicture: " << loop_idx << " out of " << nb_files
+			 << " (" << (double) 100*loop_idx/nb_files << ") : " << filename)
 
 		// Opening picture
 		picture = open_picture(filepath);
@@ -152,26 +168,33 @@ int process(const char* in_path, const char* out_dir,
 		// Buffers to get ALPR results
 		vector<vector<Point> > corners = vector<vector<Point> >();
 		vector<string> numbers = vector<string>();
-		
-		// Getting picture's plate informations
-		Alpr detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
-		AlprResults alpr_results = detector.recognize(filepath);
-		vector<AlprPlateResult> results = alpr_results.plates;
-		plateCorners(results, corners, numbers);
-		if (corners.size() == 0){
-			DISPLAY_ERR("No plate detected on " << filename
-			<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
-			failed_pictures.push(filename);
-			continue;
+		Alpr detector;
+		AlprResults alpr_results;
+
+		if (!blur_only){
+			// Getting picture's plate informations
+			detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
+			alpr_results = detector.recognize(filepath);
+			vector<AlprPlateResult> results = alpr_results.plates;
+			plate_corners(results, corners, numbers);
+			if (corners.size() == 0){
+				DISPLAY_ERR("No plate detected on " << filename
+				<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
+				failed_pictures.push(filename);
+				continue;
+			}
+			
+			// Displaying the plates numbers
+			if (verbose || save_log){
+				DISPLAY("Plates detected:")
+				for (auto&& num: numbers){
+					DISPLAY(num);
+				}
+			}
+		} else {
+			corners.push_back(parse_location(blur_only_location));
 		}
 
-		// Displaying the plates numbers
-		if (verbose || save_log){
-			DISPLAY("Plates detected:")
-			for (auto&& num: numbers){
-				DISPLAY(num);
-			}
-		}
 
 		// Bluring a copy of the initial picture
 		blured = picture.clone();
@@ -202,7 +225,7 @@ int process(const char* in_path, const char* out_dir,
 		}
 
 		// Saving the plate information if necessary
-		if (save_plate_info && !numbers.empty()){
+		if (!blur_only && save_plate_info && !numbers.empty()){
 			string plate_file = savedir+"/"+filename+DFLT_JSON_ADDON+".json";
 			ofstream plate_ostream;
 			plate_ostream.open(plate_file);
@@ -238,17 +261,16 @@ int process(const char* in_path, const char* out_dir,
 	// Cleaning memory
 	delete stack_files;
 
-	DISPLAY(format("\nExited successfully (%.2f seconds)", (difftime(time(NULL), t0))));
+	DISPLAY("\nExited successfully (" << difftime(time(NULL), t0) << "seconds)");
 
 	return EXIT_SUCCESS;
 }
 
 void usage(char* name){
-	cout << 
-	format("\
-Usage: %s -i <path to picture or directory>\
+	cout <<"\
+Usage: " << name << " -i <path to picture or directory>\
 -o <output directory>\n\
-Type -h or --help for more information.\n", name);
+Type -h or --help for more information.\n";
 }
 
 int main(int argc, char** argv)
@@ -274,6 +296,8 @@ int main(int argc, char** argv)
 	unsigned int blur_filter_size = DFLT_BLUR;
 	bool respect_input_path = false;
 	bool save_plate_info = false;
+	bool blur_only = false;
+	char *blur_only_location = new char[BUFFSIZE];
 
 	// Parsing command line
 	parse_argv(argv, in_path, out_dir,
@@ -285,7 +309,12 @@ int main(int argc, char** argv)
 			   save_log,
 			   log_file,
 			   country,
-			   save_plate_info);
+			   save_plate_info,
+			   blur_only,
+			   blur_only_location);
+
+	//Blur Location: "<x>_<y>_<height>_<width>".
+	//Example: 100_150_200_300 for a 200*300 area starting at (100,150) (top left corner).
 
 	// Executing main process
 	int ret = process(in_path, out_dir,
@@ -295,13 +324,16 @@ int main(int argc, char** argv)
 					  respect_input_path,
 					  log_file,
 					  country,
-					  save_plate_info);
+					  save_plate_info,
+					  blur_only,
+					  blur_only_location);
 
 	delete[] in_path;
 	delete[] out_dir;
 	delete[] log_file;
 	delete[] output_name_addon;
 	delete[] country;
+	delete[] blur_only_location;
 
     return ret;
 }

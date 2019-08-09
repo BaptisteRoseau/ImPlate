@@ -1,8 +1,8 @@
 #include "utils.h"
 #include "blur.h"
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/mat.hpp>
+#include <opencv4/opencv2/opencv.hpp>
+#include <opencv4/opencv2/core/mat.hpp>
 
 #include <cstdlib>
 #include <iostream>

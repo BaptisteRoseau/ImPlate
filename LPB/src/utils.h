@@ -7,13 +7,14 @@
 #include <fstream>
 #include <cstring>
 #include <stack>
+#include <cstdlib>
 
 // Macro for stdout messages for verbose-only mode, and log save
 #define DISPLAY(stream) if (verbose){cout << stream << endl;}\
 if (save_log){log_ostream << stream << endl;}
 
 // Macro for stderr messages for verbose-only mode, and log save
-#define DISPLAY_ERR(stream) if (verbose){cerr << stream << endl;}\
+#define DISPLAY_ERR(stream) if (verbose){cerr << "ERROR: " << stream << endl;}\
 if (save_log){log_ostream << stream << endl;}
 
 #define _min(a, b) ((a) < (b) ? (a) : (b))
@@ -114,5 +115,8 @@ std::string get_file_extension(const std::string &filepath);
  * @return string the path to the final output directory
  */
 std::string select_output_dir(const std::string out_dir, const std::string in_path, const std::string filepath, const bool respect_input_path);
+
+
+std::vector<cv::Point> parse_location(const std::string str_location);
 
 #endif

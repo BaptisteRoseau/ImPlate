@@ -24,7 +24,7 @@ Optional argument:\n\
 \t- -c or --counry:         The country code of the car, to match the country's plate pattern. (default: \"eu\")\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
 "
-//\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n\
+// \t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n\
 
 
 void parse_argv(char **argv, char* in_path, char *out_dir,
@@ -36,9 +36,11 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     bool &save_log,
 	char *log_file,
     char *country,
-    bool &save_plate_info){
+    bool &save_plate_info,
+    bool &blur_only,
+    char *blur_only_location){
     
-	struct option *options = new option[12];
+	struct option *options = new option[13];
 
     // Retrieving argument
     options[0].long_name  = "help";
@@ -85,7 +87,11 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[10].short_name = 's';
     options[10].flags      = GOPT_ARGUMENT_FORBIDDEN;
 
-    options[11].flags      = GOPT_LAST;
+	options[11].long_name  = "blur-only";
+    options[11].short_name = 'b';
+    options[11].flags      = GOPT_ARGUMENT_REQUIRED;
+
+    options[12].flags      = GOPT_LAST;
 
     gopt(argv, options);
     gopt_errors(argv[0], options);
@@ -112,6 +118,10 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     if (options[8].count) respect_input_path = true;
 	if (options[9].count) strcpy(country, options[9].argument);
     if (options[10].count) save_plate_info = true;
+    if (options[11].count) {
+        blur_only = true;
+        strcpy(blur_only_location, options[11].argument);
+    }
 
     delete[] options;
 }

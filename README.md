@@ -4,9 +4,21 @@ This project's purpose is to automatically blur license plates.
 
 # Installation
 
+## Requierement
+
+- Tesseract OCR v3.0.4 (https://github.com/tesseract-ocr/tesseract)
+- OpenCV v2.4.8+ (http://opencv.org/)
+- OpenALPR (https://github.com/openalpr/openalpr)
+
+Optional:
+- CUDA (https://developer.nvidia.com/cuda-downloads)
+
+## Installation Script
+
 In order to use the software, OpenCV (and it's dependencies) and OpenALPR must be installed.
 For a faster runtime, install CUDA and recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks.
 Note that an NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
+**Read carefully this README et the installations script before insatlling anything**, as you may have already some dependecies installed, and don't need to reinstall them. Feel free to modify the installation scripts if necessary. Note that OpenCV 4.0.1 is requiered, and CUDA is highly recommended (install it **before** OpenCV or OpenALPR).
 
 An installation script `install.sh` is given in the present directory. What it basically does is:
 
@@ -19,6 +31,9 @@ The installation may take several minutes, and an internet connection is requier
 After runing this script, OpenCV and OpenALPR source directories will remain, but you can freely remove them.
 Their installation path (for headers and librairies) is located at [LPB/openalpr](LPB/openalpr) and [LPB/opencv](LPB/opencv) if you plan on using it's features for another project.
 
+Another installation script `install_sudo.sh` is given, provided you have administrator rights, and  `apt` (for Debian or Ubuntu distributions).
+Please run this script using `sudo`.
+
 After the installation, the binary will be located at:
 
 `LPB/build/blur`
@@ -26,6 +41,8 @@ After the installation, the binary will be located at:
 You can add this to your PATH Environment Variable in your `.profile` home directory to use it more conveniently:
 
 `PATH=$PATH:<path to>/LPB/build/blur`
+
+## Build Documentation
 
 If you wish to build the documentation, got into the LPB directory and run the command:
 
@@ -55,7 +72,6 @@ Optional argument:
 - `-t` or `--timeout`:        A timeout in seconds.
 - `-p` or `--blur-power`:     The size of the square box used to make a blur effect (default: 70).
 - `-v` or `--verbose`:        Whether or not information has to be displayed. This does not affect the logs.
-- `-r` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)
 - `-c` or `--counry`:         The country code of the car, to match the country's plate pattern. (default: "eu")
 - `-s` or `--save-info`:      Whether or not plate information sould be saved as well.
 
@@ -71,12 +87,3 @@ Don't hesitate to check the code in [LPB/src/main.cpp](LPB/src/main.cpp) in orde
 - OpenCV3: <https://docs.opencv.org/3.4.5/>
 - OpenALPR: <http://doc.openalpr.com/opensource.html>
 - This software: [LPB/doc/html/index.html](LPB/doc/html/index.html) after building documentation.
-
-# Requierement
-
-- Tesseract OCR v3.0.4 (https://github.com/tesseract-ocr/tesseract)
-- OpenCV v2.4.8+ (http://opencv.org/)
-- OpenALPR (https://github.com/openalpr/openalpr)
-
-Optional:
-- CUDA (https://developer.nvidia.com/cuda-downloads)
