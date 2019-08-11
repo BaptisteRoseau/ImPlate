@@ -29,12 +29,13 @@ using namespace alpr;
 
 namespace fs = filesystem;
 
-#define DFLT_OUTPUT_ADDON "_blured"
+#define DFLT_OUTPUT_ADDON "_blured" //TODO: Tester sans rien, d'ailleurs, tester toutes les options
 #define DFLT_JSON_ADDON "_info"
 #define DFLT_BLUR 70
 #define DFLT_COUNTRY "eu"
-#define DFLT_CONFIG_FILE "/home/broseau/ProgrammePapa/ImPlate/alpr/config/openalpr.conf.defaults"
-#define DFLT_RUNTIME_DIR "/home/broseau/ProgrammePapa/ImPlate/alpr/runtime_data"
+#define DFLT_CONFIG_FILE "/usr/local/share/openalpr/config/openalpr.defaults.con"
+#define DFLT_RUNTIME_DIR "/usr/local/share/openalpr/runtime_data/"
+#define DFLT_FAILED_PIC_DIR "blur_failure_files.txt"
 #define BUFFSIZE 200
 
 bool verbose; /// Whether or not information should be displayed
@@ -43,8 +44,6 @@ ofstream log_ostream; /// Stream to the file where the logs will be saved
 
 /* TODO:
 	- Fix "respect original path"
-	- Better blur (or use OpenCV's blur) (Nope, this one does the job)
-	- Cmake
 	- Ajouter dans la doc les options dispo pour le pays de la plaque
 	- Formater le json pour que ce soit plus simple à lire..
  */
@@ -133,9 +132,7 @@ int process(const char* in_path, const char* out_dir,
 	double _timeout = timeout == 0 ? DBL_MAX : timeout; 
 	double t0 = time(NULL);
 
-	/*TODO: Blur only testing here (1 FILE only (not dire)) + retrieving areas location + testing good areas */
-	/* Rajouter tout ça dans utils.h */
-
+	// Blur only input verification
 	if (blur_only){
 		if (stack_files->size() != 1 || !fs::directory_entry(in_path).is_regular_file()){
 			cerr << "ERROR: Only 1 file can be given for blur only.\n";
@@ -159,7 +156,7 @@ int process(const char* in_path, const char* out_dir,
 		picture = open_picture(filepath);
 		if (picture.empty()){
 			DISPLAY_ERR("Couldn't open " << filepath);
-			failed_pictures.push(filename);
+			failed_pictures.push(filepath);
 			continue;
 		}
 
@@ -167,19 +164,18 @@ int process(const char* in_path, const char* out_dir,
 
 		// Buffers to get ALPR results
 		vector<vector<Point> > corners = vector<vector<Point> >();
-		vector<string> numbers = vector<string>();
-		Alpr detector;
+		vector<string> numbers = vector<string>();;
+		Alpr detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
 		AlprResults alpr_results;
 
 		if (!blur_only){
 			// Getting picture's plate informations
-			detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
 			alpr_results = detector.recognize(filepath);
 			vector<AlprPlateResult> results = alpr_results.plates;
 			plate_corners(results, corners, numbers);
 			if (corners.size() == 0){
-				DISPLAY_ERR("No plate detected on " << filename
-				<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
+				DISPLAY_ERR("No plate detected on " << filename);
+				//<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
 				failed_pictures.push(filename);
 				continue;
 			}
@@ -192,7 +188,16 @@ int process(const char* in_path, const char* out_dir,
 				}
 			}
 		} else {
-			corners.push_back(parse_location(blur_only_location));
+			// Parsing corners and verifying validity
+			vector<Point> cor = parse_location(blur_only_location);
+			for (auto&& pt: cor){
+				if (pt.x < 0 || pt.y < 0 || pt.x > picture.cols || pt.y > picture.rows){
+					cerr << "ERROR: Invalid pixel location: " << blur_only_location
+					<< "\nPlease respect format x1_y1_x2_y2_x3_y3_x4_y4 with valid values." << endl;
+					exit(EXIT_FAILURE);
+				}
+			}
+			corners.push_back(cor);
 		}
 
 
@@ -251,9 +256,19 @@ int process(const char* in_path, const char* out_dir,
 
 	if ((verbose || save_log) && !failed_pictures.empty()){
 		DISPLAY("\nSome pictures plate analysis or blur failed:")
+
+		// Opening file containing failed pictures only
+		ofstream failedpic_stream;
+		failedpic_stream.open(DFLT_FAILED_PIC_DIR);
+		if (!failedpic_stream){
+			DISPLAY_ERR("Couldn't open " << DFLT_FAILED_PIC_DIR)
+		}
+
+		// Displaying and writing failed pictures path
 		while (!failed_pictures.empty())
 		{
-			DISPLAY(failed_pictures.top());
+			DISPLAY(fs::absolute(fs::path(failed_pictures.top())));
+			failedpic_stream << fs::absolute(fs::path(failed_pictures.top())) << endl;
 			failed_pictures.pop();
 		}
 	}
@@ -270,7 +285,7 @@ void usage(char* name){
 	cout <<"\
 Usage: " << name << " -i <path to picture or directory>\
 -o <output directory>\n\
-Type -h or --help for more information.\n";
+Type -h or --help for more details.\n";
 }
 
 int main(int argc, char** argv)

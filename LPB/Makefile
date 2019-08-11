@@ -3,18 +3,21 @@
 SRC_DIR = src
 BLD_DIR = build
 
+# (for not-sudo install only)
 OPENCV_DIR   = ../opencv
 OPENALPR_DIR = ../openalpr_install
 
 CC			= g++
-CPPFLAGS	= -std=c++17 -Wall -Wextra
+CPPFLAGS	= -std=c++17 -Wall -Wextra -g
+
+ALPR_CFG_PATH     = "/usr/local/share/openalpr/config/openalpr.defaults.con"
+ALPR_RUNTIME_PATH = "/usr/local/share/openalpr/runtime_data/"
 
 ###				SOURCES
+#TODO: Retirer les librairies inutiles
+#Ce qui est mis en commentaire est dans le cas où l'installation ne s'est pas faite via sudo
 
 LIBS   		= \
-			-L $(OPENCV_DIR)/lib/ \
-			-L $(OPENALPR_DIR)/lib/ \
-			-L /usr/local/lib/ \
 			-lopencv_gapi \
 			-lopencv_photo \
 			-lopencv_highgui \
@@ -33,17 +36,21 @@ LIBS   		= \
 			-lopenalpr
 			#$(wildcard $(OPENCV_DIR)/lib/*.so*) \
 			$(OPENALPR_DIR)/lib/libopenalpr.so \
+			-L $(OPENALPR_DIR)/lib/ \
+			-L $(OPENCV_DIR)/lib/ \
+			-L /usr/local/lib/ \
 			-lstdc++fs
 INCLUDE		= -I ${SRC_DIR} \
 			  -I /usr/local/include/ \
-			  -I $(OPENCV_DIR)/include/ \
+			  -I /usr/local/include/opencv4
+			  #-I $(OPENCV_DIR)/include/ \
 			  -I $(OPENALPR_DIR)/include \
 
 SRC_FILES	= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(shell find $(SRC_DIR)/ -type f -name '*.cpp')
 OBJ_FILES	= $(SRC_FILES:%.cpp=%.o) 
 
 BINARY	 	= blur
-TEST_ARGS 	= -s -v -i data -o test_dir -l log.txt
+ARGS 	    = -s -v -i data -o test_dir -l log.txt
 
 #######################################################
 ###				COMMANDS CATEGORIES
@@ -74,7 +81,6 @@ help:
 		'\t' make help		'\t' Show the availables commands				'\n'\
 		'\t' make build		'\t' Build the object and binaries				'\n'\
 		'\t' make run		'\t' Run the program with default parameters	'\n'\
-		'\t' make run		'\t' Run the program with test parameters		'\n'\
 		'\t' make vrun		'\t' Run with memory check 						'\n'\
 		'\t' make doc		'\t' Generate the documentation					'\n'\
 		'\t' make clean 	'\t' Clean all generated objects and binairies	'\n'
@@ -84,13 +90,11 @@ help:
 ###				MAKE BUILD
 #######################################################
 
---prebuild:
+./$(BLD_DIR)/$(BINARY): $(OBJ_FILES)
 	@mkdir -p $(BLD_DIR)
-
-build: --prebuild $(OBJ_FILES) --build_end
-
---build_end: $(OBJ_FILES)
 	$(CC) $(CPPFLAGS) $(OBJ_FILES) -o $(BLD_DIR)/$(BINARY) $(LIBS)
+
+build: ./$(BLD_DIR)/$(BINARY)
 
 #######################################################
 ###				MAKE INSTALL
@@ -99,13 +103,12 @@ build: --prebuild $(OBJ_FILES) --build_end
 install: build
 	@rm -rf $(OBJ_FILES)
 
-
 #######################################################
 ###				MAKE RUN
 #######################################################
 
-run:
-	./$(BLD_DIR)/$(BINARY) $(TEST_ARGS)
+run: ./$(BLD_DIR)/$(BINARY)
+	./$(BLD_DIR)/$(BINARY) $(ARGS)
 
 #######################################################
 ###				MAKE RUN WITH GDB
@@ -144,4 +147,6 @@ clean:
 #######################################################
 
 %.o : %.cpp
-	$(CC) -c $(CPPFLAGS) $< -o $@ $(INCLUDE)
+	$(CC) -c -DDFLT_CONFIG_FILE="$(ALPR_CFG_PATH)"     \
+			 -DDFLT_RUNTIME_DIR="$(ALPR_RUNTIME_PATH)" \
+			  $(CPPFLAGS) $< -o $@ $(INCLUDE)

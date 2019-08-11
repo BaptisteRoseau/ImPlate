@@ -24,7 +24,7 @@ Optional argument:\n\
 \t- -c or --counry:         The country code of the car, to match the country's plate pattern. (default: \"eu\")\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
 "
-// \t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n\
+// \t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n
 
 
 void parse_argv(char **argv, char* in_path, char *out_dir,

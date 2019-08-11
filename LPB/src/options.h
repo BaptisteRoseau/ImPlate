@@ -17,7 +17,7 @@
  * @param country the country code for the plate detection
  * @param save_plate_info whether or not the plate's information have to be saved
  * @param blur_only whether or not only bluring should be done. Works only for one file.
- * @param blur_only_location the location of the area to be blured. "<x>_<y>_<height>_<width>". Example: 100_150_200_300 for a 200*300 area starting at (100,150) (top left corner).
+ * @param blur_only_location the location of the area to be blured. "<x1>_<y1>_<x2>_<y2>_...". The order is TOP_LEFT, TOP_RIGHT_ BOTTOM_RIGTH, BOTTOM LEFT. Example: 100_150_200_145_250_213_145_200.
  */
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,

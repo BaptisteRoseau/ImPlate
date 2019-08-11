@@ -2,8 +2,8 @@
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+//#include <opencv4/opencv2/highgui/highgui.hpp>
+//#include <opencv4/opencv2/imgproc/imgproc.hpp>
 
 #include <filesystem>
 #include <sys/types.h>
@@ -154,76 +154,32 @@ string select_output_dir(const string out_dir, const string in_path, const strin
 	return root+get_filename(filepath);
 }
 
-vector<Point> parse_location(const string str_location){
+void sort_corners(vector<Point> &corners){
 
-	/* C'EST DE LA MERDE, IL NE S'AGIT PAS FORCEMENT D'UN RECTANGLE */
-	/* UTILISE UNE BOUCLE WHILE AVEC UN BUFFER DE TYPE vector<vector<Point> > corners = vector<vector<Point> >(); */
-	/* CHANGE L'INPU DES OPTIONS AUSSI */
+}
+
+vector<Point> parse_location(const string str_location){
+	/* CHANGE L'INPUT DES OPTIONS AUSSI */
 	vector<Point> buffer = vector<Point>();
 	Point tmp_pt = Point();
 	 
 	// PARSING
 	size_t us_loc_0 = 0;
 	size_t us_loc_1 = 0;
-	int i;
-	for (i = 0; i < 8; i++){ //TODO: meilleure borne
+	int val;
+	int i = 0;
+	while(us_loc_1 < str_location.length()){
 		us_loc_0 = us_loc_1;
 		us_loc_1 = str_location.find('_', us_loc_0);
+		val = stoi(str_location.substr(us_loc_0, us_loc_1));
 		if (i&1){
-			tmp_pt.y = stoi(str_location.substr(us_loc_0, us_loc_1));
+			tmp_pt.y = val;
 			buffer.push_back(tmp_pt);
 		} else {
-			tmp_pt.x = stoi(str_location.substr(us_loc_0, us_loc_1));
+			tmp_pt.x = val;
 		}
+		i++;
 		DISPLAY(stoi(str_location.substr(us_loc_0, us_loc_1)));
 	}
-
-	// VERIFICATION
-	/* TODO: Verifications */
-
 	return buffer;
-}
-
-
-// String format from : https://stackoverflow.com/questions/2342162/stdstring-formatting-like-sprintf/8098080
-
-string ___format(const string fmt, ...) { // Works everywhere
-    int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code
-    string str;
-    va_list ap;
-    while (1) {     // Maximum two passes on a POSIX system...
-        str.resize(size);
-        va_start(ap, fmt);
-        int n = vsnprintf((char *)str.data(), size, fmt.c_str(), ap);
-        va_end(ap);
-        if (n > -1 && n < size) {  // Everything worked
-            str.resize(n);
-            return str;
-        }
-        if (n > -1)  // Needed size returned
-            size = n + 1;   // For null char
-        else
-            size *= 2;      // Guess at a larger size (OS specific)
-    }
-    return str;
-}
-
-#include <stdarg.h>  // For va_start, etc.
-#include <memory>    // For unique_ptr
-string __format(const string fmt_str, ...) { //May not work everywhere
-    int final_n, n = ((int)fmt_str.size()) * 2; /* Reserve two times as much as the length of the fmt_str */
-    unique_ptr<char[]> formatted;
-    va_list ap;
-    while(1) {
-        formatted.reset(new char[n]); /* Wrap the plain char array into the unique_ptr */
-        strcpy(&formatted[0], fmt_str.c_str());
-        va_start(ap, fmt_str);
-        final_n = vsnprintf(&formatted[0], n, fmt_str.c_str(), ap);
-        va_end(ap);
-        if (final_n < 0 || final_n >= n)
-            n += abs(final_n - n + 1);
-        else
-            break;
-    }
-    return string(formatted.get());
 }
