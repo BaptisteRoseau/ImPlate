@@ -174,7 +174,7 @@ string select_output_dir(const string out_root, const string in_root,
 		<< ".\nWriting into " << get_filename(filepath));
 	}
 
-	return out_root+get_filename(filepath);
+	return out_root+(string) "/"+get_filename(filepath);
 }
 
 bool build_directories(const string path){
@@ -224,7 +224,6 @@ vector<vector<Point> > parse_location(const string str_location){
 				cerr << "ERROR: Area is not having exactly 4 points." << endl;
 				exit(EXIT_FAILURE);
 			}
-			sort_corners(tmp_corner);
 			buffer.push_back(tmp_corner);
 			tmp_corner = vector<Point>();
 		}

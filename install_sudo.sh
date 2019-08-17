@@ -7,13 +7,15 @@ OPENCV_VERSION=4.0.1
 #=================== CUDA
 cd $ROOT_DIR
 
-#if ! [ -x "$(command -v cuda)" ]; then
-#    echo "Donwloading cuda, this make take a few moment (1.7GB)"
-#    wget https://developer.nvidia.com/compute/cuda/10.1/Prod/local_installers/cuda-repo-ubuntu1810-10-1-local-10.1.168-418.67_1.0-1_amd64.deb
-#    sudo apt-key add /var/cuda-repo-10-1-local-10.1.168-418.67/7fa2af80.pub
-#    sudo apt-get update
-#    sudo apt-get install cuda
-#fi
+if ! [ -x "$(command -v cuda)" ]; then
+    echo "Donwloading cuda, this make take a few moment (1.7GB)"
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+    sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+    sudo apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+    sudo add-apt-repository "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /"
+    sudo apt-get update
+    sudo apt-get install -y cuda
+fi
 
 
 #=================== OPENCV

@@ -77,7 +77,8 @@ Optional argument:
 - `-s` or `--save-info`:      Whether or not plate information sould be saved as well.
 - `-r` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.
 
-Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.
+Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.<br/>
+Also, it might be easier to manage your file by using the save directory for `--input` and `--output` with `--respect-path` enabled.<br/>
 
 # Improvement
 

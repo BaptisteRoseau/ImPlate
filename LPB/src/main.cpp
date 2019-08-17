@@ -44,15 +44,6 @@ bool verbose; /// Whether or not information should be displayed
 bool save_log; /// Whether or not logs should be saved (default: false)
 ofstream log_ostream; /// Stream to the file where the logs will be saved
 
-/* TODO:
-	- Fix "respect original path"
-	- If plate not detected, try with another country code
-	- Meilleur management de "failed pictures"
-	- fix multi plates blur
-	- tester respect path sur les cas bizarres
-	- test le -i et -o avec des ../data/../coucou
- */
-
 /**
  * @brief Retireves the plates corners and number from results to corners and numbers
  * 
@@ -183,7 +174,6 @@ int process(const char* in_path, const char* out_dir,
 			plate_corners(results, corners, numbers);
 			if (corners.size() == 0){
 				DISPLAY_ERR("No plate detected on " << filename);
-				//<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
 				failed_pictures.push(filepath);
 				continue;
 			}
@@ -206,6 +196,7 @@ int process(const char* in_path, const char* out_dir,
 						exit(EXIT_FAILURE);
 					}
 				}
+				sort_corners(cor); //NOT IMPLEMENTED
 			}
 		}
 
