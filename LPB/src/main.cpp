@@ -5,8 +5,6 @@
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/opencv.hpp>
 #include <alpr.h>
 
 #include <filesystem>
@@ -29,7 +27,7 @@ using namespace alpr;
 
 namespace fs = filesystem;
 
-#define DFLT_OUTPUT_ADDON "_blured" //TODO: Tester sans rien, d'ailleurs, tester toutes les options
+#define DFLT_OUTPUT_ADDON "_blured"
 #define DFLT_JSON_ADDON "_info"
 #define DFLT_BLUR 70
 #define DFLT_COUNTRY "eu"
@@ -44,8 +42,11 @@ ofstream log_ostream; /// Stream to the file where the logs will be saved
 
 /* TODO:
 	- Fix "respect original path"
-	- Ajouter dans la doc les options dispo pour le pays de la plaque
-	- Formater le json pour que ce soit plus simple à lire..
+	- If plate not detected, try with another country code
+	- Meilleur management de "failed pictures"
+	- fix multi plates blur
+	- tester respect path sur les cas bizarres
+	- test le -i et -o avec des ../data/../coucou
  */
 
 /**
@@ -69,6 +70,7 @@ void plate_corners(const vector<AlprPlateResult> &results,
 		}
 		corners.push_back(tmp_vect); 
 		numbers.push_back(results[i].bestPlate.characters);
+		tmp_vect.clear();
 	}
 }
 
@@ -131,6 +133,7 @@ int process(const char* in_path, const char* out_dir,
 	unsigned int nb_files = stack_files->size();
 	double _timeout = timeout == 0 ? DBL_MAX : timeout; 
 	double t0 = time(NULL);
+	//const vector country_code_vect = {"eu", "fr", "gb", "us", "au", "br", "in"};
 
 	// Blur only input verification
 	if (blur_only){
@@ -150,7 +153,7 @@ int process(const char* in_path, const char* out_dir,
 
 		// Displaying script advancement
 		DISPLAY("\nPicture: " << loop_idx << " out of " << nb_files
-			 << " (" << (double) 100*loop_idx/nb_files << ") : " << filename)
+			 << " (" << (float) 100*loop_idx/nb_files << " %) : " << filename)
 
 		// Opening picture
 		picture = open_picture(filepath);
@@ -163,7 +166,7 @@ int process(const char* in_path, const char* out_dir,
 		/* ==== PLATE DETECTION AND BLUR BEGIN ==== */
 
 		// Buffers to get ALPR results
-		vector<vector<Point> > corners = vector<vector<Point> >();
+		vector<vector<Point> > corners = vector<vector<Point> >(); /// Detected plates : [plate1: [tl, tr, br, bl], plate2: ...]
 		vector<string> numbers = vector<string>();;
 		Alpr detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
 		AlprResults alpr_results;
@@ -176,7 +179,7 @@ int process(const char* in_path, const char* out_dir,
 			if (corners.size() == 0){
 				DISPLAY_ERR("No plate detected on " << filename);
 				//<< "\nAre you sure the country code for this car is \"" << country << "\" ?");
-				failed_pictures.push(filename);
+				failed_pictures.push(filepath);
 				continue;
 			}
 			
@@ -189,15 +192,16 @@ int process(const char* in_path, const char* out_dir,
 			}
 		} else {
 			// Parsing corners and verifying validity
-			vector<Point> cor = parse_location(blur_only_location);
-			for (auto&& pt: cor){
-				if (pt.x < 0 || pt.y < 0 || pt.x > picture.cols || pt.y > picture.rows){
-					cerr << "ERROR: Invalid pixel location: " << blur_only_location
-					<< "\nPlease respect format x1_y1_x2_y2_x3_y3_x4_y4 with valid values." << endl;
-					exit(EXIT_FAILURE);
+			corners = parse_location(blur_only_location);
+			for (auto&& cor: corners){
+				for (auto&& pt: cor){
+					if (pt.x < 0 || pt.y < 0 || pt.x > picture.cols || pt.y > picture.rows){
+						cerr << "ERROR: Invalid pixel location: " << blur_only_location
+						<< "\nPlease respect format x11_y11_x12_y12_x13_y13_x14_y14_x21_y21.. with valid values." << endl;
+						exit(EXIT_FAILURE);
+					}
 				}
 			}
-			corners.push_back(cor);
 		}
 
 
@@ -209,25 +213,20 @@ int process(const char* in_path, const char* out_dir,
 		}
 		if (error){
 			DISPLAY_ERR("Couldn't blur" << error << " times out of " << corners.size() << " on " << filename);
-			if ((unsigned int) error == corners.size()){
-				failed_pictures.push(filename);
+			//if ((unsigned int) error == corners.size()){ //Skip only if every blur failed
+				failed_pictures.push(filepath);
 				continue;
-			}
+			//}
 		}
 
 		/* ==== PLATE DETECTION AND BLUR END ==== */
 
-		// Creating directory if doesn't exist
+		// Selecting output directory and building requiered directories
 		savedir = select_output_dir(out_dir, in_path, filepath, respect_input_path);
-		fs::directory_entry dir_entry = fs::directory_entry(savedir);
-		if (dir_entry.exists()){
-			DISPLAY("Removing " << dir_entry.path());
-			fs::remove_all(dir_entry.path());
+		if (!build_directories(savedir)){
+			continue;
 		}
 		
-		if (!fs::create_directory(dir_entry.path())){
-			DISPLAY_ERR("Failed to create directory " << dir_entry.path());
-		}
 
 		// Saving the plate information if necessary
 		if (!blur_only && save_plate_info && !numbers.empty()){
@@ -254,6 +253,8 @@ int process(const char* in_path, const char* out_dir,
 		
 	}
 
+	size_t nb_failed   = failed_pictures.size();
+	size_t nb_pictures = stack_files->size();
 	if ((verbose || save_log) && !failed_pictures.empty()){
 		DISPLAY("\nSome pictures plate analysis or blur failed:")
 
@@ -267,16 +268,17 @@ int process(const char* in_path, const char* out_dir,
 		// Displaying and writing failed pictures path
 		while (!failed_pictures.empty())
 		{
-			DISPLAY(fs::absolute(fs::path(failed_pictures.top())));
-			failedpic_stream << fs::absolute(fs::path(failed_pictures.top())) << endl;
+			DISPLAY(failed_pictures.top());
+			failedpic_stream << failed_pictures.top() << endl;
 			failed_pictures.pop();
 		}
 	}
 
+	DISPLAY("\nExited successfully (" << difftime(time(NULL), t0) << " seconds)."
+	<< "Success rate: " << 100*((double) (nb_pictures - nb_failed)/(double) nb_pictures) << " %");
+
 	// Cleaning memory
 	delete stack_files;
-
-	DISPLAY("\nExited successfully (" << difftime(time(NULL), t0) << "seconds)");
 
 	return EXIT_SUCCESS;
 }
@@ -302,14 +304,14 @@ int main(int argc, char** argv)
 	// Argument declaration and defaul value
 	char* in_path = new char[BUFFSIZE];
 	char* out_dir = new char[BUFFSIZE];
-	char *log_file = new char[BUFFSIZE];
 	char *output_name_addon = new char[BUFFSIZE];
 	strcpy(output_name_addon, DFLT_OUTPUT_ADDON);
-	char *country = new char[BUFFSIZE];
-	strcpy(country, DFLT_COUNTRY);
 	double timeout = 0;
 	unsigned int blur_filter_size = DFLT_BLUR;
 	bool respect_input_path = false;
+	char *log_file = new char[BUFFSIZE];
+	char *country = new char[BUFFSIZE];
+	strcpy(country, DFLT_COUNTRY);
 	bool save_plate_info = false;
 	bool blur_only = false;
 	char *blur_only_location = new char[BUFFSIZE];
@@ -327,9 +329,6 @@ int main(int argc, char** argv)
 			   save_plate_info,
 			   blur_only,
 			   blur_only_location);
-
-	//Blur Location: "<x>_<y>_<height>_<width>".
-	//Example: 100_150_200_300 for a 200*300 area starting at (100,150) (top left corner).
 
 	// Executing main process
 	int ret = process(in_path, out_dir,

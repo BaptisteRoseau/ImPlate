@@ -1,7 +1,6 @@
 #ifndef OPTIONS_HPP
 #define OPTIONS_HPP
 
-//* @param respect_input_path whether or not the pictures in the input directory will have a similar path in the output directory.
 
 /**
  * @brief Parse the command line to set the variable required by the main process.
@@ -14,10 +13,11 @@
  * @param timeout the timeout variable (default: 0)
  * @param blur_filter_size the filter size used for blur (see blur_pixel function)
  * @param verbose whether or not text has to be printed
- * @param country the country code for the plate detection
+ * @param respect_input_path whether or not the pictures in the input directory will have a similar path in the output directory.
+ * @param counry_code the country code for the plate detection: "eu", "us", "au", "br", "fr", "gb", "in". Default: "eu"
  * @param save_plate_info whether or not the plate's information have to be saved
  * @param blur_only whether or not only bluring should be done. Works only for one file.
- * @param blur_only_location the location of the area to be blured. "<x1>_<y1>_<x2>_<y2>_...". The order is TOP_LEFT, TOP_RIGHT_ BOTTOM_RIGTH, BOTTOM LEFT. Example: 100_150_200_145_250_213_145_200.
+ * @param blur_only_location the location of the areas to be blured. "<x11>_<y11>_<x12>_<y12>_...<x21>_<y21>...". The order is TOP_LEFT, TOP_RIGHT_ BOTTOM_RIGTH, BOTTOM LEFT. Example: 100_150_200_145_250_213_145_200. This must be a multiple of 8.
  */
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,

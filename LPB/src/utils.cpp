@@ -2,8 +2,6 @@
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
-//#include <opencv4/opencv2/highgui/highgui.hpp>
-//#include <opencv4/opencv2/imgproc/imgproc.hpp>
 
 #include <filesystem>
 #include <sys/types.h>
@@ -32,8 +30,28 @@ bool is_supported_file(fs::path path){
 	}
 
 	string ext = path.extension();
-    //TODO: Find supported extensions and add them here, then remove commentary
-    return true;
+
+	if (ext == ".jpg")  return true;
+	if (ext == ".JPG")  return true;
+	if (ext == ".jpeg") return true;
+	if (ext == ".JPEG") return true;
+	if (ext == ".png")  return true;
+	if (ext == ".PNG")  return true;
+	if (ext == ".pdf")  return true;
+	if (ext == ".PDF")  return true;
+	if (ext == ".webp") return true;
+	if (ext == ".WEBP") return true;
+	if (ext == ".bmp")  return true;
+	if (ext == ".BMP")  return true;
+	if (ext == ".svg")  return true;
+	if (ext == ".SVG")  return true;
+	if (ext == ".heic") return true;
+	if (ext == ".HEIC") return true;
+	if (ext == ".raw")  return true;
+	if (ext == ".RAW")  return true;
+
+	DISPLAY_ERR(path << " format is not supported.");
+    return false;
 }
 
 stack<string> *list_files(const char *path){
@@ -41,7 +59,7 @@ stack<string> *list_files(const char *path){
 	fs::directory_entry f = fs::directory_entry(path);
 
 	// File
-	if (f.is_regular_file()){// && is_supported_file(f.path())){
+	if (f.is_regular_file() && is_supported_file(f.path())){
 		file_paths->push((string) f.path());
 		DISPLAY("Added: " << f.path());
 		return file_paths;
@@ -130,38 +148,58 @@ string get_file_extension(const string &filepath){
     return fs::path(filepath).extension();
 }
 
-//TODO: Implement this
-string select_output_dir(const string out_dir, const string in_path, const string filepath, const bool respect_input_path){
-	(void) in_path;
-	string root = out_dir+(string) "/"; 
-	// Respect the original path into input directory if necessary
+bool replace(string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+string select_output_dir(const string out_root, const string in_root,
+						 const string filepath, const bool respect_input_path){
 	if (respect_input_path){
-		fs::path path = fs::path(filepath).relative_path();
-		cout << path << endl;
-		string buffer = root;
-		int i = 0;
-		for (const auto& part : path){
-			if (i != 0){
-				buffer += (string) part.stem()+"/";
-			}
-			i++;
+		// Getting absolute path to for safer replacement
+		string abs_out_root  = (string) fs::absolute(fs::path(out_root)) + (string) "/";
+		string abs_in_root   = (string) fs::absolute(fs::path(in_root)) + (string) "/";
+		string abs_filepath  = (string) fs::absolute(fs::path(filepath));
+
+		// Trying to replace input path with output path
+		if (replace(abs_filepath, abs_in_root, abs_out_root)){
+			return (string) fs::path(abs_filepath).replace_extension("");
 		}
-		cout << buffer << endl;
-		return root+get_filename(filepath);
+
+		// If couldn't replace, last return will be called
+		DISPLAY_ERR("Couldn't respect original path of " << filepath
+		<< ".\nWriting into " << get_filename(filepath));
 	}
 
-	// Else, return only the filename
-	return root+get_filename(filepath);
+	return out_root+get_filename(filepath);
+}
+
+bool build_directories(const string path){
+	fs::directory_entry dir_entry = fs::directory_entry(path);
+	if (dir_entry.exists()){
+		DISPLAY("Removing " << dir_entry.path());
+		fs::remove_all(dir_entry.path());
+	}
+	
+	if (!fs::create_directories(dir_entry.path())){
+		DISPLAY_ERR("Failed to create directories " << dir_entry.path());
+		return false;
+	}
+
+	return true;
 }
 
 void sort_corners(vector<Point> &corners){
-
+ (void) corners; //TODO
 }
 
-vector<Point> parse_location(const string str_location){
-	/* CHANGE L'INPUT DES OPTIONS AUSSI */
-	vector<Point> buffer = vector<Point>();
-	Point tmp_pt = Point();
+vector<vector<Point> > parse_location(const string str_location){
+	vector<vector<Point> > buffer = vector<vector<Point> >();
+	vector<Point> tmp_corner = vector<Point>();
+	Point tmp_point = Point();
 	 
 	// PARSING
 	size_t us_loc_0 = 0;
@@ -169,17 +207,33 @@ vector<Point> parse_location(const string str_location){
 	int val;
 	int i = 0;
 	while(us_loc_1 < str_location.length()){
-		us_loc_0 = us_loc_1;
+		us_loc_0 = i == 0 ? us_loc_1 : us_loc_1 + 1;
 		us_loc_1 = str_location.find('_', us_loc_0);
-		val = stoi(str_location.substr(us_loc_0, us_loc_1));
+		val = stoi(str_location.substr(us_loc_0, us_loc_1 - us_loc_0));
 		if (i&1){
-			tmp_pt.y = val;
-			buffer.push_back(tmp_pt);
+			tmp_point.y = val;
+			tmp_corner.push_back(tmp_point);
 		} else {
-			tmp_pt.x = val;
+			tmp_point.x = val;
 		}
 		i++;
-		DISPLAY(stoi(str_location.substr(us_loc_0, us_loc_1)));
+
+		// Adding the 4 corners into the buffer
+		if (i % 8 == 0){
+			if (tmp_corner.size() != 4){
+				cerr << "ERROR: Area is not having exactly 4 points." << endl;
+				exit(EXIT_FAILURE);
+			}
+			sort_corners(tmp_corner);
+			buffer.push_back(tmp_corner);
+			tmp_corner = vector<Point>();
+		}
+	}
+
+	// VERIFICATION
+	if (i % 8 != 0 || buffer.size() != (size_t) i/8){
+		cerr << "ERROR: The blur location must contain a multiple of 8 values." << endl;
+		exit(EXIT_FAILURE);
 	}
 	return buffer;
 }

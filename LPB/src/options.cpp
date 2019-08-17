@@ -21,11 +21,10 @@ Optional argument:\n\
 \t- -t or --timeout:        A timeout in seconds.\n\
 \t- -p or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
 \t- -v or --verbose:        Whether or not informations has to be displayed. This does not affect the logs.\n\
-\t- -c or --counry:         The country code of the car, to match the country's plate pattern. (default: \"eu\")\n\
+\t- -c or --counry_code:    The country code of the car, to match the country's plate pattern. (\"eu\", \"us\", \"au\", \"br\", \"fr\", \"gb\", \"in\". Default: \"eu\")\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
+\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.\n\
 "
-// \t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.(Not working yet)\n
-
 
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,
@@ -79,7 +78,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[8].short_name = 'r';
     options[8].flags      = GOPT_ARGUMENT_FORBIDDEN;
 
-	options[9].long_name  = "country";
+	options[9].long_name  = "counry_code";
     options[9].short_name = 'c';
     options[9].flags      = GOPT_ARGUMENT_REQUIRED;
 

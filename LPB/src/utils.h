@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <opencv2/core/mat.hpp>
+#include <opencv4/opencv2/core/mat.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -116,7 +116,13 @@ std::string get_file_extension(const std::string &filepath);
  */
 std::string select_output_dir(const std::string out_dir, const std::string in_path, const std::string filepath, const bool respect_input_path);
 
+/**
+ * @brief Recursively build requiered directories for path.
+ * 
+ * @param path the path to the output directory.
+ */
+bool build_directories(const std::string path);
 
-std::vector<cv::Point> parse_location(const std::string str_location);
+std::vector<std::vector<cv::Point> > parse_location(const std::string str_location);
 
 #endif

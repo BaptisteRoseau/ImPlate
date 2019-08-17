@@ -6,7 +6,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <assert.h>
 #include <cstring>
 #include <stack>
 
@@ -77,8 +76,15 @@ bool in_area(int i, int j, const vector<Point> &corners){
 //corners: [TOPLEFT, TOPRIGHT, BOTRIGHT, BOTLEFT]
 int blur(const Mat picture, Mat blured, const vector<Point> &corners,
          unsigned int filter_size = 45){
-    assert(corners.size() == 4);
-    assert((int) filter_size < _min(picture.rows, picture.cols));
+    // Input verification (don't use assert as you don't want the whole program to stop)
+    if (corners.size() != 4){
+        DISPLAY_ERR("Invalid corner detection. Skiping picture.");
+        return EXIT_FAILURE;
+    }
+    if ((int) filter_size >= _min(picture.rows, picture.cols)){
+        DISPLAY_ERR("Filter size too large for this picture. Skiping picture.");
+        return EXIT_FAILURE;
+    }
 
     // Getting corners
     Point pt_tl = corners[0];
