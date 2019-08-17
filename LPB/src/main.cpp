@@ -31,8 +31,12 @@ namespace fs = filesystem;
 #define DFLT_JSON_ADDON "_info"
 #define DFLT_BLUR 70
 #define DFLT_COUNTRY "eu"
+#ifndef DFLT_CONFIG_FILE
 #define DFLT_CONFIG_FILE "/usr/local/share/openalpr/config/openalpr.defaults.con"
+#endif
+#ifndef DFLT_RUNTIME_DIR
 #define DFLT_RUNTIME_DIR "/usr/local/share/openalpr/runtime_data/"
+#endif
 #define DFLT_FAILED_PIC_DIR "blur_failure_files.txt"
 #define BUFFSIZE 200
 
@@ -133,6 +137,7 @@ int process(const char* in_path, const char* out_dir,
 	unsigned int nb_files = stack_files->size();
 	double _timeout = timeout == 0 ? DBL_MAX : timeout; 
 	double t0 = time(NULL);
+	const size_t nb_pictures = stack_files->size(); //For success rate
 	//const vector country_code_vect = {"eu", "fr", "gb", "us", "au", "br", "in"};
 
 	// Blur only input verification
@@ -253,8 +258,7 @@ int process(const char* in_path, const char* out_dir,
 		
 	}
 
-	size_t nb_failed   = failed_pictures.size();
-	size_t nb_pictures = stack_files->size();
+	const size_t nb_failed = failed_pictures.size(); // For success rate
 	if ((verbose || save_log) && !failed_pictures.empty()){
 		DISPLAY("\nSome pictures plate analysis or blur failed:")
 

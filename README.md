@@ -75,6 +75,9 @@ Optional argument:
 - `-v` or `--verbose`:        Whether or not information has to be displayed. This does not affect the logs.
 - `-c` or `--counry`:         The country code of the car, to match the country's plate pattern. (default: "eu")
 - `-s` or `--save-info`:      Whether or not plate information sould be saved as well.
+- `-r` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.
+
+Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.
 
 # Improvement
 

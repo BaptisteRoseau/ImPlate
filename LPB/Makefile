@@ -14,24 +14,11 @@ ALPR_CFG_PATH     = "/usr/local/share/openalpr/config/openalpr.defaults.con"
 ALPR_RUNTIME_PATH = "/usr/local/share/openalpr/runtime_data/"
 
 ###				SOURCES
-#TODO: Retirer les librairies inutiles
 #Ce qui est mis en commentaire est dans le cas où l'installation ne s'est pas faite via sudo
 
 LIBS   		= \
-			-lopencv_gapi \
-			-lopencv_photo \
-			-lopencv_highgui \
 			-lopencv_imgcodecs \
-			-lopencv_stitching \
 			-lopencv_core \
-			-lopencv_videoio \
-			-lopencv_dnn \
-			-lopencv_video \
-			-lopencv_imgproc \
-			-lopencv_ml \
-			-lopencv_features2d \
-			-lopencv_objdetect \
-			-lopencv_flann \
 			-lstdc++fs \
 			-lopenalpr
 			#$(wildcard $(OPENCV_DIR)/lib/*.so*) \
@@ -50,7 +37,9 @@ SRC_FILES	= $(wildcard $(SRC_DIR)/*.cpp) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(sh
 OBJ_FILES	= $(SRC_FILES:%.cpp=%.o) 
 
 BINARY	 	= blur
-ARGS 	    = -s -v -i data -o test_dir -l log.txt
+#ARGS 	    = -s -v -r -i ~/Pictures/carpictures -o ~/Pictures/carpictures_blured -l log.txt
+ARGS 	    = -s -v -r -i data -o test_dir -l log.txt
+#ARGS 	    = -s -v -i data/FiatPanda.jpg -o test_dir -l log.txt -b 100_150_200_145_250_213_145_200_300_350_400_345_450_413_345_400
 
 #######################################################
 ###				COMMANDS CATEGORIES
@@ -147,6 +136,6 @@ clean:
 #######################################################
 
 %.o : %.cpp
-	$(CC) -c -DDFLT_CONFIG_FILE="$(ALPR_CFG_PATH)"     \
-			 -DDFLT_RUNTIME_DIR="$(ALPR_RUNTIME_PATH)" \
+	$(CC) -c -DDFLT_CONFIG_FILE=\"$(ALPR_CFG_PATH)\"     \
+			 -DDFLT_RUNTIME_DIR=\"$(ALPR_RUNTIME_PATH)\" \
 			  $(CPPFLAGS) $< -o $@ $(INCLUDE)
