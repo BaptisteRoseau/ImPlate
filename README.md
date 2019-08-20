@@ -16,10 +16,12 @@ Optional:
 
 ## Installation Script
 
-In order to use the software, OpenCV (and it's dependencies) and OpenALPR must be installed. You can see how to install it from scratch here: [http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html].<br/>
-For a faster runtime, install CUDA and recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks.<br/>
-Note that an NVIDIA GTX 1XXX GPU or higher is required to use CUDA.<br/>
-**Read carefully this README et the installations script before insatlling anything**, as you may have already some dependecies installed, and don't need to reinstall them. Feel free to modify the installation scripts if necessary. Note that OpenCV 4.0.1 is requiered, and CUDA is highly recommended (install it **before** OpenCV or OpenALPR).<br/>
+The easiest way to install the software if your have access to sudo is to run `sudo install_sudo.sh` (you need to have `apt` installed). It require an internet connection and may take several minutes. Please read carefully this script before launching it. Once it is done, you can add the path to the `blur` executable to your `PATH`.
+
+If you want to manually install it, OpenCV (and it's dependencies) and OpenALPR must be installed. You can see how to install it from scratch here: [http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html]. You can also see the requiered packages in the `install_sudo.sh` script.
+
+For a faster runtime, install CUDA then recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks. Note that an NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
+**Read carefully this README and the installation scripts before installing anything**, as you may have already some dependecies installed, and don't need to reinstall them. Feel free to modify the installation scripts if necessary. Note that OpenCV 4.0.1 or higher is requiered, and CUDA is highly recommended (install it **before** OpenCV or OpenALPR).
 
 An installation script `install.sh` is given in the present directory. What it basically does is:
 
@@ -28,29 +30,26 @@ An installation script `install.sh` is given in the present directory. What it b
 - Copy the requiered source code, headers and precompiled librairies into the software's directory.
 - Compile the software source code
 
-The installation may take several minutes, and an internet connection is requiered.<br/>
-After runing this script, OpenCV and OpenALPR source directories will remain, but you can freely remove them.<br/>
+The installation may take several minutes, and an internet connection is requiered.
+After runing this script, OpenCV and OpenALPR source directories will remain, but you can freely remove them.
 Their installation path (for headers and librairies) is located at [LPB/openalpr](LPB/openalpr) and [LPB/opencv](LPB/opencv) if you plan on using it's features for another project.
-
-Another installation script `install_sudo.sh` is given, provided you have administrator rights, and  `apt` (for Debian or Ubuntu distributions).<br/>
-Please run this script using `sudo`.
 
 After the installation, the binary will be located at:
 
 `LPB/build/blur`
 
-You can add this to your PATH Environment Variable in your `.profile` home directory to use it more conveniently:
+You can add this to your PATH Environment Variable by adding this line in your `~/.profile`:
 
 `PATH=$PATH:<path to>/LPB/build/blur`
 
 ## Build Documentation
 
-If you wish to build the documentation, got into the LPB directory and run the command:
+If you wish to build the documentation, go into the LPB directory and run the command:
 
 `make doc` or `doxygen Doxyfile`
 
-The documenation will be located at [LPB/doc/html/index.html](LPB/doc/html/index.html). The details of the functions can be found on the headers files (*.h).<br/>
-If the code needs to be recompiled, go into the [LPB](LPB) directory and run the command `make install`.<br/>
+The documenation will be located at [LPB/doc/html/index.html](LPB/doc/html/index.html). The details of the functions can be found on the headers files (*.h).
+If the code needs to be recompiled, go into the [LPB](LPB) directory and run the command `make install`.
 
 # How to use
 
@@ -63,7 +62,7 @@ Input and output path are requiered, and there are several options available:
 Requiered argument:
 
 - `-i` or `--input`:  The path to the input file or directory.
-- `-o` or `--output`: The path to the output file or directory. Output file path is only available with a file as input. Directories will be created if they don't exist
+- `-o` or `--output`: The path to the output file or directory. Output file path is only available with a file as input. Directories will be created if they don't exist. It can be the same as `--input`.
 
 Optional argument:
 
@@ -74,21 +73,21 @@ Optional argument:
 - `-p` or `--blur-power`:     The size of the square box used to make a blur effect (default: 70).
 - `-v` or `--verbose`:        Whether or not information has to be displayed. This does not affect the logs.
 - `-c` or `--counry`:         The country code of the car, to match the country's plate pattern. (default: "eu")
+
 - `-s` or `--save-info`:      Whether or not plate information sould be saved as well.
 - `-r` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.
 
-Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.<br/>
-Also, it might be easier to manage your file by using the save directory for `--input` and `--output` with `--respect-path` enabled.<br/>
+Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.
 
 # Improvement
 
-For the moment, the country code is set to "eu" (European cars) by default, but can be easily changed if necessary.<br/>
-In order to improve the plate detection accuracy of ALPR, please refer to <http://doc.openalpr.com/opensource.html#training-ocr>.<br/>
+For the moment, the country code is set to "eu" (European cars) by default, but can be easily changed if necessary.
+In order to improve the plate detection accuracy of ALPR, please refer to <http://doc.openalpr.com/opensource.html#training-ocr>.
 
 # Documentation
 
-Don't hesitate to check the code in [LPB/src/main.cpp](LPB/src/main.cpp) in order to be able to make little changes if necessary.<br/>
+Don't hesitate to check the code in [LPB/src/main.cpp](LPB/src/main.cpp) in order to be able to make little changes if necessary.
 
-- OpenCV3: <https://docs.opencv.org/3.4.5/>
+- OpenCV4: <https://docs.opencv.org/4.0.1/>
 - OpenALPR: <http://doc.openalpr.com/opensource.html>
 - This software: [LPB/doc/html/index.html](LPB/doc/html/index.html) after building documentation.
