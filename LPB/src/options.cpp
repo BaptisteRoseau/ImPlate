@@ -1,19 +1,24 @@
 #include "options.h"
 #include "gopt/gopt.h"
+#include "utils.h"
 
 #include <cstdlib>
 #include <iostream>
 #include <string.h>
 #include <cstring>
 #include <cstdio>
+#include <filesystem>
 
 using namespace std;
+namespace fs = filesystem;
 
 #define HELP_PROMPT "\
 Usage: -i <path to picture or directory> -o <output directory> [args]\n\
 Requiered argument:\n\
 \t- -i or --input:  The path to the input file or directory.\n\
-\t- -o or --output: The path to the output directory. Will be created if doesn't exist.\n\
+\t- -o or --output: The path to the output file or directory. \n\
+\t                  Output file path is only available with a file as input.\n\
+\t                  Directories will be created if they don't exist.\n\
 Optional argument:\n\
 \t- -h or --help:           Displays this screen.\n\
 \t- -l or --save-log:       The path to a file where all the logs will be saved.Will be created if doesn't exist.\n\
@@ -25,6 +30,7 @@ Optional argument:\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
 \t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.\n\
 "
+//\t- -s or --save-info:      Whether or not plate information sould be saved as well. If the input is a file, and output path for this can be given.\n\
 
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,
@@ -36,6 +42,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *log_file,
     char *country,
     bool &save_plate_info,
+    char *plate_info_save_path,
     bool &blur_only,
     char *blur_only_location){
     
@@ -84,7 +91,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
 
 	options[10].long_name  = "save-info";
     options[10].short_name = 's';
-    options[10].flags      = GOPT_ARGUMENT_FORBIDDEN;
+    options[10].flags      = GOPT_ARGUMENT_OPTIONAL;
 
 	options[11].long_name  = "blur-only";
     options[11].short_name = 'b';
@@ -116,10 +123,43 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     if (options[7].count) verbose = true;
     if (options[8].count) respect_input_path = true;
 	if (options[9].count) strcpy(country, options[9].argument);
-    if (options[10].count) save_plate_info = true;
+    if (options[10].count){
+        save_plate_info = true;
+        if (options[10].argument != NULL){ //FIXME: options[10].argument == NULL even if argument is provided
+            plate_info_save_path = new char[strlen(options[10].argument) + 1];
+            strcpy(plate_info_save_path, options[10].argument); 
+        }
+    }
     if (options[11].count) {
         blur_only = true;
         strcpy(blur_only_location, options[11].argument);
+    }
+
+    // Options compatibility verification
+    if (blur_only && save_plate_info){
+        DISPLAY_WAR("--blur-only is not compatible with --save-info."
+        << "\nDisabling --save-info.\n")
+        save_plate_info = false;
+        delete[] plate_info_save_path;
+        plate_info_save_path = NULL;
+    }
+
+    if (fs::directory_entry(in_path).is_regular_file() && plate_info_save_path != NULL){
+        DISPLAY_WAR("--save-info path location is not compatible with a file as input. Please use it for directories instead."
+        << "\nDisabling --save-info path. (--save-info remains enabled)\n")
+        delete[] plate_info_save_path;
+        plate_info_save_path = NULL;
+    }
+
+    if (fs::directory_entry(in_path).is_regular_file() && respect_input_path){
+        DISPLAY_WAR("--respect-path is not compatible with a file as input. Please use it for directories instead."
+        << "\nDisabling --respect-path.\n")
+        respect_input_path = false;
+    }
+
+    if (blur_only && options[9].count){ // country
+        DISPLAY_WAR("--blur-only does not require --counry_code."
+        << "\nIgnoring country code.\n")
     }
 
     delete[] options;

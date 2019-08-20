@@ -79,7 +79,6 @@ make install
 echo "Testing..."
 (make run && echo "Testing success.\nInstallation complete.") || echo "Testing failed."
 #PATH=$PATH:$LPB_DIR/build/blur
-echo "Complete."
 
 #========= Cleaning
 cd $ROOT_DIR

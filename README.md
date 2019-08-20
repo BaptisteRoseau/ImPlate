@@ -63,7 +63,7 @@ Input and output path are requiered, and there are several options available:
 Requiered argument:
 
 - `-i` or `--input`:  The path to the input file or directory.
-- `-o` or `--output`: The path to the output directory. Will be created if doesn't exist.
+- `-o` or `--output`: The path to the output file or directory. Output file path is only available with a file as input. Directories will be created if they don't exist
 
 Optional argument:
 

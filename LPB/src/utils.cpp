@@ -16,10 +16,13 @@
 #include <random>
 #include <stack>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 using namespace cv;
 namespace fs = filesystem;
+
+#define PI 3.14159265358979323846264338327950288419716939937510
 
 /*======== SUBFUNCTIONS IMPLEMENTATION ==========*/
 
@@ -112,6 +115,16 @@ void save_picture(const Mat &picture, string dir, string name){
 	}
 }
 
+void save_picture(const Mat &picture, string path){
+	bool success = imwrite(path, picture);
+	if (success){
+		DISPLAY("Wrote picture " << path);
+	}
+	else{
+		DISPLAY("Failed to write picture " << path);
+	}
+}
+
 string str_normalize(string &s){
 	for (size_t i = 0; i < s.length(); i++){
 		switch (s[i]){
@@ -125,19 +138,19 @@ string str_normalize(string &s){
     return s;
 }
 
-int build_dir(const char *path){
+bool build_dir(const char *path){
 	struct stat info;
 	if(stat(path, &info) != 0){
 		if (mkdir(path, S_IRWXU) != 0){
 			DISPLAY_ERR("Couldn't create " << path);
-			return EXIT_FAILURE;
+			return false;
 		}
 	}
 	else if (!S_ISDIR(info.st_mode)){ 
 		DISPLAY_ERR(path << " is not a directory");
-		return EXIT_FAILURE;
+		return false;
 	}
-	return EXIT_SUCCESS;
+	return true;
 }
 
 string get_filename(const string &filepath){
@@ -178,22 +191,76 @@ string select_output_dir(const string out_root, const string in_root,
 }
 
 bool build_directories(const string path){
-	fs::directory_entry dir_entry = fs::directory_entry(path);
-	if (dir_entry.exists()){
-		DISPLAY("Removing " << dir_entry.path());
-		fs::remove_all(dir_entry.path());
-	}
-	
-	if (!fs::create_directories(dir_entry.path())){
-		DISPLAY_ERR("Failed to create directories " << dir_entry.path());
-		return false;
+	// Choosing wether or not the last part has to be built
+	string tmp = path;
+	if (fs::path(path).has_extension()){
+		tmp = (string) fs::path(path).parent_path();
 	}
 
+	// Building directories
+	fs::create_directories(tmp);
+	if (!fs::directory_entry(tmp).exists()){
+		DISPLAY_ERR("Failed to create directories " << tmp);
+		return false;
+	}
 	return true;
 }
 
-void sort_corners(vector<Point> &corners){
- (void) corners; //TODO
+//Used for blur-only option to allow any order for the 4 points
+void sort_corners(vector<Point> &corners){ //FIXME: Sorting the 4 points in not working
+	return;
+	if (corners.size() != 4){
+		cerr << "\033[1;31mERROR:\033[0m Area is not having exactly 4 points." << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	// Computing center
+	vector<double> angles;
+	Point center = {0, 0};
+	for(auto&& pt: corners){
+		center.x += pt.x;
+		center.y += pt.y;
+	}
+	center.x /= 4;
+	center.y /= 4;
+
+	// Computing angle from (1, 0) (work.. maybe ??)
+	double ang;
+	Point vect;
+	for(auto&& pt: corners){
+		vect.x = pt.x - center.x;
+		vect.y = pt.y - center.y;
+		ang = acos((double) vect.x/sqrt(vect.x*vect.x + vect.y*vect.y));
+		//ang = vect.y < 0 ? ang + PI : ang;
+		//cout << ang << endl;
+		angles.push_back(ang);
+	}
+
+	// Sorting according to angle (works)
+	int i;
+	bool sorted = false;
+	while(!sorted){
+		sorted = true;
+		for(i = 0; i < 3; i++){
+			if (angles[i] > angles[i+1]){
+				// Swaping angles
+				ang = angles[i];
+				angles[i] = angles[i+1];
+				angles[i+1] = ang;
+
+				// Swapping points
+				vect = corners[i];
+				corners[i] = corners[i+1];
+				corners[i+1] = vect;
+				
+				sorted = false;
+			}
+		}
+	}
+	
+	// Putting the top-left corner first
+	//TODO
+	//cout << endl;
 }
 
 vector<vector<Point> > parse_location(const string str_location){
@@ -221,7 +288,7 @@ vector<vector<Point> > parse_location(const string str_location){
 		// Adding the 4 corners into the buffer
 		if (i % 8 == 0){
 			if (tmp_corner.size() != 4){
-				cerr << "ERROR: Area is not having exactly 4 points." << endl;
+				cerr << "\033[1;31mERROR:\033[0m Area is not having exactly 4 points." << endl;
 				exit(EXIT_FAILURE);
 			}
 			buffer.push_back(tmp_corner);
@@ -231,7 +298,7 @@ vector<vector<Point> > parse_location(const string str_location){
 
 	// VERIFICATION
 	if (i % 8 != 0 || buffer.size() != (size_t) i/8){
-		cerr << "ERROR: The blur location must contain a multiple of 8 values." << endl;
+		cerr << "\033[1;31mERROR:\033[0m The blur location must contain a multiple of 8 values." << endl;
 		exit(EXIT_FAILURE);
 	}
 	return buffer;

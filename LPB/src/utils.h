@@ -14,7 +14,11 @@
 if (save_log){log_ostream << stream << endl;}
 
 // Macro for stderr messages for verbose-only mode, and log save
-#define DISPLAY_ERR(stream) if (verbose){cerr << "ERROR: " << stream << endl;}\
+#define DISPLAY_ERR(stream) if (verbose){cerr << "\033[1;31mERROR:\033[0m " << stream << endl;}\
+if (save_log){log_ostream << stream << endl;}
+
+// Macro for stderr messages for verbose-only mode, and log save
+#define DISPLAY_WAR(stream) if (verbose){cerr << "\033[1;35mWARNING:\033[0m " << stream << endl;}\
 if (save_log){log_ostream << stream << endl;}
 
 #define _min(a, b) ((a) < (b) ? (a) : (b))
@@ -56,9 +60,9 @@ std::string stack_next(std::stack<std::string> *s);
  * If the path refers to a file, this will return an error.
  * 
  * @param path to the directory to create.
- * @return int 1 for failure, 0 for succes
+ * @return false for failure, true for success
  */
-int build_dir(const char *path);
+bool build_dir(const char *path);
 
 /**
  * @brief Open a picture with OpenCV
@@ -78,13 +82,21 @@ cv::Mat open_picture(const std::string path);
 std::string str_normalize(std::string &s);
 
 /**
- * @brief Writes the picture from Mat object into the dir/name file.
+ * @brief Writes the picture from Mat object into the "dir/name" file.
  * 
  * @param picture is the matrix object to save.
  * @param dir is the directory where the picture has to be saved.
  * @param name is the name of the file to save.
  */
 void save_picture(const cv::Mat &picture, std::string dir, std::string name);
+
+/**
+ * @brief Writes the picture from Mat object into the "path" file.
+ * 
+ * @param picture is the matrix object to save.
+ * @param path is the path where the picture has to be saved
+ */
+void save_picture(const cv::Mat &picture, std::string path);
 
 /**
  * @brief Get the name of the file without path nor extension.
@@ -118,11 +130,23 @@ std::string select_output_dir(const std::string out_dir, const std::string in_pa
 
 /**
  * @brief Recursively build requiered directories for path.
+ * If the input is a file, only the requiered directories will be built
  * 
  * @param path the path to the output directory.
  */
 bool build_directories(const std::string path);
 
+
+void sort_corners(std::vector<cv::Point> &corners);
+/**
+ * @brief Recursively build requiered directories for path.
+ * 
+ * @param str_location is the input from the command line.
+ *  It must respect format "x11_y11_x12_y12_x13_y13_x14_y14_x21_y21...".
+ *  Every multiple of 8 values is an area to blur formed by 4 points (x, y).
+ *  The order for the points is TOP_LEFT, TOP_RIGHT, BOTTOM_RIGHT, BOTTOM_LEFT
+ * @return a vector having the good format to be used by blur function.
+ */
 std::vector<std::vector<cv::Point> > parse_location(const std::string str_location);
 
 #endif

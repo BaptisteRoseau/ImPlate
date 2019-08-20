@@ -39,7 +39,8 @@ OBJ_FILES	= $(SRC_FILES:%.cpp=%.o)
 BINARY	 	= blur
 #ARGS 	    = -s -v -r -i ~/Pictures/carpictures -o ~/Pictures/carpictures_blured -l log.txt
 ARGS 	    = -s -v -r -i data -o test_dir -l log.txt
-#ARGS 	    = -s -v -i data/FiatPanda.jpg -o test_dir -l log.txt -b 100_150_200_145_250_213_145_200_300_350_400_345_450_413_345_400
+#ARGS 	    = -s test_dir -v -i data/tuture.jpg -o ../LPB/test_dir/fiat/fiat.jpg -l log.txt #-b 100_150_200_145_250_213_145_200_300_350_400_345_450_413_345_400
+#ARGS 	    = -s -v -i data/FiatPanda.jpg -o test_dir -l log.txt -b 100_150_250_213_200_145_145_200_300_350_450_413_345_400_400_345
 
 #######################################################
 ###				COMMANDS CATEGORIES
