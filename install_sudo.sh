@@ -60,7 +60,6 @@ sudo apt-get install -y liblog4cplus-dev
 if ! [ -x "$(command -v alpr)" ]; then
     ### Getting OpenAlpr
     git clone https://github.com/sunfic/openalpr-opencv4 # Works with OpenCV 4.0.1 or higher
-    #git clone https://github.com/openalpr/openalpr.git # Works with OpenCV 2.4.8 only
     cd openalpr-opencv4
     mkdir -p build
     cd build
@@ -72,16 +71,33 @@ fi
 #=================== LICEN PLATE BLUR
 cd $LPB_DIR
 
-## Building source
+sudo apt install -y libopenmpi-dev
+
+# Building source
 make install
 
 # Testing on data
 echo "Testing..."
-(make run && echo "Testing success.\nInstallation complete.") || echo "Testing failed."
-#PATH=$PATH:$LPB_DIR/build/blur
+(make run && echo "Testing success.\nInstallation complete.") ||( echo "Testing failed." && exit )
+rm -rf blur_failures.txt log.txt test_dir
+
+# Building documentation
+sudo apt install -y doxygen
+make doc
+
+# Adding blur into PATH (into the ~/.bashrc)
+echo "Adding blur command into PATH.."
+echo "# License plate blur binairy path" >> ~/.bashrc
+echo "PATH=\$PATH:$LPB_DIR/build/" >> ~/.bashrc
+
 
 #========= Cleaning
 cd $ROOT_DIR
 
+# Removing unusefull directories
 rm -rf openalpr-opencv4
 rm -rf opencv-$OPENCV_VERSION
+
+echo "Comlete. Refresh terminal or launch another one to activate 'blur' command."
+
+

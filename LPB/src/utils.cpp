@@ -169,13 +169,27 @@ bool replace(string& str, const std::string& from, const std::string& to) {
     return true;
 }
 
+string add_addon(string path, string addon){
+	fs::path tmp = fs::path(path);
+	tmp.replace_extension(addon+(string)tmp.extension());
+	return (string) tmp;
+}
+
 string select_output_dir(const string out_root, const string in_root,
 						 const string filepath, const bool respect_input_path){
 	if (respect_input_path){
-		// Getting absolute path to for safer replacement
+		// Getting absolute path for safer replacement
 		string abs_out_root  = (string) fs::absolute(fs::path(out_root)) + (string) "/";
 		string abs_in_root   = (string) fs::absolute(fs::path(in_root)) + (string) "/";
 		string abs_filepath  = (string) fs::absolute(fs::path(filepath));
+
+		// Normalizing every "//" and "/./" that causes replacing error
+		while (replace(abs_out_root, "//", "/")){}
+		while (replace(abs_out_root, "/./", "/")){}
+		while (replace(abs_in_root, "//", "/")){}
+		while (replace(abs_in_root, "/./", "/")){}
+		while (replace(abs_filepath, "//", "/")){}
+		while (replace(abs_filepath, "/./", "/")){}
 
 		// Trying to replace input path with output path
 		if (replace(abs_filepath, abs_in_root, abs_out_root)){
@@ -184,7 +198,7 @@ string select_output_dir(const string out_root, const string in_root,
 
 		// If couldn't replace, last return will be called
 		DISPLAY_ERR("Couldn't respect original path of " << filepath
-		<< ".\nWriting into " << get_filename(filepath));
+		<< ".\n\tWriting into " << get_filename(filepath));
 	}
 
 	return out_root+(string) "/"+get_filename(filepath);

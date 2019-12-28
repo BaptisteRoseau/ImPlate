@@ -27,18 +27,8 @@ using namespace alpr;
 
 namespace fs = filesystem;
 
-#define DFLT_OUTPUT_ADDON "_blured"
-#define DFLT_JSON_ADDON "_info"
-#define DFLT_BLUR 70
-#define DFLT_COUNTRY "eu"
-#ifndef DFLT_CONFIG_FILE
-#define DFLT_CONFIG_FILE "/usr/local/share/openalpr/config/openalpr.defaults.con"
-#endif
-#ifndef DFLT_RUNTIME_DIR
-#define DFLT_RUNTIME_DIR "/usr/local/share/openalpr/runtime_data/"
-#endif
-#define DFLT_FAILED_PIC_DIR "blur_failure_files.txt"
 #define BUFFSIZE 200
+//TODO: Option "blur manuel des images ratées" -> call l'executable blur_ui
 
 bool verbose; /// Whether or not information should be displayed
 bool save_log; /// Whether or not logs should be saved (default: false)
@@ -93,7 +83,8 @@ int process(const char* in_path, const char* out_path,
 			const bool save_plate_info,
 			const char *plate_info_save_path,
 			const bool blur_only,
-			const char *blur_only_location){
+			const char *blur_only_location,
+			const bool replace_input_file){
 
 	// Retrieving picture file paths into stack_files
 	stack<string> *stack_files = list_files(in_path);
@@ -125,7 +116,7 @@ int process(const char* in_path, const char* out_path,
 	stack<string> failed_pictures = stack<string>();
 	Mat picture = Mat();
 	Mat blured  = Mat();
-	string filepath, filename, fileext, savedir, file_out_path;
+	string filepath, filename, fileext, savedir;
 	int error;
 	unsigned int loop_idx = 0;
 	unsigned int nb_files = stack_files->size();
@@ -203,7 +194,6 @@ int process(const char* in_path, const char* out_path,
 			}
 		}
 
-
 		// Bluring a copy of the initial picture
 		blured = picture.clone();
 		error = 0;
@@ -220,18 +210,32 @@ int process(const char* in_path, const char* out_path,
 
 		/* ==== PLATE DETECTION AND BLUR END ==== */
 
-
+		//TODO: Factorize "replace_input_file" option
 		// If input is a file, output will be directly out_path, not a directory
 		if (fs::directory_entry(in_path).is_regular_file()){
 			if (build_directories(out_path)){
 				if (fs::path(out_path).has_extension()){
-					// Saving file as in given
-					savedir = (string) fs::path(out_path).parent_path();
-					save_picture(blured, out_path);
+					if (replace_input_file){
+						// Replacing input file if "--rename" option
+						fs::rename(filepath, out_path);
+						savedir = (string) fs::path(out_path).parent_path(); //Used for save-info
+						save_picture(blured, filepath);
+					} else {
+						// Saving file as in given
+						savedir = (string) fs::path(out_path).parent_path();
+						save_picture(blured, out_path);
+					}
 				} else {
-					// Saving file into the directory given
-					savedir = out_path;
-					save_picture(blured, out_path, filename+output_name_addon+fileext);
+					if (replace_input_file){
+						// Replacing input file if "--rename" option
+						fs::rename(filepath, (string)out_path+"/"+filename+output_name_addon+fileext);
+						savedir = (string) out_path; //Used for save-info
+						save_picture(blured, filepath);
+					} else {
+						// Saving file into the directory given
+						savedir = out_path;
+						save_picture(blured, out_path, filename+output_name_addon+fileext);
+					}
 				}
 			} else {
 				continue;
@@ -243,8 +247,14 @@ int process(const char* in_path, const char* out_path,
 			if (!build_directories(savedir)){
 				continue;
 			}
-			// Writing blured picture into the directory
-			save_picture(blured, savedir, filename+output_name_addon+fileext);
+			if (replace_input_file){
+				// Replacing input file
+				fs::rename(filepath, savedir+"/"+filename+output_name_addon+fileext);
+				save_picture(blured, filepath);
+			} else {
+				// Writing blured picture into the directory
+				save_picture(blured, savedir, filename+output_name_addon+fileext);
+			}
 		}
 
 		// Saving the plate information if necessary
@@ -316,8 +326,7 @@ Usage: " << name << " -i <path to picture or directory>\
 Type -h or --help for more details.\n";
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv){
 	if (argc == 1){
 		usage(argv[0]);
 		return -1;
@@ -342,6 +351,7 @@ int main(int argc, char** argv)
 	char *plate_info_save_path = NULL; // Dynamically allocated if argument provided
 	bool blur_only = false;
 	char *blur_only_location = new char[BUFFSIZE];
+	bool replace_input_file = false;
 
 	// Parsing command line
 	parse_argv(argv, in_path, out_path,
@@ -356,7 +366,8 @@ int main(int argc, char** argv)
 			   save_plate_info,
 			   plate_info_save_path,
 			   blur_only,
-			   blur_only_location);
+			   blur_only_location,
+			   replace_input_file);
 
 	// Executing main process
 	int ret = process(in_path, out_path,
@@ -369,7 +380,8 @@ int main(int argc, char** argv)
 					  save_plate_info,
 					  plate_info_save_path,
 					  blur_only,
-					  blur_only_location);
+					  blur_only_location,
+					  replace_input_file);
 
 	delete[] in_path;
 	delete[] out_path;

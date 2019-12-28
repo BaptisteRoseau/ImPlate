@@ -1,6 +1,21 @@
 #ifndef OPTIONS_HPP
 #define OPTIONS_HPP
 
+#define DFLT_OUTPUT_ADDON "_blured"
+#define DFLT_JSON_ADDON "_info"
+#define DFLT_BACKUP_ADDON "_backup"
+#define DFLT_BLUR 70
+#define DFLT_COUNTRY "eu"
+#ifndef DFLT_CONFIG_FILE
+#define DFLT_CONFIG_FILE "/usr/local/share/openalpr/config/openalpr.defaults.con"
+#endif
+#ifndef DFLT_RUNTIME_DIR
+#define DFLT_RUNTIME_DIR "/usr/local/share/openalpr/runtime_data/"
+#endif
+#define DFLT_FAILED_PIC_DIR "blur_failures.txt"
+#ifndef DFLT_MANUAL_BLUR_BIN
+#define DFLT_MANUAL_BLUR_BIN "./build/blur_ui"
+#endif
 
 /**
  * @brief Parse the command line to set the variable required by the main process.
@@ -20,6 +35,7 @@
  * @param blur_only whether or not only bluring should be done. Works only for one file.
  * @param blur_only_location the location of the areas to be blured. "x11_y11_x12_y12_...x21_y21...".
  * 	      The order is TOP_LEFT, TOP_RIGHT_ BOTTOM_RIGTH, BOTTOM LEFT. Example: 100_150_200_145_250_213_145_200. There must be a multiple of 8 values.
+ * @param replace_input_file whether or not you want to replace intput file by the blured image. A copy of the origin file is made with _origin.
  */
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,
@@ -33,6 +49,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     bool &save_plate_info,
 	char *plate_info_save_path,
     bool &blur_only,
-    char *blur_only_location);
+    char *blur_only_location,
+	bool &replace_input_file);
 
 #endif

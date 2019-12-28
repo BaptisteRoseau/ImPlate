@@ -136,8 +136,17 @@ std::string select_output_dir(const std::string out_dir, const std::string in_pa
  */
 bool build_directories(const std::string path);
 
+/**
+ * @brief Add the addon string before the extension of the file
+ * 
+ * @param path the path of the file.
+ * @param addon the addon to add before the extension.
+ */
+std::string add_addon(std::string path, std::string addon);
+
 
 void sort_corners(std::vector<cv::Point> &corners);
+
 /**
  * @brief Recursively build requiered directories for path.
  * 

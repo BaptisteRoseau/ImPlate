@@ -24,13 +24,14 @@ Optional argument:\n\
 \t- -l or --save-log:       The path to a file where all the logs will be saved.Will be created if doesn't exist.\n\
 \t- -a or --out-name-addon: The name addon for every blured picture (default: '_rendered').\n\
 \t- -t or --timeout:        A timeout in seconds.\n\
-\t- -p or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
+\t- -b or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
 \t- -v or --verbose:        Whether or not informations has to be displayed. This does not affect the logs.\n\
 \t- -c or --counry_code:    The country code of the car, to match the country's plate pattern. (\"eu\", \"us\", \"au\", \"br\", \"fr\", \"gb\", \"in\". Default: \"eu\")\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
-\t- -r or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.\n\
+\t- -p or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.\n\
+\t- -r or --rename:         Rename input images with _origin and replace it with the blured image.\n\
 "
-//\t- -s or --save-info:      Whether or not plate information sould be saved as well. If the input is a file, and output path for this can be given.\n\
+//\t- -s or --save-info:      Whether or not plate information sould be saved as well. If the input is a file, and output path for this can be given.\n
 
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,
@@ -44,9 +45,10 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     bool &save_plate_info,
     char *plate_info_save_path,
     bool &blur_only,
-    char *blur_only_location){
+    char *blur_only_location,
+    bool &replace_input_file){
     
-	struct option *options = new option[13];
+	struct option *options = new option[14];
 
     // Retrieving argument
     options[0].long_name  = "help";
@@ -74,7 +76,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[5].flags      = GOPT_ARGUMENT_REQUIRED;
 
     options[6].long_name  = "blur-power";
-    options[6].short_name = 'p';
+    options[6].short_name = 'b';
     options[6].flags      = GOPT_ARGUMENT_REQUIRED;
 
     options[7].long_name  = "verbose";
@@ -82,7 +84,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[7].flags      = GOPT_ARGUMENT_FORBIDDEN;
 
     options[8].long_name  = "respect-path";
-    options[8].short_name = 'r';
+    options[8].short_name = 'p';
     options[8].flags      = GOPT_ARGUMENT_FORBIDDEN;
 
 	options[9].long_name  = "counry_code";
@@ -94,10 +96,14 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     options[10].flags      = GOPT_ARGUMENT_OPTIONAL;
 
 	options[11].long_name  = "blur-only";
-    options[11].short_name = 'b';
+    options[11].short_name = 'w';
     options[11].flags      = GOPT_ARGUMENT_REQUIRED;
 
-    options[12].flags      = GOPT_LAST;
+    options[12].long_name  = "rename";
+    options[12].short_name = 'r';
+    options[12].flags      = GOPT_ARGUMENT_OPTIONAL;
+
+    options[13].flags      = GOPT_LAST;
 
     gopt(argv, options);
     gopt_errors(argv[0], options);
@@ -134,6 +140,7 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
         blur_only = true;
         strcpy(blur_only_location, options[11].argument);
     }
+    if (options[12].count) replace_input_file = true;
 
     // Options compatibility verification
     if (blur_only && save_plate_info){
@@ -160,6 +167,10 @@ void parse_argv(char **argv, char* in_path, char *out_dir,
     if (blur_only && options[9].count){ // country
         DISPLAY_WAR("--blur-only does not require --counry_code."
         << "\nIgnoring country code.\n")
+    }
+
+    if (!options[4].count && replace_input_file){
+        strcpy(output_name_addon, DFLT_BACKUP_ADDON);
     }
 
     delete[] options;

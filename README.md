@@ -6,6 +6,7 @@ This project's purpose is to automatically blur license plates.
 
 ## Requierement
 
+All this requirement will ve installed by using `sudo install_sudo.sh`
 - Tesseract OCR v3.0.4+ (https://github.com/tesseract-ocr/tesseract)
 - OpenCV v4.0.1+ (http://opencv.org/)
 - OpenALPR (https://github.com/openalpr/openalpr)
@@ -14,33 +15,30 @@ This project's purpose is to automatically blur license plates.
 Optional:
 - CUDA (https://developer.nvidia.com/cuda-downloads)
 
+
+
 ## Installation Script
 
 The easiest way to install the software if your have access to sudo is to run `sudo install_sudo.sh` (you need to have `apt` installed). It require an internet connection and may take several minutes. Please read carefully this script before launching it. Once it is done, you can add the path to the `blur` executable to your `PATH`.
 
-If you want to manually install it, OpenCV (and it's dependencies) and OpenALPR must be installed. You can see how to install it from scratch here: [http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html]. You can also see the requiered packages in the `install_sudo.sh` script.
-
 For a faster runtime, install CUDA then recompile OpenCV and OpenALPR so it will use the GPU instead of the CPU for the Neural Networks. Note that an NVIDIA GTX 1XXX GPU or higher is required to use CUDA.
 **Read carefully this README and the installation scripts before installing anything**, as you may have already some dependecies installed, and don't need to reinstall them. Feel free to modify the installation scripts if necessary. Note that OpenCV 4.0.1 or higher is requiered, and CUDA is highly recommended (install it **before** OpenCV or OpenALPR).
 
-An installation script `install.sh` is given in the present directory. What it basically does is:
-
-- Download and install OpenCV from source
-- Download and install OpenALPR from source
-- Copy the requiered source code, headers and precompiled librairies into the software's directory.
-- Compile the software source code
-
-The installation may take several minutes, and an internet connection is requiered.
-After runing this script, OpenCV and OpenALPR source directories will remain, but you can freely remove them.
-Their installation path (for headers and librairies) is located at [LPB/openalpr](LPB/openalpr) and [LPB/opencv](LPB/opencv) if you plan on using it's features for another project.
+If you want to manually install it, OpenCV (and it's dependencies) and OpenALPR must be installed. You can see how to install it from scratch here: [http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html]. You can also see the requiered packages and the different steps into the `install_sudo.sh` script.
 
 After the installation, the binary will be located at:
 
 `LPB/build/blur`
 
-You can add this to your PATH Environment Variable by adding this line in your `~/.profile`:
-
+By using the `sudo install_sudo.sh` script, this line will be automatically added to your `~/.bashrc`, allowing you to use `blur` command wherever you want.
+The following line  `~/.bashrc`:
 `PATH=$PATH:<path to>/LPB/build/blur`
+
+A set of pictures are located in the [LPB/data](LPB/data), they are only used for testing during the first installation. Your are free to removes them after the installation is completed.
+
+**Do not move the repository after installation**
+
+
 
 ## Build Documentation
 
@@ -50,6 +48,8 @@ If you wish to build the documentation, go into the LPB directory and run the co
 
 The documenation will be located at [LPB/doc/html/index.html](LPB/doc/html/index.html). The details of the functions can be found on the headers files (*.h).
 If the code needs to be recompiled, go into the [LPB](LPB) directory and run the command `make install`.
+
+
 
 # How to use
 
@@ -79,10 +79,14 @@ Optional argument:
 
 Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.
 
+
+
 # Improvement
 
 For the moment, the country code is set to "eu" (European cars) by default, but can be easily changed if necessary.
 In order to improve the plate detection accuracy of ALPR, please refer to <http://doc.openalpr.com/opensource.html#training-ocr>.
+
+
 
 # Documentation
 
