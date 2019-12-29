@@ -1,22 +1,6 @@
 #ifndef OPTIONS_HPP
 #define OPTIONS_HPP
 
-#define DFLT_OUTPUT_ADDON "_blured"
-#define DFLT_JSON_ADDON "_info"
-#define DFLT_BACKUP_ADDON "_backup"
-#define DFLT_BLUR 70
-#define DFLT_COUNTRY "eu"
-#ifndef DFLT_CONFIG_FILE
-#define DFLT_CONFIG_FILE "/usr/local/share/openalpr/config/openalpr.defaults.con"
-#endif
-#ifndef DFLT_RUNTIME_DIR
-#define DFLT_RUNTIME_DIR "/usr/local/share/openalpr/runtime_data/"
-#endif
-#define DFLT_FAILED_PIC_DIR "blur_failures.txt"
-#ifndef DFLT_MANUAL_BLUR_BIN
-#define DFLT_MANUAL_BLUR_BIN "./build/blur_ui"
-#endif
-
 /**
  * @brief Parse the command line to set the variable required by the main process.
  * The variable's default value must have been set before the function is called.

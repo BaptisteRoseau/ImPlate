@@ -1,6 +1,7 @@
 #include "options.h"
 #include "gopt/gopt.h"
 #include "utils.h"
+#include "config.h"
 
 #include <cstdlib>
 #include <iostream>

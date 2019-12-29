@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "config.h"
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
@@ -16,6 +17,7 @@
 #include <random>
 #include <stack>
 #include <fstream>
+#include <sstream>
 #include <cmath>
 
 using namespace std;
@@ -52,8 +54,10 @@ bool is_supported_file(fs::path path){
 	if (ext == ".HEIC") return true;
 	if (ext == ".raw")  return true;
 	if (ext == ".RAW")  return true;
+	if (ext == ".txt")  return true;
+	if (ext == ".csv")  return true;
 
-	DISPLAY_ERR(path << " format is not supported.");
+	DISPLAY_ERR(path << " format \"" << ext << "\" is not supported.");
     return false;
 }
 
@@ -63,8 +67,20 @@ stack<string> *list_files(const char *path){
 
 	// File
 	if (f.is_regular_file() && is_supported_file(f.path())){
-		file_paths->push((string) f.path());
-		DISPLAY("Added: " << f.path());
+		string ext = f.path().extension();
+		if (ext == ".csv" || ext == ".txt"){
+			// Text file containing images path
+			ifstream infile(path);
+			string line;
+			while (getline(infile, line)){
+				file_paths->push(line);
+				DISPLAY("Added: " << line);	
+			}
+		} else {
+			// Regular image file
+			file_paths->push((string) f.path());
+			DISPLAY("Added: " << f.path());
+		}
 		return file_paths;
 	}
 

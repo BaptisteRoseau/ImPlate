@@ -2,6 +2,7 @@
 #include "blur.h"
 #include "options.h"
 #include "gopt/gopt.h"
+#include "config.h"
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
@@ -114,6 +115,7 @@ int process(const char* in_path, const char* out_path,
 
 	// Parameters initialisation
 	stack<string> failed_pictures = stack<string>();
+	stack<string> success_pictures = stack<string>();
 	Mat picture = Mat();
 	Mat blured  = Mat();
 	string filepath, filename, fileext, savedir;
@@ -245,6 +247,8 @@ int process(const char* in_path, const char* out_path,
 			// Selecting output directory and building requiered directories
 			savedir = select_output_dir(out_path, in_path, filepath, respect_input_path);
 			if (!build_directories(savedir)){
+				DISPLAY_ERR("Couldn't build directories for " << savedir);
+				failed_pictures.push(filepath);
 				continue;
 			}
 			if (replace_input_file){
@@ -256,6 +260,9 @@ int process(const char* in_path, const char* out_path,
 				save_picture(blured, savedir, filename+output_name_addon+fileext);
 			}
 		}
+
+		// Picture was successfully saved
+		success_pictures.push(filepath);
 
 		// Saving the plate information if necessary
 		if (!blur_only && save_plate_info && !numbers.empty()){
@@ -290,20 +297,40 @@ int process(const char* in_path, const char* out_path,
 		
 	}
 
+	// Displaying success pictures
+	const size_t nb_success = success_pictures.size(); // For success rate
+	if ((verbose || save_log) && !success_pictures.empty()){
+		DISPLAY("\nPictures successfully blured:")
+
+		// Opening file containing success pictures only
+		ofstream successpic_stream;
+		successpic_stream.open(DFLT_SUCCESS_PIC_FILE);
+		if (!successpic_stream){
+			DISPLAY_ERR("Couldn't open " << DFLT_SUCCESS_PIC_FILE)
+		}
+
+		// Displaying and writing success pictures path
+		while (!success_pictures.empty()){
+			DISPLAY(success_pictures.top());
+			successpic_stream << success_pictures.top() << endl;
+			success_pictures.pop();
+		}
+	}
+
+	// Displaying failed pictures
 	const size_t nb_failed = failed_pictures.size(); // For success rate
 	if ((verbose || save_log) && !failed_pictures.empty()){
 		DISPLAY("\nSome pictures plate analysis or blur failed:")
 
 		// Opening file containing failed pictures only
 		ofstream failedpic_stream;
-		failedpic_stream.open(DFLT_FAILED_PIC_DIR);
+		failedpic_stream.open(DFLT_FAILURE_PIC_FILE);
 		if (!failedpic_stream){
-			DISPLAY_ERR("Couldn't open " << DFLT_FAILED_PIC_DIR)
+			DISPLAY_ERR("Couldn't open " << DFLT_FAILURE_PIC_FILE)
 		}
 
 		// Displaying and writing failed pictures path
-		while (!failed_pictures.empty())
-		{
+		while (!failed_pictures.empty()){
 			DISPLAY(failed_pictures.top());
 			failedpic_stream << failed_pictures.top() << endl;
 			failed_pictures.pop();

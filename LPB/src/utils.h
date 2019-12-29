@@ -15,11 +15,11 @@ if (save_log){log_ostream << stream << endl;}
 
 // Macro for stderr messages for verbose-only mode, and log save
 #define DISPLAY_ERR(stream) if (verbose){cerr << "\033[1;31mERROR:\033[0m " << stream << endl;}\
-if (save_log){log_ostream << stream << endl;}
+if (save_log){log_ostream << "ERROR: " << stream << endl;}
 
 // Macro for stderr messages for verbose-only mode, and log save
 #define DISPLAY_WAR(stream) if (verbose){cerr << "\033[1;35mWARNING:\033[0m " << stream << endl;}\
-if (save_log){log_ostream << stream << endl;}
+if (save_log){log_ostream << "WARNING: " << stream << endl;}
 
 #define _min(a, b) ((a) < (b) ? (a) : (b))
 #define _max(a, b) ((a) > (b) ? (a) : (b))
