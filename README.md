@@ -7,6 +7,7 @@ This project's purpose is to automatically blur license plates.
 ## Requierement
 
 All this requirement will ve installed by using `sudo install_sudo.sh`
+- g++ 8.3+
 - Tesseract OCR v3.0.4+ (https://github.com/tesseract-ocr/tesseract)
 - OpenCV v4.0.1+ (http://opencv.org/)
 - OpenALPR (https://github.com/openalpr/openalpr)
@@ -70,14 +71,14 @@ Optional argument:
 - `-l` or `--save-log`:       The path to a file where all the output logs will be saved. Will be created if doesn't exist.
 - `-a` or `--out-name-addon`: The name addon for every blured picture (default: '_blured').
 - `-t` or `--timeout`:        A timeout in seconds.
-- `-p` or `--blur-power`:     The size of the square box used to make a blur effect (default: 70).
+- `-b` or `--blur-power`:     The size of the square box used to make a blur effect (default: 70).
 - `-v` or `--verbose`:        Whether or not information has to be displayed. This does not affect the logs.
 - `-c` or `--counry`:         The country code of the car, to match the country's plate pattern. (default: "eu")
-
 - `-s` or `--save-info`:      Whether or not plate information sould be saved as well.
-- `-r` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.
+- `-p` or `--respect-path`:   Whether or not the path of output blured picture has to be similar to their path in the input directory.
 
 Note that removing verbose, save-info and save-log can save up to a bit less than 1/3 of the running time.
+- `-r` or `--rename`:         Rename input images with _backup and replace it with the blured image.
 
 
 
