@@ -298,7 +298,6 @@ int process(const char* in_path, const char* out_path,
 	}
 
 	// Displaying success pictures
-	const size_t nb_success = success_pictures.size(); // For success rate
 	if ((verbose || save_log) && !success_pictures.empty()){
 		DISPLAY("\nPictures successfully blured:")
 
