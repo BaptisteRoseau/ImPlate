@@ -1,0 +1,264 @@
+\hypertarget{options_8h}{}\section{src/options.h File Reference}
+\label{options_8h}\index{src/options.\+h@{src/options.\+h}}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{options_8h_a64c20f761398137e8c54f7db39b1f6e8}{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}~\char`\"{}\+\_\+blured\char`\"{}
+\item 
+\#define \hyperlink{options_8h_aedbea03e3cf8c526aaf157c85a0d7ce3}{D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON}~\char`\"{}\+\_\+info\char`\"{}
+\item 
+\#define \hyperlink{options_8h_ac22c3d37443935079af5fdf30a314aa6}{D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON}~\char`\"{}\+\_\+backup\char`\"{}
+\item 
+\#define \hyperlink{options_8h_a4ea69b139dec27f3e30bac70e4002c2d}{D\+F\+L\+T\+\_\+\+B\+L\+UR}~70
+\item 
+\#define \hyperlink{options_8h_a6423a8fe8797e552531c808829ea150c}{D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY}~\char`\"{}eu\char`\"{}
+\item 
+\#define \hyperlink{options_8h_a518656120c6dc6698ef7e675f55f1c43}{D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE}~\char`\"{}/usr/local/share/openalpr/config/openalpr.\+defaults.\+con\char`\"{}
+\item 
+\#define \hyperlink{options_8h_aa02efea6d774e00176e31b31e757a889}{D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR}~\char`\"{}/usr/local/share/openalpr/runtime\+\_\+data/\char`\"{}
+\item 
+\#define \hyperlink{options_8h_a39564f8719739177c8dba39b9b1c7f72}{D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR}~\char`\"{}blur\+\_\+failures.\+txt\char`\"{}
+\item 
+\#define \hyperlink{options_8h_abf3b002432d8874a5277387255c1862d}{D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN}~\char`\"{}./build/blur\+\_\+ui\char`\"{}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{options_8h_a32e3d254407b832defbb31e1f5c16dbd}{parse\+\_\+argv} (char $\ast$$\ast$argv, char $\ast$in\+\_\+path, char $\ast$out\+\_\+dir, char $\ast$output\+\_\+name\+\_\+addon, double \&timeout, unsigned int \&blur\+\_\+filter\+\_\+size, bool \&\hyperlink{utils_8h_ab3f078684998b83967d507d0f453f454}{verbose}, bool \&respect\+\_\+input\+\_\+path, bool \&\hyperlink{utils_8h_abcc3fefbf1ee9c4ef290623d427df143}{save\+\_\+log}, char $\ast$log\+\_\+file, char $\ast$country, bool \&save\+\_\+plate\+\_\+info, char $\ast$plate\+\_\+info\+\_\+save\+\_\+path, bool \&blur\+\_\+only, char $\ast$blur\+\_\+only\+\_\+location, bool \&replace\+\_\+input\+\_\+file)
+\begin{DoxyCompactList}\small\item\em Parse the command line to set the variable required by the main process. The variable\textquotesingle{}s default value must have been set before the function is called. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{options_8h_ac22c3d37443935079af5fdf30a314aa6}\label{options_8h_ac22c3d37443935079af5fdf30a314aa6}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON}}
+\index{D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON}{DFLT\_BACKUP\_ADDON}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+B\+A\+C\+K\+U\+P\+\_\+\+A\+D\+D\+ON~\char`\"{}\+\_\+backup\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_a4ea69b139dec27f3e30bac70e4002c2d}\label{options_8h_a4ea69b139dec27f3e30bac70e4002c2d}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+B\+L\+UR@{D\+F\+L\+T\+\_\+\+B\+L\+UR}}
+\index{D\+F\+L\+T\+\_\+\+B\+L\+UR@{D\+F\+L\+T\+\_\+\+B\+L\+UR}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+B\+L\+UR}{DFLT\_BLUR}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+B\+L\+UR~70}
+
+\mbox{\Hypertarget{options_8h_a518656120c6dc6698ef7e675f55f1c43}\label{options_8h_a518656120c6dc6698ef7e675f55f1c43}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE@{D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE}}
+\index{D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE@{D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE}{DFLT\_CONFIG\_FILE}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+C\+O\+N\+F\+I\+G\+\_\+\+F\+I\+LE~\char`\"{}/usr/local/share/openalpr/config/openalpr.\+defaults.\+con\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_a6423a8fe8797e552531c808829ea150c}\label{options_8h_a6423a8fe8797e552531c808829ea150c}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY@{D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY}}
+\index{D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY@{D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY}{DFLT\_COUNTRY}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+C\+O\+U\+N\+T\+RY~\char`\"{}eu\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_a39564f8719739177c8dba39b9b1c7f72}\label{options_8h_a39564f8719739177c8dba39b9b1c7f72}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR@{D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR}}
+\index{D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR@{D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR}{DFLT\_FAILED\_PIC\_DIR}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+F\+A\+I\+L\+E\+D\+\_\+\+P\+I\+C\+\_\+\+D\+IR~\char`\"{}blur\+\_\+failures.\+txt\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_aedbea03e3cf8c526aaf157c85a0d7ce3}\label{options_8h_aedbea03e3cf8c526aaf157c85a0d7ce3}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON}}
+\index{D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON}{DFLT\_JSON\_ADDON}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+J\+S\+O\+N\+\_\+\+A\+D\+D\+ON~\char`\"{}\+\_\+info\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_abf3b002432d8874a5277387255c1862d}\label{options_8h_abf3b002432d8874a5277387255c1862d}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN@{D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN}}
+\index{D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN@{D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN}{DFLT\_MANUAL\_BLUR\_BIN}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+M\+A\+N\+U\+A\+L\+\_\+\+B\+L\+U\+R\+\_\+\+B\+IN~\char`\"{}./build/blur\+\_\+ui\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_a64c20f761398137e8c54f7db39b1f6e8}\label{options_8h_a64c20f761398137e8c54f7db39b1f6e8}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}}
+\index{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}{DFLT\_OUTPUT\_ADDON}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON~\char`\"{}\+\_\+blured\char`\"{}}
+
+\mbox{\Hypertarget{options_8h_aa02efea6d774e00176e31b31e757a889}\label{options_8h_aa02efea6d774e00176e31b31e757a889}} 
+\index{options.\+h@{options.\+h}!D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR@{D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR}}
+\index{D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR@{D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR}{DFLT\_RUNTIME\_DIR}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+R\+U\+N\+T\+I\+M\+E\+\_\+\+D\+IR~\char`\"{}/usr/local/share/openalpr/runtime\+\_\+data/\char`\"{}}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{options_8h_a32e3d254407b832defbb31e1f5c16dbd}\label{options_8h_a32e3d254407b832defbb31e1f5c16dbd}} 
+\index{options.\+h@{options.\+h}!parse\+\_\+argv@{parse\+\_\+argv}}
+\index{parse\+\_\+argv@{parse\+\_\+argv}!options.\+h@{options.\+h}}
+\subsubsection{\texorpdfstring{parse\+\_\+argv()}{parse\_argv()}}
+{\footnotesize\ttfamily void parse\+\_\+argv (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{argv,  }\item[{char $\ast$}]{in\+\_\+path,  }\item[{char $\ast$}]{out\+\_\+dir,  }\item[{char $\ast$}]{output\+\_\+name\+\_\+addon,  }\item[{double \&}]{timeout,  }\item[{unsigned int \&}]{blur\+\_\+filter\+\_\+size,  }\item[{bool \&}]{verbose,  }\item[{bool \&}]{respect\+\_\+input\+\_\+path,  }\item[{bool \&}]{save\+\_\+log,  }\item[{char $\ast$}]{log\+\_\+file,  }\item[{char $\ast$}]{country,  }\item[{bool \&}]{save\+\_\+plate\+\_\+info,  }\item[{char $\ast$}]{plate\+\_\+info\+\_\+save\+\_\+path,  }\item[{bool \&}]{blur\+\_\+only,  }\item[{char $\ast$}]{blur\+\_\+only\+\_\+location,  }\item[{bool \&}]{replace\+\_\+input\+\_\+file }\end{DoxyParamCaption})}
+
+
+
+Parse the command line to set the variable required by the main process. The variable\textquotesingle{}s default value must have been set before the function is called. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argv} & the main\textquotesingle{}s argv parameter. \\
+\hline
+{\em in\+\_\+path} & the input directory or file path buffer variable \\
+\hline
+{\em out\+\_\+dir} & the output directory path buffer variable \\
+\hline
+{\em output\+\_\+name\+\_\+addon} & the name addon buffer variable (default\+: \char`\"{}\+\_\+rendered\char`\"{}) \\
+\hline
+{\em timeout} & the timeout variable (default\+: 0) \\
+\hline
+{\em blur\+\_\+filter\+\_\+size} & the filter size used for blur (see blur\+\_\+pixel function) \\
+\hline
+{\em verbose} & whether or not text has to be printed \\
+\hline
+{\em respect\+\_\+input\+\_\+path} & whether or not the pictures in the input directory will have a similar path in the output directory. \\
+\hline
+{\em counry\+\_\+code} & the country code for the plate detection\+: \char`\"{}eu\char`\"{}, \char`\"{}us\char`\"{}, \char`\"{}au\char`\"{}, \char`\"{}br\char`\"{}, \char`\"{}fr\char`\"{}, \char`\"{}gb\char`\"{}, \char`\"{}in\char`\"{}. Default\+: \char`\"{}eu\char`\"{} \\
+\hline
+{\em save\+\_\+plate\+\_\+info} & whether or not the plate\textquotesingle{}s information have to be saved \\
+\hline
+{\em plate\+\_\+info\+\_\+save\+\_\+path} & the path to file or directory to save plate information. \\
+\hline
+{\em blur\+\_\+only} & whether or not only bluring should be done. Works only for one file. \\
+\hline
+{\em blur\+\_\+only\+\_\+location} & the location of the areas to be blured. \char`\"{}x11\+\_\+y11\+\_\+x12\+\_\+y12\+\_\+...\+x21\+\_\+y21...\char`\"{}. The order is T\+O\+P\+\_\+\+L\+E\+FT, T\+O\+P\+\_\+\+R\+I\+G\+H\+T\+\_\+ B\+O\+T\+T\+O\+M\+\_\+\+R\+I\+G\+TH, B\+O\+T\+T\+OM L\+E\+FT. Example\+: 100\+\_\+150\+\_\+200\+\_\+145\+\_\+250\+\_\+213\+\_\+145\+\_\+200. There must be a multiple of 8 values. \\
+\hline
+{\em replace\+\_\+input\+\_\+file} & whether or not you want to replace intput file by the blured image. A copy of the origin file is made with \+\_\+origin. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyCode}
+49                              \{
+50     
+51     \textcolor{keyword}{struct }option *options = \textcolor{keyword}{new} option[14];
+52 
+53     \textcolor{comment}{// Retrieving argument}
+54     options[0].long\_name  = \textcolor{stringliteral}{"help"};
+55     options[0].short\_name = \textcolor{charliteral}{'h'};
+56     options[0].flags      = GOPT\_ARGUMENT\_FORBIDDEN;
+57 
+58     options[1].long\_name  = \textcolor{stringliteral}{"save-log"};
+59     options[1].short\_name = \textcolor{charliteral}{'l'};
+60     options[1].flags      = GOPT\_ARGUMENT\_REQUIRED;
+61 
+62     options[2].long\_name  = \textcolor{stringliteral}{"input"};
+63     options[2].short\_name = \textcolor{charliteral}{'i'};
+64     options[2].flags      = GOPT\_ARGUMENT\_REQUIRED;
+65 
+66     options[3].long\_name  = \textcolor{stringliteral}{"output"};
+67     options[3].short\_name = \textcolor{charliteral}{'o'};
+68     options[3].flags      = GOPT\_ARGUMENT\_REQUIRED;
+69 
+70     options[4].long\_name  = \textcolor{stringliteral}{"out-name-addon"};
+71     options[4].short\_name = \textcolor{charliteral}{'a'};
+72     options[4].flags      = GOPT\_ARGUMENT\_REQUIRED;
+73 
+74     options[5].long\_name  = \textcolor{stringliteral}{"timeout"};
+75     options[5].short\_name = \textcolor{charliteral}{'t'};
+76     options[5].flags      = GOPT\_ARGUMENT\_REQUIRED;
+77 
+78     options[6].long\_name  = \textcolor{stringliteral}{"blur-power"};
+79     options[6].short\_name = \textcolor{charliteral}{'b'};
+80     options[6].flags      = GOPT\_ARGUMENT\_REQUIRED;
+81 
+82     options[7].long\_name  = \textcolor{stringliteral}{"verbose"};
+83     options[7].short\_name = \textcolor{charliteral}{'v'};
+84     options[7].flags      = GOPT\_ARGUMENT\_FORBIDDEN;
+85 
+86     options[8].long\_name  = \textcolor{stringliteral}{"respect-path"};
+87     options[8].short\_name = \textcolor{charliteral}{'p'};
+88     options[8].flags      = GOPT\_ARGUMENT\_FORBIDDEN;
+89 
+90     options[9].long\_name  = \textcolor{stringliteral}{"counry\_code"};
+91     options[9].short\_name = \textcolor{charliteral}{'c'};
+92     options[9].flags      = GOPT\_ARGUMENT\_REQUIRED;
+93 
+94     options[10].long\_name  = \textcolor{stringliteral}{"save-info"};
+95     options[10].short\_name = \textcolor{charliteral}{'s'};
+96     options[10].flags      = GOPT\_ARGUMENT\_OPTIONAL;
+97 
+98     options[11].long\_name  = \textcolor{stringliteral}{"blur-only"};
+99     options[11].short\_name = \textcolor{charliteral}{'w'};
+100     options[11].flags      = GOPT\_ARGUMENT\_REQUIRED;
+101 
+102     options[12].long\_name  = \textcolor{stringliteral}{"rename"};
+103     options[12].short\_name = \textcolor{charliteral}{'r'};
+104     options[12].flags      = GOPT\_ARGUMENT\_OPTIONAL;
+105 
+106     options[13].flags      = GOPT\_LAST;
+107 
+108     gopt(argv, options);
+109     gopt\_errors(argv[0], options);
+110 
+111     \textcolor{comment}{// Setting variables if necessary}
+112     \textcolor{keywordflow}{if} (options[0].count)\{
+113         cout << \hyperlink{options_8cpp_a3e8f8841c9e50d6e3a79a668d7ad7791}{HELP\_PROMPT};
+114         exit(EXIT\_SUCCESS);
+115     \}
+116     \textcolor{keywordflow}{if} (!options[2].count || !options[3].count)\{
+117         cerr << \textcolor{stringliteral}{"Input path and output directory needs to be specified.\(\backslash\)n"};
+118         exit(EXIT\_FAILURE);
+119     \}
+120     \textcolor{keywordflow}{if} (options[1].count)\{
+121         \hyperlink{main_8cpp_abcc3fefbf1ee9c4ef290623d427df143}{save\_log} = \textcolor{keyword}{true};
+122         strcpy(log\_file, options[1].argument); 
+123     \}
+124     \textcolor{keywordflow}{if} (options[2].count) strcpy(in\_path, options[2].argument);
+125     \textcolor{keywordflow}{if} (options[3].count) strcpy(out\_dir, options[3].argument);
+126     \textcolor{keywordflow}{if} (options[4].count) strcpy(output\_name\_addon, options[4].argument);
+127     \textcolor{keywordflow}{if} (options[5].count) timeout = atof(options[5].argument);
+128     \textcolor{keywordflow}{if} (options[6].count) blur\_filter\_size = atoi(options[6].argument);
+129     \textcolor{keywordflow}{if} (options[7].count) \hyperlink{main_8cpp_ab3f078684998b83967d507d0f453f454}{verbose} = \textcolor{keyword}{true};
+130     \textcolor{keywordflow}{if} (options[8].count) respect\_input\_path = \textcolor{keyword}{true};
+131     \textcolor{keywordflow}{if} (options[9].count) strcpy(country, options[9].argument);
+132     \textcolor{keywordflow}{if} (options[10].count)\{
+133         save\_plate\_info = \textcolor{keyword}{true};
+134         \textcolor{keywordflow}{if} (options[10].argument != NULL)\{ \textcolor{comment}{//FIXME: options[10].argument == NULL even if argument is
+       provided}
+135             plate\_info\_save\_path = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[strlen(options[10].argument) + 1];
+136             strcpy(plate\_info\_save\_path, options[10].argument); 
+137         \}
+138     \}
+139     \textcolor{keywordflow}{if} (options[11].count) \{
+140         blur\_only = \textcolor{keyword}{true};
+141         strcpy(blur\_only\_location, options[11].argument);
+142     \}
+143     \textcolor{keywordflow}{if} (options[12].count) replace\_input\_file = \textcolor{keyword}{true};
+144 
+145     \textcolor{comment}{// Options compatibility verification}
+146     \textcolor{keywordflow}{if} (blur\_only && save\_plate\_info)\{
+147         \hyperlink{utils_8h_a14184f482aa4fd148a3a84d87ef54945}{DISPLAY\_WAR}(\textcolor{stringliteral}{"--blur-only is not compatible with --save-info."}
+148         << \textcolor{stringliteral}{"\(\backslash\)nDisabling --save-info.\(\backslash\)n"})
+149         save\_plate\_info = false;
+150         delete[] plate\_info\_save\_path;
+151         plate\_info\_save\_path = NULL;
+152     \}
+153 
+154     if (fs::directory\_entry(in\_path).is\_regular\_file() && plate\_info\_save\_path != NULL)\{
+155         \hyperlink{utils_8h_a14184f482aa4fd148a3a84d87ef54945}{DISPLAY\_WAR}(\textcolor{stringliteral}{"--save-info path location is not compatible with a file as input. Please
+       use it for directories instead."}
+156         << \textcolor{stringliteral}{"\(\backslash\)nDisabling --save-info path. (--save-info remains enabled)\(\backslash\)n"})
+157         delete[] plate\_info\_save\_path;
+158         plate\_info\_save\_path = NULL;
+159     \}
+160 
+161     if (fs::directory\_entry(in\_path).is\_regular\_file() && respect\_input\_path)\{
+162         \hyperlink{utils_8h_a14184f482aa4fd148a3a84d87ef54945}{DISPLAY\_WAR}(\textcolor{stringliteral}{"--respect-path is not compatible with a file as input. Please use it for
+       directories instead."}
+163         << \textcolor{stringliteral}{"\(\backslash\)nDisabling --respect-path.\(\backslash\)n"})
+164         respect\_input\_path = false;
+165     \}
+166 
+167     if (blur\_only && options[9].count)\{ \textcolor{comment}{// country}
+168         \hyperlink{utils_8h_a14184f482aa4fd148a3a84d87ef54945}{DISPLAY\_WAR}(\textcolor{stringliteral}{"--blur-only does not require --counry\_code."}
+169         << \textcolor{stringliteral}{"\(\backslash\)nIgnoring country code.\(\backslash\)n"})
+170     \}
+171 
+172     \textcolor{keywordflow}{if} (!options[4].count && replace\_input\_file)\{
+173         strcpy(output\_name\_addon, \hyperlink{options_8h_ac22c3d37443935079af5fdf30a314aa6}{DFLT\_BACKUP\_ADDON});
+174     \}
+175 
+176     \textcolor{keyword}{delete}[] options;
+177 \}
+\end{DoxyCode}

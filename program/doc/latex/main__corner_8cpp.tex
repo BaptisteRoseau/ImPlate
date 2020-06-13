@@ -1,0 +1,452 @@
+\hypertarget{main__corner_8cpp}{}\section{src/main\+\_\+corner.cpp File Reference}
+\label{main__corner_8cpp}\index{src/main\+\_\+corner.\+cpp@{src/main\+\_\+corner.\+cpp}}
+{\ttfamily \#include \char`\"{}utils.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}blur.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}options.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}gopt/gopt.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$opencv4/opencv2/opencv.\+hpp$>$}\newline
+{\ttfamily \#include $<$opencv4/opencv2/core/mat.\+hpp$>$}\newline
+{\ttfamily \#include $<$filesystem$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$sys/stat.\+h$>$}\newline
+{\ttfamily \#include $<$sys/io.\+h$>$}\newline
+{\ttfamily \#include $<$cstdio$>$}\newline
+{\ttfamily \#include $<$cstdlib$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$stack$>$}\newline
+{\ttfamily \#include $<$limits.\+h$>$}\newline
+{\ttfamily \#include $<$gtk/gtk.\+h$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{main__corner_8cpp_a64c20f761398137e8c54f7db39b1f6e8}{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}~\char`\"{}\+\_\+blured\char`\"{}
+\item 
+\#define \hyperlink{main__corner_8cpp_a4ea69b139dec27f3e30bac70e4002c2d}{D\+F\+L\+T\+\_\+\+B\+L\+UR}~70
+\item 
+\#define \hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{B\+U\+F\+F\+S\+I\+ZE}~200
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{main__corner_8cpp_a3cebb83a60ddf467b6d3dc9ec5e5ea04}{draw\+\_\+lines} ()
+\item 
+void \hyperlink{main__corner_8cpp_a8be26950c87fa288ff7ccbc0cfd17154}{Call\+Back\+Func} (int event, int x, int y, int flags, void $\ast$userdata)
+\item 
+int \hyperlink{main__corner_8cpp_afa9316c21f2e38fc2f310961f042fbc7}{main\+\_\+loop} (const char $\ast$in\+\_\+path, const char $\ast$out\+\_\+path, const char $\ast$output\+\_\+name\+\_\+addon, const double timeout, const unsigned int blur\+\_\+filter\+\_\+size, const bool respect\+\_\+input\+\_\+path, const char $\ast$log\+\_\+file)
+\item 
+void \hyperlink{main__corner_8cpp_a1ad940455be56209415d328d78622715}{usage} (char $\ast$name)
+\item 
+int \hyperlink{main__corner_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}{main} (int argc, char $\ast$$\ast$argv)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{main__corner_8cpp_ab3f078684998b83967d507d0f453f454}{verbose}
+\item 
+bool \hyperlink{main__corner_8cpp_abcc3fefbf1ee9c4ef290623d427df143}{save\+\_\+log}
+\begin{DoxyCompactList}\small\item\em Whether or not information should be displayed. \end{DoxyCompactList}\item 
+ofstream \hyperlink{main__corner_8cpp_a80cfbd8d58b0a285b5a3c999c05b115b}{log\+\_\+ostream}
+\begin{DoxyCompactList}\small\item\em Whether or not logs should be saved (default\+: false) \end{DoxyCompactList}\item 
+bool \hyperlink{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}{finished} = false
+\begin{DoxyCompactList}\small\item\em Stream to the file where the logs will be saved. \end{DoxyCompactList}\item 
+Mat \hyperlink{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}{ori}
+\item 
+Mat \hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img}
+\item 
+vector$<$ Point $>$ \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}
+\item 
+vector$<$ vector$<$ Point $>$ $>$ \hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}\label{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!B\+U\+F\+F\+S\+I\+ZE@{B\+U\+F\+F\+S\+I\+ZE}}
+\index{B\+U\+F\+F\+S\+I\+ZE@{B\+U\+F\+F\+S\+I\+ZE}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{B\+U\+F\+F\+S\+I\+ZE}{BUFFSIZE}}
+{\footnotesize\ttfamily \#define B\+U\+F\+F\+S\+I\+ZE~200}
+
+\mbox{\Hypertarget{main__corner_8cpp_a4ea69b139dec27f3e30bac70e4002c2d}\label{main__corner_8cpp_a4ea69b139dec27f3e30bac70e4002c2d}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!D\+F\+L\+T\+\_\+\+B\+L\+UR@{D\+F\+L\+T\+\_\+\+B\+L\+UR}}
+\index{D\+F\+L\+T\+\_\+\+B\+L\+UR@{D\+F\+L\+T\+\_\+\+B\+L\+UR}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+B\+L\+UR}{DFLT\_BLUR}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+B\+L\+UR~70}
+
+\mbox{\Hypertarget{main__corner_8cpp_a64c20f761398137e8c54f7db39b1f6e8}\label{main__corner_8cpp_a64c20f761398137e8c54f7db39b1f6e8}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}}
+\index{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON@{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON}{DFLT\_OUTPUT\_ADDON}}
+{\footnotesize\ttfamily \#define D\+F\+L\+T\+\_\+\+O\+U\+T\+P\+U\+T\+\_\+\+A\+D\+D\+ON~\char`\"{}\+\_\+blured\char`\"{}}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{main__corner_8cpp_a8be26950c87fa288ff7ccbc0cfd17154}\label{main__corner_8cpp_a8be26950c87fa288ff7ccbc0cfd17154}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!Call\+Back\+Func@{Call\+Back\+Func}}
+\index{Call\+Back\+Func@{Call\+Back\+Func}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{Call\+Back\+Func()}{CallBackFunc()}}
+{\footnotesize\ttfamily void Call\+Back\+Func (\begin{DoxyParamCaption}\item[{int}]{event,  }\item[{int}]{x,  }\item[{int}]{y,  }\item[{int}]{flags,  }\item[{void $\ast$}]{userdata }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+54                                                                  \{
+55    \textcolor{keywordflow}{if}(event == EVENT\_RBUTTONDOWN)\{
+56         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Right mouse button clicked at ("} << x << \textcolor{stringliteral}{", "} << y << \textcolor{stringliteral}{")"});
+57         \textcolor{keywordflow}{if} (!\hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.empty())\{
+58             \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.pop\_back();
+59         \}
+60         \hyperlink{main__corner_8cpp_a3cebb83a60ddf467b6d3dc9ec5e5ea04}{draw\_lines}();
+61         \textcolor{keywordflow}{return};
+62    \}
+63    \textcolor{keywordflow}{if}(event == EVENT\_LBUTTONDOWN)\{
+64         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Left mouse button clicked at ("} << x << \textcolor{stringliteral}{", "} << y << \textcolor{stringliteral}{")"});
+65         \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.push\_back(Point(x,y));
+66         \hyperlink{main__corner_8cpp_a3cebb83a60ddf467b6d3dc9ec5e5ea04}{draw\_lines}();
+67         \textcolor{keywordflow}{if} (!\hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.empty() && \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.size() % 4 == 0)\{
+68             \hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners}.push\_back(\hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices});
+69             \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.clear();
+70             \hyperlink{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}{finished} = \textcolor{keyword}{true};
+71         \}
+72         \textcolor{keywordflow}{return};
+73    \}
+74 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{main__corner_8cpp_a3cebb83a60ddf467b6d3dc9ec5e5ea04}\label{main__corner_8cpp_a3cebb83a60ddf467b6d3dc9ec5e5ea04}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!draw\+\_\+lines@{draw\+\_\+lines}}
+\index{draw\+\_\+lines@{draw\+\_\+lines}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{draw\+\_\+lines()}{draw\_lines()}}
+{\footnotesize\ttfamily void draw\+\_\+lines (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+41                  \{
+42     \hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img} = \hyperlink{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}{ori}.clone();
+43     \hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img}.at<Vec3b>(\hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}[0].x,\hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}[0].y) = Vec3b(255,0,0);
+44     \textcolor{keywordtype}{size\_t} vsize = \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.size();
+45     \textcolor{keywordtype}{size\_t} i;
+46     \textcolor{keywordflow}{for} (i = 1; i < vsize; i++)\{
+47         line(\hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img}, \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}[i-1], \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}[i], Scalar(0,0,0));
+48     \}
+49     \textcolor{keywordflow}{if} (!\hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.empty() && vsize % 4 == 0)\{
+50         line(\hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img}, \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}[0], \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}[vsize-1], Scalar(0,0,0));
+51     \}
+52 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{main__corner_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}\label{main__corner_8cpp_a3c04138a5bfe5d72780bb7e82a18e627}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!main@{main}}
+\index{main@{main}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily int main (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{char $\ast$$\ast$}]{argv }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+246                                \{
+247     \textcolor{keywordflow}{if} (argc == 1)\{
+248         \hyperlink{main__corner_8cpp_a1ad940455be56209415d328d78622715}{usage}(argv[0]);
+249         \textcolor{keywordflow}{return} -1;
+250     \}
+251 
+252     \textcolor{comment}{// Global variable initialization}
+253     \hyperlink{main__corner_8cpp_abcc3fefbf1ee9c4ef290623d427df143}{save\_log} = \textcolor{keyword}{false};
+254     \hyperlink{main__corner_8cpp_ab3f078684998b83967d507d0f453f454}{verbose}  = \textcolor{keyword}{false};
+255     \hyperlink{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}{finished} = \textcolor{keyword}{false};
+256 
+257     \textcolor{comment}{// Argument declaration and defaul value}
+258     \textcolor{keywordtype}{char}* in\_path = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[\hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{BUFFSIZE}];
+259     \textcolor{keywordtype}{char}* out\_path = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[\hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{BUFFSIZE}];
+260     \textcolor{keywordtype}{char} *output\_name\_addon = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[\hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{BUFFSIZE}];
+261     strcpy(output\_name\_addon, \hyperlink{main__corner_8cpp_a64c20f761398137e8c54f7db39b1f6e8}{DFLT\_OUTPUT\_ADDON});
+262     \textcolor{keywordtype}{double} timeout = 0;
+263     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} blur\_filter\_size = \hyperlink{main__corner_8cpp_a4ea69b139dec27f3e30bac70e4002c2d}{DFLT\_BLUR};
+264     \textcolor{keywordtype}{bool} respect\_input\_path = \textcolor{keyword}{false};
+265     \textcolor{keywordtype}{char} *log\_file = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[\hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{BUFFSIZE}];
+266     \textcolor{keywordtype}{char} *country = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[\hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{BUFFSIZE}];
+267     strcpy(country, \textcolor{stringliteral}{"eu"});
+268     \textcolor{keywordtype}{bool} save\_plate\_info = \textcolor{keyword}{false};
+269     \textcolor{keywordtype}{char} *plate\_info\_save\_path = NULL; \textcolor{comment}{// Dynamically allocated if argument provided}
+270     \textcolor{keywordtype}{bool} blur\_only = \textcolor{keyword}{false};
+271     \textcolor{keywordtype}{char} *blur\_only\_location = \textcolor{keyword}{new} \textcolor{keywordtype}{char}[\hyperlink{main__corner_8cpp_a39912bfe2a55f30e269196f9141d845d}{BUFFSIZE}];
+272     \textcolor{keywordtype}{bool} replace\_input\_file = \textcolor{keyword}{false};
+273 
+274     \textcolor{comment}{// Parsing command line}
+275     \hyperlink{options_8cpp_a32e3d254407b832defbb31e1f5c16dbd}{parse\_argv}(argv, in\_path, out\_path,
+276                output\_name\_addon,
+277                timeout,
+278                blur\_filter\_size,
+279                \hyperlink{main__corner_8cpp_ab3f078684998b83967d507d0f453f454}{verbose},
+280                respect\_input\_path,
+281                \hyperlink{main__corner_8cpp_abcc3fefbf1ee9c4ef290623d427df143}{save\_log},
+282                log\_file,
+283                country,
+284                save\_plate\_info,
+285                plate\_info\_save\_path,
+286                blur\_only,
+287                blur\_only\_location,
+288                replace\_input\_file);
+289 
+290     \textcolor{comment}{// Executing main process}
+291     \textcolor{keywordtype}{int} ret = \hyperlink{main__corner_8cpp_afa9316c21f2e38fc2f310961f042fbc7}{main\_loop}(in\_path, out\_path,
+292                       output\_name\_addon,
+293                       timeout,
+294                       blur\_filter\_size,
+295                       respect\_input\_path,
+296                       log\_file);
+297 
+298     \textcolor{keyword}{delete}[] in\_path;
+299     \textcolor{keyword}{delete}[] out\_path;
+300     \textcolor{keyword}{delete}[] log\_file;
+301     \textcolor{keyword}{delete}[] output\_name\_addon;
+302     \textcolor{keyword}{delete}[] country;
+303     \textcolor{keyword}{delete}[] blur\_only\_location;
+304     \textcolor{keywordflow}{if} (plate\_info\_save\_path != NULL) \textcolor{keyword}{delete}[] plate\_info\_save\_path;
+305 
+306     \textcolor{keywordflow}{return} ret;
+307     \textcolor{comment}{//return ret;}
+308 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{main__corner_8cpp_afa9316c21f2e38fc2f310961f042fbc7}\label{main__corner_8cpp_afa9316c21f2e38fc2f310961f042fbc7}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!main\+\_\+loop@{main\+\_\+loop}}
+\index{main\+\_\+loop@{main\+\_\+loop}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{main\+\_\+loop()}{main\_loop()}}
+{\footnotesize\ttfamily int main\+\_\+loop (\begin{DoxyParamCaption}\item[{const char $\ast$}]{in\+\_\+path,  }\item[{const char $\ast$}]{out\+\_\+path,  }\item[{const char $\ast$}]{output\+\_\+name\+\_\+addon,  }\item[{const double}]{timeout,  }\item[{const unsigned int}]{blur\+\_\+filter\+\_\+size,  }\item[{const bool}]{respect\+\_\+input\+\_\+path,  }\item[{const char $\ast$}]{log\+\_\+file }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+81                                  \{
+82     
+83     \textcolor{comment}{// Retrieving picture file paths into stack\_files}
+84     stack<string> *stack\_files = \hyperlink{utils_8cpp_ae4643e188dffcf0be61ad466be616893}{list\_files}(in\_path);
+85     \textcolor{keywordflow}{if} (stack\_files == NULL)\{
+86         \textcolor{comment}{//Don't use DISPLAY\_ERR }
+87         \textcolor{comment}{// you want to see this message even without verbose}
+88         cerr << \textcolor{stringliteral}{"\(\backslash\)033[1;31mERROR:\(\backslash\)033[0m Couldn't open any file.\(\backslash\)n"};
+89         exit(EXIT\_FAILURE);
+90     \}
+91 
+92     \textcolor{comment}{// Opening log file if necessary}
+93     \textcolor{keywordflow}{if} (\hyperlink{main__corner_8cpp_abcc3fefbf1ee9c4ef290623d427df143}{save\_log})\{
+94         \hyperlink{main__corner_8cpp_a80cfbd8d58b0a285b5a3c999c05b115b}{log\_ostream}.open(log\_file);
+95         \textcolor{keywordflow}{if} (!\hyperlink{main__corner_8cpp_a80cfbd8d58b0a285b5a3c999c05b115b}{log\_ostream})\{
+96             cerr << \textcolor{stringliteral}{"\(\backslash\)033[1;31mERROR:\(\backslash\)033[0m Couldn't open "} << log\_file << endl;
+97             exit(EXIT\_FAILURE);
+98         \}
+99     \}
+100 
+101     \textcolor{comment}{// Building output directory if it doesn't exists, and if input is a directory}
+102     \textcolor{keywordflow}{if} (!fs::directory\_entry(in\_path).is\_regular\_file())\{
+103         \textcolor{keywordflow}{if} (!\hyperlink{utils_8cpp_ab20f60b1e5e97d647adbb5accca11b31}{build\_dir}(out\_path))\{
+104             cerr << \textcolor{stringliteral}{"\(\backslash\)033[1;31mERROR:\(\backslash\)033[0m Couldn't build output directory.\(\backslash\)n"};
+105             exit(EXIT\_FAILURE);
+106         \}
+107     \}
+108 
+109     \textcolor{comment}{// Parameters initialisation}
+110     stack<string> failed\_pictures = stack<string>();
+111     Mat picture = Mat();
+112     Mat blured  = Mat();
+113     \textcolor{keywordtype}{string} filepath, filename, fileext, savedir, file\_out\_path;
+114     \textcolor{keywordtype}{int} error;
+115     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} loop\_idx = 0;
+116     \textcolor{keywordtype}{unsigned} \textcolor{keywordtype}{int} nb\_files = stack\_files->size();
+117     \textcolor{keywordtype}{double} \_timeout = timeout == 0 ? DBL\_MAX : timeout; 
+118     \textcolor{keywordtype}{double} t0 = time(NULL);
+119 
+120 
+121     \textcolor{keywordflow}{while} (!stack\_files->empty())\{
+122         \textcolor{comment}{// Reseting global variables}
+123         destroyAllWindows();
+124         \hyperlink{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}{finished}=\textcolor{keyword}{false};
+125         \hyperlink{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}{vertices}.clear();
+126         \hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners}.clear();
+127 
+128         \textcolor{comment}{// Getting file path informations}
+129         filepath = \hyperlink{utils_8cpp_ae5b1ab76259e06682dd39bec35eabae7}{stack\_next}(stack\_files);
+130         filename = \hyperlink{utils_8cpp_a4ea7fd2a97d2581efbe44b7093f546e1}{get\_filename}(filepath);
+131         fileext  = \hyperlink{utils_8cpp_aab7a8df6fb5d890b89762e315e34b6c5}{get\_file\_extension}(filepath);
+132         loop\_idx++;
+133 
+134         \textcolor{comment}{// Displaying script advancement}
+135         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"\(\backslash\)nPicture: "} << loop\_idx << \textcolor{stringliteral}{" out of "} << nb\_files
+136              << \textcolor{stringliteral}{" ("} << (\textcolor{keywordtype}{float}) 100*loop\_idx/nb\_files << \textcolor{stringliteral}{" %) : "} << filename)
+137 
+138         \textcolor{comment}{// Opening picture}
+139         picture = \hyperlink{utils_8cpp_aa6d4b502c0c32edc596e2b0f7f1a3aa5}{open\_picture}(filepath);
+140         \textcolor{keywordflow}{if} (picture.empty())\{
+141             \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Couldn't open "} << filepath);
+142             failed\_pictures.push(filepath);
+143             \textcolor{keywordflow}{continue};
+144         \}
+145 
+146         \textcolor{comment}{//======================= MAIN DISPLAY FOR THIS PICTURE}
+147 
+148         \textcolor{comment}{// Read image from file }
+149         \hyperlink{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}{ori} = imread(filepath);
+150 
+151         \textcolor{comment}{// Check it loaded}
+152         \textcolor{keywordflow}{if}(\hyperlink{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}{ori}.empty())\{ 
+153             \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Couldn't load "} << filepath)
+154             \textcolor{keywordflow}{continue};
+155         \}
+156 
+157         \textcolor{comment}{// Copying original image into buffer image}
+158         \hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img} = \hyperlink{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}{ori}.clone();
+159 
+160         \textcolor{comment}{//Create a window}
+161         namedWindow(\textcolor{stringliteral}{"ImageDisplay"}, 1);
+162 
+163         \textcolor{comment}{// Register a mouse callback}
+164         setMouseCallback(\textcolor{stringliteral}{"ImageDisplay"}, \hyperlink{main__corner_8cpp_a8be26950c87fa288ff7ccbc0cfd17154}{CallBackFunc}, NULL);
+165 
+166         \textcolor{comment}{// Main loop}
+167         \textcolor{comment}{//(TODO: 1 loop pour blur plusieurs zones)}
+168 
+169         \textcolor{comment}{// Bluring loop}
+170         \textcolor{keywordflow}{while}(!\hyperlink{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}{finished})\{
+171             imshow(\textcolor{stringliteral}{"ImageDisplay"}, \hyperlink{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}{img});
+172             waitKey(50);
+173         \}
+174 
+175         \textcolor{comment}{// Bluring a copy of the initial picture}
+176         blured = picture.clone();
+177         error = 0;
+178         \textcolor{keywordflow}{for} (\textcolor{keyword}{auto}&& corn: \hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners})\{
+179             error += \hyperlink{utils_8h_a7742fa23cad0b81a56daae0c5ad63c8b}{\_max}(\hyperlink{blur_8cpp_a5a840e0bd20fadca13ad48a56f32db33}{blur}(picture, blured, corn, blur\_filter\_size), error);
+180         \}
+181         \textcolor{keywordflow}{if} (error)\{
+182             \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Couldn't blur"} << error << \textcolor{stringliteral}{" times out of "} << corners.size() << \textcolor{stringliteral}{" on "}
+       << filename);
+183             failed\_pictures.push(filepath);
+184             \textcolor{keywordflow}{continue};
+185         \}
+186 
+187         \textcolor{comment}{// Show results}
+188         destroyAllWindows();
+189         namedWindow(\textcolor{stringliteral}{"Result"}, 1);
+190         imshow(\textcolor{stringliteral}{"Result"}, blured);
+191         waitKey(3000);
+192 
+193         \textcolor{comment}{//======================= END MAIN DISPLAY}
+194 
+195         \textcolor{comment}{// If input is a file, output will be directly out\_path, not a directory}
+196         \textcolor{keywordflow}{if} (fs::directory\_entry(in\_path).is\_regular\_file())\{
+197             \textcolor{keywordflow}{if} (\hyperlink{utils_8cpp_a8dab6a9def9013ef3bdfa6a9991c2e4d}{build\_directories}(out\_path))\{
+198                 \textcolor{keywordflow}{if} (fs::path(out\_path).has\_extension())\{
+199                     \textcolor{comment}{// Saving file as in given}
+200                     savedir = (string) fs::path(out\_path).parent\_path();
+201                     \hyperlink{utils_8cpp_a055f358e0b6695779f8b5125bfb9f6e8}{save\_picture}(blured, out\_path);
+202                 \} \textcolor{keywordflow}{else} \{
+203                     \textcolor{comment}{// Saving file into the directory given}
+204                     savedir = out\_path;
+205                     \hyperlink{utils_8cpp_a055f358e0b6695779f8b5125bfb9f6e8}{save\_picture}(blured, out\_path, filename+output\_name\_addon+fileext);
+206                 \}
+207             \} \textcolor{keywordflow}{else} \{
+208                 \textcolor{keywordflow}{continue};
+209             \}
+210         \textcolor{comment}{// If input is a directory, }
+211         \} \textcolor{keywordflow}{else} \{
+212             \textcolor{comment}{// Selecting output directory and building requiered directories}
+213             savedir = \hyperlink{utils_8cpp_acb8dcd394d479af8e54fa59e13367361}{select\_output\_dir}(out\_path, in\_path, filepath, respect\_input\_path);
+214             \textcolor{keywordflow}{if} (!\hyperlink{utils_8cpp_a8dab6a9def9013ef3bdfa6a9991c2e4d}{build\_directories}(savedir))\{
+215                 \textcolor{keywordflow}{continue};
+216             \}
+217             \textcolor{comment}{// Writing blured picture into the directory}
+218             \hyperlink{utils_8cpp_a055f358e0b6695779f8b5125bfb9f6e8}{save\_picture}(blured, savedir, filename+output\_name\_addon+fileext);
+219         \}
+220         
+221         \textcolor{comment}{// Cleaning memory and exiting program if \_timeout is reached}
+222         \textcolor{keywordflow}{if} (difftime(time(NULL), t0) > \_timeout)\{           
+223             \textcolor{keyword}{delete} stack\_files;
+224             \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Timeout reached."});
+225             \textcolor{keywordflow}{return} EXIT\_SUCCESS;
+226         \}
+227     \}
+228 
+229     \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"\(\backslash\)nExited successfully ("} << difftime(time(NULL), t0) << \textcolor{stringliteral}{" seconds)."})
+230 
+231     \textcolor{comment}{// Cleaning memory}
+232     delete stack\_files;
+233 
+234     return EXIT\_SUCCESS;
+235 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{main__corner_8cpp_a1ad940455be56209415d328d78622715}\label{main__corner_8cpp_a1ad940455be56209415d328d78622715}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!usage@{usage}}
+\index{usage@{usage}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{usage()}{usage()}}
+{\footnotesize\ttfamily void usage (\begin{DoxyParamCaption}\item[{char $\ast$}]{name }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+239                       \{
+240     cout <<\textcolor{stringliteral}{"\(\backslash\)}
+241 \textcolor{stringliteral}{Usage: "} << name << \textcolor{stringliteral}{" -i <path to picture or directory>\(\backslash\)}
+242 \textcolor{stringliteral}{-o <output directory>\(\backslash\)n\(\backslash\)}
+243 \textcolor{stringliteral}{Type -h or --help for more details.\(\backslash\)n"};
+244 \}
+\end{DoxyCode}
+
+
+\subsection{Variable Documentation}
+\mbox{\Hypertarget{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}\label{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!corners@{corners}}
+\index{corners@{corners}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{corners}{corners}}
+{\footnotesize\ttfamily vector$<$vector$<$Point$>$ $>$ corners}
+
+\mbox{\Hypertarget{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}\label{main__corner_8cpp_a9324389a5cdc532c6417a87ccafe18ce}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!finished@{finished}}
+\index{finished@{finished}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{finished}{finished}}
+{\footnotesize\ttfamily bool finished = false}
+
+
+
+Stream to the file where the logs will be saved. 
+
+\mbox{\Hypertarget{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}\label{main__corner_8cpp_ae385a0521acc08a6149564a573cb5ca0}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!img@{img}}
+\index{img@{img}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{img}{img}}
+{\footnotesize\ttfamily Mat img}
+
+\mbox{\Hypertarget{main__corner_8cpp_a80cfbd8d58b0a285b5a3c999c05b115b}\label{main__corner_8cpp_a80cfbd8d58b0a285b5a3c999c05b115b}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!log\+\_\+ostream@{log\+\_\+ostream}}
+\index{log\+\_\+ostream@{log\+\_\+ostream}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{log\+\_\+ostream}{log\_ostream}}
+{\footnotesize\ttfamily ofstream log\+\_\+ostream}
+
+
+
+Whether or not logs should be saved (default\+: false) 
+
+\mbox{\Hypertarget{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}\label{main__corner_8cpp_ad9b4541f41d68fe828858e80ac761d4e}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!ori@{ori}}
+\index{ori@{ori}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{ori}{ori}}
+{\footnotesize\ttfamily Mat ori}
+
+\mbox{\Hypertarget{main__corner_8cpp_abcc3fefbf1ee9c4ef290623d427df143}\label{main__corner_8cpp_abcc3fefbf1ee9c4ef290623d427df143}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!save\+\_\+log@{save\+\_\+log}}
+\index{save\+\_\+log@{save\+\_\+log}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{save\+\_\+log}{save\_log}}
+{\footnotesize\ttfamily bool save\+\_\+log}
+
+
+
+Whether or not information should be displayed. 
+
+\mbox{\Hypertarget{main__corner_8cpp_ab3f078684998b83967d507d0f453f454}\label{main__corner_8cpp_ab3f078684998b83967d507d0f453f454}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!verbose@{verbose}}
+\index{verbose@{verbose}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{verbose}{verbose}}
+{\footnotesize\ttfamily bool verbose}
+
+\mbox{\Hypertarget{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}\label{main__corner_8cpp_a4147bc1f4bfada8aa6c11e5f982c1f98}} 
+\index{main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}!vertices@{vertices}}
+\index{vertices@{vertices}!main\+\_\+corner.\+cpp@{main\+\_\+corner.\+cpp}}
+\subsubsection{\texorpdfstring{vertices}{vertices}}
+{\footnotesize\ttfamily vector$<$Point$>$ vertices}
+

@@ -1,0 +1,92 @@
+This project\textquotesingle{}s purpose is to automatically blur license plates.
+
+\section*{Installation}
+
+\subsection*{Requierement}
+
+All this requirement will ve installed by using {\ttfamily sudo install\+\_\+sudo.\+sh}
+\begin{DoxyItemize}
+\item Tesseract O\+CR v3.\+0.\+4+ (\href{https://github.com/tesseract-ocr/tesseract}{\tt https\+://github.\+com/tesseract-\/ocr/tesseract})
+\item Open\+CV v4.\+0.\+1+ (\href{http://opencv.org/}{\tt http\+://opencv.\+org/})
+\item Open\+A\+L\+PR (\href{https://github.com/openalpr/openalpr}{\tt https\+://github.\+com/openalpr/openalpr})
+\item Open\+CV Dependencies (\href{http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html}{\tt http\+://www.\+linuxfromscratch.\+org/blfs/view/svn/general/opencv.\+html})
+\end{DoxyItemize}
+
+Optional\+:
+\begin{DoxyItemize}
+\item C\+U\+DA (\href{https://developer.nvidia.com/cuda-downloads}{\tt https\+://developer.\+nvidia.\+com/cuda-\/downloads})
+\end{DoxyItemize}
+
+\subsection*{Installation Script}
+
+The easiest way to install the software if your have access to sudo is to run {\ttfamily sudo install\+\_\+sudo.\+sh} (you need to have {\ttfamily apt} installed). It require an internet connection and may take several minutes. Please read carefully this script before launching it. Once it is done, you can add the path to the {\ttfamily blur} executable to your {\ttfamily P\+A\+TH}.
+
+For a faster runtime, install C\+U\+DA then recompile Open\+CV and Open\+A\+L\+PR so it will use the G\+PU instead of the C\+PU for the Neural Networks. Note that an N\+V\+I\+D\+IA G\+TX 1\+X\+XX G\+PU or higher is required to use C\+U\+DA. {\bfseries Read carefully this R\+E\+A\+D\+ME and the installation scripts before installing anything}, as you may have already some dependecies installed, and don\textquotesingle{}t need to reinstall them. Feel free to modify the installation scripts if necessary. Note that Open\+CV 4.\+0.\+1 or higher is requiered, and C\+U\+DA is highly recommended (install it {\bfseries before} Open\+CV or Open\+A\+L\+PR).
+
+If you want to manually install it, Open\+CV (and it\textquotesingle{}s dependencies) and Open\+A\+L\+PR must be installed. You can see how to install it from scratch here\+: \mbox{[}\href{http://www.linuxfromscratch.org/blfs/view/svn/general/opencv.html}{\tt http\+://www.\+linuxfromscratch.\+org/blfs/view/svn/general/opencv.\+html}\mbox{]}. You can also see the requiered packages and the different steps into the {\ttfamily install\+\_\+sudo.\+sh} script.
+
+After the installation, the binary will be located at\+:
+
+{\ttfamily L\+P\+B/build/blur}
+
+By using the {\ttfamily sudo install\+\_\+sudo.\+sh} script, this line will be automatically added to your {\ttfamily $\sim$/.bashrc}, allowing you to use {\ttfamily blur} command wherever you want. The following line {\ttfamily $\sim$/.bashrc}\+: {\ttfamily P\+A\+TH=\$\+P\+A\+TH\+:$<$path to$>$/\+L\+P\+B/build/blur}
+
+A set of pictures are located in the \href{LPB/data}{\tt L\+P\+B/data}, they are only used for testing during the first installation. Your are free to removes them after the installation is completed.
+
+{\bfseries Do not move the repository after installation}
+
+\subsection*{Build Documentation}
+
+If you wish to build the documentation, go into the L\+PB directory and run the command\+:
+
+{\ttfamily make doc} or {\ttfamily doxygen Doxyfile}
+
+The documenation will be located at \href{LPB/doc/html/index.html}{\tt L\+P\+B/doc/html/index.\+html}. The details of the functions can be found on the headers files ($\ast$.h). If the code needs to be recompiled, go into the \mbox{[}L\+PB\mbox{]}(L\+PB) directory and run the command {\ttfamily make install}.
+
+\section*{How to use}
+
+Once installation is complete and path added to the Environment Variables, you can use the software with this command line\+:
+
+{\ttfamily blur -\/i $<$path to picture or directory$>$ -\/o $<$output directory$>$ \mbox{[}args\mbox{]}}
+
+Input and output path are requiered, and there are several options available\+:
+
+Requiered argument\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily -\/i} or {\ttfamily -\/-\/input}\+: The path to the input file or directory.
+\item {\ttfamily -\/o} or {\ttfamily -\/-\/output}\+: The path to the output file or directory. Output file path is only available with a file as input. Directories will be created if they don\textquotesingle{}t exist. It can be the same as {\ttfamily -\/-\/input}.
+\end{DoxyItemize}
+
+Optional argument\+:
+
+
+\begin{DoxyItemize}
+\item {\ttfamily -\/h} or {\ttfamily -\/-\/help}\+: Displays this screen.
+\item {\ttfamily -\/l} or {\ttfamily -\/-\/save-\/log}\+: The path to a file where all the output logs will be saved. Will be created if doesn\textquotesingle{}t exist.
+\item {\ttfamily -\/a} or {\ttfamily -\/-\/out-\/name-\/addon}\+: The name addon for every blured picture (default\+: \textquotesingle{}\+\_\+blured\textquotesingle{}).
+\item {\ttfamily -\/t} or {\ttfamily -\/-\/timeout}\+: A timeout in seconds.
+\item {\ttfamily -\/p} or {\ttfamily -\/-\/blur-\/power}\+: The size of the square box used to make a blur effect (default\+: 70).
+\item {\ttfamily -\/v} or {\ttfamily -\/-\/verbose}\+: Whether or not information has to be displayed. This does not affect the logs.
+\item {\ttfamily -\/c} or {\ttfamily -\/-\/counry}\+: The country code of the car, to match the country\textquotesingle{}s plate pattern. (default\+: \char`\"{}eu\char`\"{})
+\item {\ttfamily -\/s} or {\ttfamily -\/-\/save-\/info}\+: Whether or not plate information sould be saved as well.
+\item {\ttfamily -\/r} or {\ttfamily -\/-\/respect-\/path}\+: Whether or not the path of output blured picture has to be similar to their path in the input directory.
+\end{DoxyItemize}
+
+Note that removing verbose, save-\/info and save-\/log can save up to a bit less than 1/3 of the running time.
+
+\# \+Improvement
+
+For the moment, the country code is set to \char`\"{}eu\char`\"{} (European cars) by default, but can be easily changed if necessary. In order to improve the plate detection accuracy of A\+L\+PR, please refer to \href{http://doc.openalpr.com/opensource.html#training-ocr}{\tt http\+://doc.\+openalpr.\+com/opensource.\+html\#training-\/ocr}.
+
+\section*{Documentation}
+
+Don\textquotesingle{}t hesitate to check the code in \href{LPB/src/main.cpp}{\tt L\+P\+B/src/main.\+cpp} in order to be able to make little changes if necessary.
+
+
+\begin{DoxyItemize}
+\item Open\+C\+V4\+: \href{https://docs.opencv.org/4.0.1/}{\tt https\+://docs.\+opencv.\+org/4.\+0.\+1/}
+\item Open\+A\+L\+PR\+: \href{http://doc.openalpr.com/opensource.html}{\tt http\+://doc.\+openalpr.\+com/opensource.\+html}
+\item This software\+: \href{LPB/doc/html/index.html}{\tt L\+P\+B/doc/html/index.\+html} after building documentation. 
+\end{DoxyItemize}

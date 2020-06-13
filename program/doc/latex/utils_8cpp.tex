@@ -1,0 +1,512 @@
+\hypertarget{utils_8cpp}{}\section{src/utils.cpp File Reference}
+\label{utils_8cpp}\index{src/utils.\+cpp@{src/utils.\+cpp}}
+{\ttfamily \#include \char`\"{}utils.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$opencv4/opencv2/opencv.\+hpp$>$}\newline
+{\ttfamily \#include $<$opencv4/opencv2/core/mat.\+hpp$>$}\newline
+{\ttfamily \#include $<$filesystem$>$}\newline
+{\ttfamily \#include $<$sys/types.\+h$>$}\newline
+{\ttfamily \#include $<$sys/stat.\+h$>$}\newline
+{\ttfamily \#include $<$sys/io.\+h$>$}\newline
+{\ttfamily \#include $<$cstdio$>$}\newline
+{\ttfamily \#include $<$cstdlib$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$assert.\+h$>$}\newline
+{\ttfamily \#include $<$iostream$>$}\newline
+{\ttfamily \#include $<$cstring$>$}\newline
+{\ttfamily \#include $<$random$>$}\newline
+{\ttfamily \#include $<$stack$>$}\newline
+{\ttfamily \#include $<$fstream$>$}\newline
+{\ttfamily \#include $<$cmath$>$}\newline
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{utils_8cpp_a598a3330b3c21701223ee0ca14316eca}{PI}~3.\+14159265358979323846264338327950288419716939937510
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{utils_8cpp_add7326c89d70d570e8f73d4a8296f7f8}{is\+\_\+supported\+\_\+file} (fs\+::path path)
+\item 
+stack$<$ string $>$ $\ast$ \hyperlink{utils_8cpp_ae4643e188dffcf0be61ad466be616893}{list\+\_\+files} (const char $\ast$path)
+\begin{DoxyCompactList}\small\item\em List every files in the given file/directory path recursively. Results will be put into a stack. \end{DoxyCompactList}\item 
+Mat \hyperlink{utils_8cpp_aa6d4b502c0c32edc596e2b0f7f1a3aa5}{open\+\_\+picture} (const string path)
+\item 
+string \hyperlink{utils_8cpp_ae5b1ab76259e06682dd39bec35eabae7}{stack\+\_\+next} (stack$<$ string $>$ $\ast$s)
+\item 
+void \hyperlink{utils_8cpp_a055f358e0b6695779f8b5125bfb9f6e8}{save\+\_\+picture} (const Mat \&picture, string dir, string name)
+\item 
+void \hyperlink{utils_8cpp_a785f30cc8d8c0e8d3827f63cb1a8ca4f}{save\+\_\+picture} (const Mat \&picture, string path)
+\item 
+string \hyperlink{utils_8cpp_a7f14eec883e3dabee7cbc020f1ebbf1f}{str\+\_\+normalize} (string \&s)
+\item 
+bool \hyperlink{utils_8cpp_ab20f60b1e5e97d647adbb5accca11b31}{build\+\_\+dir} (const char $\ast$path)
+\begin{DoxyCompactList}\small\item\em builds a directory for the given path. If the path refers to a file, this will return an error. \end{DoxyCompactList}\item 
+string \hyperlink{utils_8cpp_a4ea7fd2a97d2581efbe44b7093f546e1}{get\+\_\+filename} (const string \&filepath)
+\item 
+string \hyperlink{utils_8cpp_aab7a8df6fb5d890b89762e315e34b6c5}{get\+\_\+file\+\_\+extension} (const string \&filepath)
+\item 
+bool \hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace} (string \&str, const std\+::string \&from, const std\+::string \&to)
+\item 
+string \hyperlink{utils_8cpp_aa735b94da6e8e2df91c5f6620f9825d5}{add\+\_\+addon} (string path, string addon)
+\item 
+string \hyperlink{utils_8cpp_acb8dcd394d479af8e54fa59e13367361}{select\+\_\+output\+\_\+dir} (const string out\+\_\+root, const string in\+\_\+root, const string filepath, const bool respect\+\_\+input\+\_\+path)
+\item 
+bool \hyperlink{utils_8cpp_a8dab6a9def9013ef3bdfa6a9991c2e4d}{build\+\_\+directories} (const string path)
+\item 
+void \hyperlink{utils_8cpp_a1019114e31070a917af7b19bab80052c}{sort\+\_\+corners} (vector$<$ Point $>$ \&\hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners})
+\item 
+vector$<$ vector$<$ Point $>$ $>$ \hyperlink{utils_8cpp_ac5cf585d84f32faf46bd54e736582c9a}{parse\+\_\+location} (const string str\+\_\+location)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\mbox{\Hypertarget{utils_8cpp_a598a3330b3c21701223ee0ca14316eca}\label{utils_8cpp_a598a3330b3c21701223ee0ca14316eca}} 
+\index{utils.\+cpp@{utils.\+cpp}!PI@{PI}}
+\index{PI@{PI}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{PI}{PI}}
+{\footnotesize\ttfamily \#define PI~3.\+14159265358979323846264338327950288419716939937510}
+
+
+
+\subsection{Function Documentation}
+\mbox{\Hypertarget{utils_8cpp_aa735b94da6e8e2df91c5f6620f9825d5}\label{utils_8cpp_aa735b94da6e8e2df91c5f6620f9825d5}} 
+\index{utils.\+cpp@{utils.\+cpp}!add\+\_\+addon@{add\+\_\+addon}}
+\index{add\+\_\+addon@{add\+\_\+addon}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{add\+\_\+addon()}{add\_addon()}}
+{\footnotesize\ttfamily string add\+\_\+addon (\begin{DoxyParamCaption}\item[{string}]{path,  }\item[{string}]{addon }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+172                                            \{
+173     fs::path tmp = fs::path(path);
+174     tmp.replace\_extension(addon+(\textcolor{keywordtype}{string})tmp.extension());
+175     \textcolor{keywordflow}{return} (\textcolor{keywordtype}{string}) tmp;
+176 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_ab20f60b1e5e97d647adbb5accca11b31}\label{utils_8cpp_ab20f60b1e5e97d647adbb5accca11b31}} 
+\index{utils.\+cpp@{utils.\+cpp}!build\+\_\+dir@{build\+\_\+dir}}
+\index{build\+\_\+dir@{build\+\_\+dir}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{build\+\_\+dir()}{build\_dir()}}
+{\footnotesize\ttfamily bool build\+\_\+dir (\begin{DoxyParamCaption}\item[{const char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+builds a directory for the given path. If the path refers to a file, this will return an error. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & to the directory to create. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+false for failure, true for success 
+\end{DoxyReturn}
+
+\begin{DoxyCode}
+141                                 \{
+142     \textcolor{keyword}{struct }stat info;
+143     \textcolor{keywordflow}{if}(stat(path, &info) != 0)\{
+144         \textcolor{keywordflow}{if} (mkdir(path, S\_IRWXU) != 0)\{
+145             \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Couldn't create "} << path);
+146             \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+147         \}
+148     \}
+149     \textcolor{keywordflow}{else} \textcolor{keywordflow}{if} (!S\_ISDIR(info.st\_mode))\{ 
+150         \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(path << \textcolor{stringliteral}{" is not a directory"});
+151         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+152     \}
+153     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+154 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a8dab6a9def9013ef3bdfa6a9991c2e4d}\label{utils_8cpp_a8dab6a9def9013ef3bdfa6a9991c2e4d}} 
+\index{utils.\+cpp@{utils.\+cpp}!build\+\_\+directories@{build\+\_\+directories}}
+\index{build\+\_\+directories@{build\+\_\+directories}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{build\+\_\+directories()}{build\_directories()}}
+{\footnotesize\ttfamily bool build\+\_\+directories (\begin{DoxyParamCaption}\item[{const string}]{path }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+207                                          \{
+208     \textcolor{comment}{// Choosing wether or not the last part has to be built}
+209     \textcolor{keywordtype}{string} tmp = path;
+210     \textcolor{keywordflow}{if} (fs::path(path).has\_extension())\{
+211         tmp = (string) fs::path(path).parent\_path();
+212     \}
+213 
+214     \textcolor{comment}{// Building directories}
+215     fs::create\_directories(tmp);
+216     \textcolor{keywordflow}{if} (!fs::directory\_entry(tmp).exists())\{
+217         \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Failed to create directories "} << tmp);
+218         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+219     \}
+220     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+221 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_aab7a8df6fb5d890b89762e315e34b6c5}\label{utils_8cpp_aab7a8df6fb5d890b89762e315e34b6c5}} 
+\index{utils.\+cpp@{utils.\+cpp}!get\+\_\+file\+\_\+extension@{get\+\_\+file\+\_\+extension}}
+\index{get\+\_\+file\+\_\+extension@{get\+\_\+file\+\_\+extension}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{get\+\_\+file\+\_\+extension()}{get\_file\_extension()}}
+{\footnotesize\ttfamily string get\+\_\+file\+\_\+extension (\begin{DoxyParamCaption}\item[{const string \&}]{filepath }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+160                                                  \{
+161     \textcolor{keywordflow}{return} fs::path(filepath).extension();
+162 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a4ea7fd2a97d2581efbe44b7093f546e1}\label{utils_8cpp_a4ea7fd2a97d2581efbe44b7093f546e1}} 
+\index{utils.\+cpp@{utils.\+cpp}!get\+\_\+filename@{get\+\_\+filename}}
+\index{get\+\_\+filename@{get\+\_\+filename}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{get\+\_\+filename()}{get\_filename()}}
+{\footnotesize\ttfamily string get\+\_\+filename (\begin{DoxyParamCaption}\item[{const string \&}]{filepath }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+156                                            \{
+157     \textcolor{keywordflow}{return} fs::path(filepath).stem();
+158 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_add7326c89d70d570e8f73d4a8296f7f8}\label{utils_8cpp_add7326c89d70d570e8f73d4a8296f7f8}} 
+\index{utils.\+cpp@{utils.\+cpp}!is\+\_\+supported\+\_\+file@{is\+\_\+supported\+\_\+file}}
+\index{is\+\_\+supported\+\_\+file@{is\+\_\+supported\+\_\+file}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{is\+\_\+supported\+\_\+file()}{is\_supported\_file()}}
+{\footnotesize\ttfamily bool is\+\_\+supported\+\_\+file (\begin{DoxyParamCaption}\item[{fs\+::path}]{path }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+30                                    \{
+31     \textcolor{keywordflow}{if} (!path.has\_extension())\{
+32         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+33     \}
+34 
+35     \textcolor{keywordtype}{string} ext = path.extension();
+36 
+37     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".jpg"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+38     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".JPG"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+39     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".jpeg"}) \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+40     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".JPEG"}) \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+41     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".png"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+42     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".PNG"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+43     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".pdf"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+44     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".PDF"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+45     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".webp"}) \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+46     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".WEBP"}) \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+47     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".bmp"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+48     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".BMP"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+49     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".svg"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+50     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".SVG"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+51     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".heic"}) \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+52     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".HEIC"}) \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+53     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".raw"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+54     \textcolor{keywordflow}{if} (ext == \textcolor{stringliteral}{".RAW"})  \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+55 
+56     \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(path << \textcolor{stringliteral}{" format is not supported."});
+57     \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+58 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_ae4643e188dffcf0be61ad466be616893}\label{utils_8cpp_ae4643e188dffcf0be61ad466be616893}} 
+\index{utils.\+cpp@{utils.\+cpp}!list\+\_\+files@{list\+\_\+files}}
+\index{list\+\_\+files@{list\+\_\+files}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{list\+\_\+files()}{list\_files()}}
+{\footnotesize\ttfamily stack$<$string$>$$\ast$ list\+\_\+files (\begin{DoxyParamCaption}\item[{const char $\ast$}]{path }\end{DoxyParamCaption})}
+
+
+
+List every files in the given file/directory path recursively. Results will be put into a stack. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em path} & is the path to the file or directory to compute \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+std\+::stack$<$std\+::string$>$$\ast$ contains the path to all the files to compute 
+\end{DoxyReturn}
+
+\begin{DoxyCode}
+60                                            \{
+61     stack<string> *file\_paths = \textcolor{keyword}{new} stack<string>();
+62     fs::directory\_entry f = fs::directory\_entry(path);
+63 
+64     \textcolor{comment}{// File}
+65     \textcolor{keywordflow}{if} (f.is\_regular\_file() && \hyperlink{utils_8cpp_add7326c89d70d570e8f73d4a8296f7f8}{is\_supported\_file}(f.path()))\{
+66         file\_paths->push((\textcolor{keywordtype}{string}) f.path());
+67         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Added: "} << f.path());
+68         \textcolor{keywordflow}{return} file\_paths;
+69     \}
+70 
+71     \textcolor{comment}{// Directory}
+72     \textcolor{keywordflow}{if} (f.is\_directory())\{
+73         \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}& p: fs::recursive\_directory\_iterator(path))\{
+74             \textcolor{keywordflow}{if} (p.is\_regular\_file() && \hyperlink{utils_8cpp_add7326c89d70d570e8f73d4a8296f7f8}{is\_supported\_file}(p.path()))\{
+75                 file\_paths->push((\textcolor{keywordtype}{string}) p.path());
+76                 \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Added: "} << p.path());
+77             \}
+78         \}
+79         \textcolor{keywordflow}{return} file\_paths;
+80     \}
+81 
+82     \textcolor{comment}{// ERROR case}
+83     \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(path << \textcolor{stringliteral}{" is not a file nor a directory."});
+84     \textcolor{keywordflow}{return} NULL;
+85 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_aa6d4b502c0c32edc596e2b0f7f1a3aa5}\label{utils_8cpp_aa6d4b502c0c32edc596e2b0f7f1a3aa5}} 
+\index{utils.\+cpp@{utils.\+cpp}!open\+\_\+picture@{open\+\_\+picture}}
+\index{open\+\_\+picture@{open\+\_\+picture}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{open\+\_\+picture()}{open\_picture()}}
+{\footnotesize\ttfamily Mat open\+\_\+picture (\begin{DoxyParamCaption}\item[{const string}]{path }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+87                                    \{
+88     Mat ret = imread(path);
+89     \textcolor{keywordflow}{if} (ret.empty())\{
+90         \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Failed to open "} << path);
+91     \} \textcolor{keywordflow}{else} \{
+92         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Opened "} << path);
+93     \}
+94     \textcolor{keywordflow}{return} ret;
+95 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_ac5cf585d84f32faf46bd54e736582c9a}\label{utils_8cpp_ac5cf585d84f32faf46bd54e736582c9a}} 
+\index{utils.\+cpp@{utils.\+cpp}!parse\+\_\+location@{parse\+\_\+location}}
+\index{parse\+\_\+location@{parse\+\_\+location}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{parse\+\_\+location()}{parse\_location()}}
+{\footnotesize\ttfamily vector$<$vector$<$Point$>$ $>$ parse\+\_\+location (\begin{DoxyParamCaption}\item[{const string}]{str\+\_\+location }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+280                                                                 \{
+281     vector<vector<Point> > buffer = vector<vector<Point> >();
+282     vector<Point> tmp\_corner = vector<Point>();
+283     Point tmp\_point = Point();
+284      
+285     \textcolor{comment}{// PARSING}
+286     \textcolor{keywordtype}{size\_t} us\_loc\_0 = 0;
+287     \textcolor{keywordtype}{size\_t} us\_loc\_1 = 0;
+288     \textcolor{keywordtype}{int} val;
+289     \textcolor{keywordtype}{int} i = 0;
+290     \textcolor{keywordflow}{while}(us\_loc\_1 < str\_location.length())\{
+291         us\_loc\_0 = i == 0 ? us\_loc\_1 : us\_loc\_1 + 1;
+292         us\_loc\_1 = str\_location.find(\textcolor{charliteral}{'\_'}, us\_loc\_0);
+293         val = stoi(str\_location.substr(us\_loc\_0, us\_loc\_1 - us\_loc\_0));
+294         \textcolor{keywordflow}{if} (i&1)\{
+295             tmp\_point.y = val;
+296             tmp\_corner.push\_back(tmp\_point);
+297         \} \textcolor{keywordflow}{else} \{
+298             tmp\_point.x = val;
+299         \}
+300         i++;
+301 
+302         \textcolor{comment}{// Adding the 4 corners into the buffer}
+303         \textcolor{keywordflow}{if} (i % 8 == 0)\{
+304             \textcolor{keywordflow}{if} (tmp\_corner.size() != 4)\{
+305                 cerr << \textcolor{stringliteral}{"\(\backslash\)033[1;31mERROR:\(\backslash\)033[0m Area is not having exactly 4 points."} << endl;
+306                 exit(EXIT\_FAILURE);
+307             \}
+308             buffer.push\_back(tmp\_corner);
+309             tmp\_corner = vector<Point>();
+310         \}
+311     \}
+312 
+313     \textcolor{comment}{// VERIFICATION}
+314     \textcolor{keywordflow}{if} (i % 8 != 0 || buffer.size() != (size\_t) i/8)\{
+315         cerr << \textcolor{stringliteral}{"\(\backslash\)033[1;31mERROR:\(\backslash\)033[0m The blur location must contain a multiple of 8 values."} << endl;
+316         exit(EXIT\_FAILURE);
+317     \}
+318     \textcolor{keywordflow}{return} buffer;
+319 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}\label{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}} 
+\index{utils.\+cpp@{utils.\+cpp}!replace@{replace}}
+\index{replace@{replace}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{replace()}{replace()}}
+{\footnotesize\ttfamily bool replace (\begin{DoxyParamCaption}\item[{string \&}]{str,  }\item[{const std\+::string \&}]{from,  }\item[{const std\+::string \&}]{to }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+164                                                                       \{
+165     \textcolor{keywordtype}{size\_t} start\_pos = str.find(from);
+166     \textcolor{keywordflow}{if}(start\_pos == std::string::npos)
+167         \textcolor{keywordflow}{return} \textcolor{keyword}{false};
+168     str.replace(start\_pos, from.length(), to);
+169     \textcolor{keywordflow}{return} \textcolor{keyword}{true};
+170 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a055f358e0b6695779f8b5125bfb9f6e8}\label{utils_8cpp_a055f358e0b6695779f8b5125bfb9f6e8}} 
+\index{utils.\+cpp@{utils.\+cpp}!save\+\_\+picture@{save\+\_\+picture}}
+\index{save\+\_\+picture@{save\+\_\+picture}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{save\+\_\+picture()}{save\_picture()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily void save\+\_\+picture (\begin{DoxyParamCaption}\item[{const Mat \&}]{picture,  }\item[{string}]{dir,  }\item[{string}]{name }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+107                                                               \{
+108     \textcolor{keywordtype}{string} tmp = dir+\textcolor{charliteral}{'/'}+name;
+109     \textcolor{keywordtype}{bool} success = imwrite(tmp, picture);
+110     \textcolor{keywordflow}{if} (success)\{
+111         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Wrote picture "} << tmp);
+112     \}
+113     \textcolor{keywordflow}{else}\{
+114         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Failed to write picture "} << tmp);
+115     \}
+116 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a785f30cc8d8c0e8d3827f63cb1a8ca4f}\label{utils_8cpp_a785f30cc8d8c0e8d3827f63cb1a8ca4f}} 
+\index{utils.\+cpp@{utils.\+cpp}!save\+\_\+picture@{save\+\_\+picture}}
+\index{save\+\_\+picture@{save\+\_\+picture}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{save\+\_\+picture()}{save\_picture()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily void save\+\_\+picture (\begin{DoxyParamCaption}\item[{const Mat \&}]{picture,  }\item[{string}]{path }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+118                                                   \{
+119     \textcolor{keywordtype}{bool} success = imwrite(path, picture);
+120     \textcolor{keywordflow}{if} (success)\{
+121         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Wrote picture "} << path);
+122     \}
+123     \textcolor{keywordflow}{else}\{
+124         \hyperlink{utils_8h_a6281452b8be5febd0a1ba61a4b867ab5}{DISPLAY}(\textcolor{stringliteral}{"Failed to write picture "} << path);
+125     \}
+126 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_acb8dcd394d479af8e54fa59e13367361}\label{utils_8cpp_acb8dcd394d479af8e54fa59e13367361}} 
+\index{utils.\+cpp@{utils.\+cpp}!select\+\_\+output\+\_\+dir@{select\+\_\+output\+\_\+dir}}
+\index{select\+\_\+output\+\_\+dir@{select\+\_\+output\+\_\+dir}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{select\+\_\+output\+\_\+dir()}{select\_output\_dir()}}
+{\footnotesize\ttfamily string select\+\_\+output\+\_\+dir (\begin{DoxyParamCaption}\item[{const string}]{out\+\_\+root,  }\item[{const string}]{in\+\_\+root,  }\item[{const string}]{filepath,  }\item[{const bool}]{respect\+\_\+input\+\_\+path }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+179                                                                               \{
+180     \textcolor{keywordflow}{if} (respect\_input\_path)\{
+181         \textcolor{comment}{// Getting absolute path for safer replacement}
+182         \textcolor{keywordtype}{string} abs\_out\_root  = (string) fs::absolute(fs::path(out\_root)) + (\textcolor{keywordtype}{string}) \textcolor{stringliteral}{"/"};
+183         \textcolor{keywordtype}{string} abs\_in\_root   = (string) fs::absolute(fs::path(in\_root)) + (\textcolor{keywordtype}{string}) \textcolor{stringliteral}{"/"};
+184         \textcolor{keywordtype}{string} abs\_filepath  = (string) fs::absolute(fs::path(filepath));
+185 
+186         \textcolor{comment}{// Normalizing every "//" and "/./" that causes replacing error}
+187         \textcolor{keywordflow}{while} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_out\_root, \textcolor{stringliteral}{"//"}, \textcolor{stringliteral}{"/"}))\{\}
+188         \textcolor{keywordflow}{while} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_out\_root, \textcolor{stringliteral}{"/./"}, \textcolor{stringliteral}{"/"}))\{\}
+189         \textcolor{keywordflow}{while} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_in\_root, \textcolor{stringliteral}{"//"}, \textcolor{stringliteral}{"/"}))\{\}
+190         \textcolor{keywordflow}{while} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_in\_root, \textcolor{stringliteral}{"/./"}, \textcolor{stringliteral}{"/"}))\{\}
+191         \textcolor{keywordflow}{while} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_filepath, \textcolor{stringliteral}{"//"}, \textcolor{stringliteral}{"/"}))\{\}
+192         \textcolor{keywordflow}{while} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_filepath, \textcolor{stringliteral}{"/./"}, \textcolor{stringliteral}{"/"}))\{\}
+193 
+194         \textcolor{comment}{// Trying to replace input path with output path}
+195         \textcolor{keywordflow}{if} (\hyperlink{utils_8cpp_a7ffa711c27e96561e0f681df0f1189b6}{replace}(abs\_filepath, abs\_in\_root, abs\_out\_root))\{
+196             \textcolor{keywordflow}{return} (\textcolor{keywordtype}{string}) fs::path(abs\_filepath).replace\_extension(\textcolor{stringliteral}{""});
+197         \}
+198 
+199         \textcolor{comment}{// If couldn't replace, last return will be called}
+200         \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Couldn't respect original path of "} << filepath
+201         << \textcolor{stringliteral}{".\(\backslash\)n\(\backslash\)tWriting into "} << \hyperlink{utils_8cpp_a4ea7fd2a97d2581efbe44b7093f546e1}{get\_filename}(filepath));
+202     \}
+203 
+204     \textcolor{keywordflow}{return} out\_root+(string) \textcolor{stringliteral}{"/"}+\hyperlink{utils_8cpp_a4ea7fd2a97d2581efbe44b7093f546e1}{get\_filename}(filepath);
+205 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a1019114e31070a917af7b19bab80052c}\label{utils_8cpp_a1019114e31070a917af7b19bab80052c}} 
+\index{utils.\+cpp@{utils.\+cpp}!sort\+\_\+corners@{sort\+\_\+corners}}
+\index{sort\+\_\+corners@{sort\+\_\+corners}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{sort\+\_\+corners()}{sort\_corners()}}
+{\footnotesize\ttfamily void sort\+\_\+corners (\begin{DoxyParamCaption}\item[{vector$<$ Point $>$ \&}]{corners }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+224                                          \{ \textcolor{comment}{//FIXME: Sorting the 4 points in not working}
+225     \textcolor{keywordflow}{return};
+226     \textcolor{keywordflow}{if} (\hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners}.size() != 4)\{
+227         cerr << \textcolor{stringliteral}{"\(\backslash\)033[1;31mERROR:\(\backslash\)033[0m Area is not having exactly 4 points."} << endl;
+228         exit(EXIT\_FAILURE);
+229     \}
+230 
+231     \textcolor{comment}{// Computing center}
+232     vector<double> angles;
+233     Point center = \{0, 0\};
+234     \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}&& pt: \hyperlink{main__corner_8cpp_a09dc1a0b5c61500ad117bedf43340c0b}{corners})\{
+235         center.x += pt.x;
+236         center.y += pt.y;
+237     \}
+238     center.x /= 4;
+239     center.y /= 4;
+240 
+241     \textcolor{comment}{// Computing angle from (1, 0) (work.. maybe ??)}
+242     \textcolor{keywordtype}{double} ang;
+243     Point vect;
+244     \textcolor{keywordflow}{for}(\textcolor{keyword}{auto}&& pt: corners)\{
+245         vect.x = pt.x - center.x;
+246         vect.y = pt.y - center.y;
+247         ang = acos((\textcolor{keywordtype}{double}) vect.x/sqrt(vect.x*vect.x + vect.y*vect.y));
+248         \textcolor{comment}{//ang = vect.y < 0 ? ang + PI : ang;}
+249         \textcolor{comment}{//cout << ang << endl;}
+250         angles.push\_back(ang);
+251     \}
+252 
+253     \textcolor{comment}{// Sorting according to angle (works)}
+254     \textcolor{keywordtype}{int} i;
+255     \textcolor{keywordtype}{bool} sorted = \textcolor{keyword}{false};
+256     \textcolor{keywordflow}{while}(!sorted)\{
+257         sorted = \textcolor{keyword}{true};
+258         \textcolor{keywordflow}{for}(i = 0; i < 3; i++)\{
+259             \textcolor{keywordflow}{if} (angles[i] > angles[i+1])\{
+260                 \textcolor{comment}{// Swaping angles}
+261                 ang = angles[i];
+262                 angles[i] = angles[i+1];
+263                 angles[i+1] = ang;
+264 
+265                 \textcolor{comment}{// Swapping points}
+266                 vect = corners[i];
+267                 corners[i] = corners[i+1];
+268                 corners[i+1] = vect;
+269                 
+270                 sorted = \textcolor{keyword}{false};
+271             \}
+272         \}
+273     \}
+274     
+275     \textcolor{comment}{// Putting the top-left corner first}
+276     \textcolor{comment}{//TODO}
+277     \textcolor{comment}{//cout << endl;}
+278 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_ae5b1ab76259e06682dd39bec35eabae7}\label{utils_8cpp_ae5b1ab76259e06682dd39bec35eabae7}} 
+\index{utils.\+cpp@{utils.\+cpp}!stack\+\_\+next@{stack\+\_\+next}}
+\index{stack\+\_\+next@{stack\+\_\+next}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{stack\+\_\+next()}{stack\_next()}}
+{\footnotesize\ttfamily string stack\+\_\+next (\begin{DoxyParamCaption}\item[{stack$<$ string $>$ $\ast$}]{s }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+97                                    \{
+98     \textcolor{keywordflow}{if} (s->empty())\{
+99         \hyperlink{utils_8h_ad5cf6896472401b4d1f4250c8ef96e7c}{DISPLAY\_ERR}(\textcolor{stringliteral}{"Empty file stack."});
+100         \textcolor{keywordflow}{return} NULL;
+101     \}
+102     \textcolor{keywordtype}{string} tmp = s->top();
+103     s->pop();
+104     \textcolor{keywordflow}{return} tmp;
+105 \}
+\end{DoxyCode}
+\mbox{\Hypertarget{utils_8cpp_a7f14eec883e3dabee7cbc020f1ebbf1f}\label{utils_8cpp_a7f14eec883e3dabee7cbc020f1ebbf1f}} 
+\index{utils.\+cpp@{utils.\+cpp}!str\+\_\+normalize@{str\+\_\+normalize}}
+\index{str\+\_\+normalize@{str\+\_\+normalize}!utils.\+cpp@{utils.\+cpp}}
+\subsubsection{\texorpdfstring{str\+\_\+normalize()}{str\_normalize()}}
+{\footnotesize\ttfamily string str\+\_\+normalize (\begin{DoxyParamCaption}\item[{string \&}]{s }\end{DoxyParamCaption})}
+
+
+\begin{DoxyCode}
+128                                \{
+129     \textcolor{keywordflow}{for} (\textcolor{keywordtype}{size\_t} i = 0; i < s.length(); i++)\{
+130         \textcolor{keywordflow}{switch} (s[i])\{
+131             \textcolor{keywordflow}{case} \textcolor{charliteral}{' '}: s[i] = \textcolor{charliteral}{'\_'}; \textcolor{keywordflow}{break};
+132             \textcolor{keywordflow}{case} \textcolor{charliteral}{'('}: s[i] = \textcolor{charliteral}{'\_'}; \textcolor{keywordflow}{break};
+133             \textcolor{keywordflow}{case} \textcolor{charliteral}{')'}: s[i] = \textcolor{charliteral}{'\_'}; \textcolor{keywordflow}{break};
+134             \textcolor{keywordflow}{case} \textcolor{charliteral}{'['}: s[i] = \textcolor{charliteral}{'\_'}; \textcolor{keywordflow}{break};
+135             \textcolor{keywordflow}{case} \textcolor{charliteral}{']'}: s[i] = \textcolor{charliteral}{'\_'}; \textcolor{keywordflow}{break};
+136         \}
+137     \}
+138     \textcolor{keywordflow}{return} s;
+139 \}
+\end{DoxyCode}
