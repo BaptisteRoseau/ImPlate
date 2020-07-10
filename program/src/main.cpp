@@ -36,7 +36,7 @@ bool save_log; /// Whether or not logs should be saved (default: false)
 ofstream log_ostream; /// Stream to the file where the logs will be saved
 
 /**
- * @brief Retireves the plates corners and number from results to corners and numbers
+ * @brief Retireves the plate(s) corners and number from results to corners and numbers
  * 
  * @param results the returned value of the alpr process
  * @param corners a buffer where to write corners (from top-left following the chonological order)

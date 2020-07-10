@@ -3,9 +3,8 @@
 SRC_DIR = src
 BLD_DIR = build
 
-
-CC			= g++
-CPPFLAGS	= -std=c++17 -Wall -Wextra -g
+CC		 = g++
+CPPFLAGS = -std=c++17 -Wall -Wextra -fopenmp -g
 
 ALPR_CFG_PATH     = "/usr/local/share/openalpr/config/openalpr.defaults.con"
 ALPR_RUNTIME_PATH = "/usr/local/share/openalpr/runtime_data/"
@@ -13,21 +12,21 @@ ALPR_RUNTIME_PATH = "/usr/local/share/openalpr/runtime_data/"
 ###				SOURCES
 #Ce qui est mis en commentaire est dans le cas où l'installation ne s'est pas faite via sudo
 
-LIBS   		= \
-			-lopencv_imgcodecs \
-			-lopencv_core \
-			-lstdc++fs \
-			-lopenalpr
-INCLUDE		= -I ${SRC_DIR} \
-			  -I /usr/local/include/ \
-			  -I /usr/local/include/opencv4
+LIBS   	= \
+		-lopencv_imgcodecs \
+		-lopencv_core \
+		-lstdc++fs \
+		-lopenalpr
+INCLUDE	= -I ${SRC_DIR} \
+		  -I /usr/local/include/ \
+		  -I /usr/local/include/opencv4
 
-MAIN_FILE   = src/main.cpp
-CORNER_FILE = src/main_corner.cpp
-SRC_FILES	= $(filter-out $(MAIN_FILE) $(CORNER_FILE), $(wildcard $(SRC_DIR)/*.cpp)) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(shell find $(SRC_DIR)/ -type f -name '*.cpp')
-OBJ_MAIN    = $(MAIN_FILE:%.cpp=%.o)
-OBJ_CORNER  = $(CORNER_FILE:%.cpp=%.o)
-OBJ_FILES	= $(SRC_FILES:%.cpp=%.o)
+MAIN_FILE     = src/main.cpp
+GUI_MAIN_FILE = src/main_gui.cpp
+SRC_FILES	  = $(filter-out $(MAIN_FILE) $(GUI_MAIN_FILE), $(wildcard $(SRC_DIR)/*.cpp)) $(wildcard $(SRC_DIR)/gopt/*.cpp) #$(shell find $(SRC_DIR)/ -type f -name '*.cpp')
+OBJ_MAIN      = $(MAIN_FILE:%.cpp=%.o)
+OBJ_GUI       = $(GUI_MAIN_FILE:%.cpp=%.o)
+OBJ_FILES	  = $(SRC_FILES:%.cpp=%.o)
 
 
 # (for not-sudo install only)
@@ -41,13 +40,13 @@ LIBS_NOSUDO  = $(wildcard $(OPENCV_DIR)/lib/*.so*) \
 INCLUDE_NOSUDO = -I $(OPENCV_DIR)/include/ \
 			  	 -I $(OPENALPR_DIR)/include
 
-BINARY	 	  = blur
-BINARY_CORNER = blur_ui
-#ARGS 	    = -s -v -r -i ~/Pictures/carpictures -o ~/Pictures/carpictures_blured -l log.txt
-ARGS 	    = -s -v -r -i data -o test_dir -l log.txt
-#ARGS 	    = -s test_dir -v -i data/tuture.jpg -o ../LPB/test_dir/fiat/fiat.jpg -l log.txt -b 100_150_200_145_250_213_145_200_300_350_400_345_450_413_345_400
-#ARGS 	    = -s -v -i data/FiatPanda.jpg -o test_dir -l log.txt -b 100_150_250_213_200_145_145_200_300_350_450_413_345_400_400_345
-ARGS_CORNER = -v -r -i ~/Pictures/carpictures -o ~/Pictures/carpictures_blured -l log_ui.txt
+BINARY	   = blur
+BINARY_GUI = blur_ui
+#ARGS 	   = -s -v -r -i ~/Pictures/carpictures -o ~/Pictures/carpictures_blured -l log.txt
+ARGS 	   = -s -v -r -i ../data -o test_dir -l log.txt
+#ARGS 	   = -s test_dir -v -i data/tuture.jpg -o ../LPB/test_dir/fiat/fiat.jpg -l log.txt -b 100_150_200_145_250_213_145_200_300_350_400_345_450_413_345_400
+#ARGS 	   = -s -v -i data/FiatPanda.jpg -o test_dir -l log.txt -b 100_150_250_213_200_145_145_200_300_350_450_413_345_400_400_345
+ARGS_GUI   = -s -v -i ../data -o ../data_out -l log.txt
 
 #######################################################
 ###				COMMANDS CATEGORIES
@@ -89,16 +88,16 @@ help:
 
 ./$(BLD_DIR)/$(BINARY): $(OBJ_FILES) $(OBJ_MAIN)
 	@mkdir -p $(BLD_DIR)
-	$(CC) $(CPPFLAGS) $(OBJ_MAIN) $(OBJ_FILES) -DDFLT_MANUAL_BLUR_BIN=\"$(shell pwd)/$(BLD_DIR)/$(BINARY_CORNER)\" -o $(BLD_DIR)/$(BINARY) $(LIBS)
+	$(CC) $(CPPFLAGS) $(OBJ_MAIN) $(OBJ_FILES) -DDFLT_MANUAL_BLUR_BIN=\"$(shell pwd)/$(BLD_DIR)/$(BINARY_GUI)\" -o $(BLD_DIR)/$(BINARY) $(LIBS)
 
-./$(BLD_DIR)/$(BINARY_CORNER): $(OBJ_FILES) $(OBJ_CORNER)
-	$(CC) $(CPPFLAGS) $(OBJ_CORNER) $(OBJ_FILES) -o $(BLD_DIR)/$(BINARY_CORNER) $(shell pkg-config --libs gtk+-3.0) $(LIBS) $(shell pkg-config --libs gtk+-3.0) -lopencv_objdetect -lopencv_features2d -lopencv_imgproc -lopencv_highgui -lopencv_core
+./$(BLD_DIR)/$(BINARY_GUI): $(OBJ_FILES) $(OBJ_GUI)
+	$(CC) $(CPPFLAGS) $(OBJ_GUI) $(OBJ_FILES) -o $(BLD_DIR)/$(BINARY_GUI) $(shell pkg-config --libs gtk+-3.0) $(LIBS) $(shell pkg-config --libs gtk+-3.0) -lopencv_objdetect -lopencv_features2d -lopencv_imgproc -lopencv_highgui -lopencv_core
 
-build: ./$(BLD_DIR)/$(BINARY) ./$(BLD_DIR)/$(BINARY_CORNER)
+build: ./$(BLD_DIR)/$(BINARY) ./$(BLD_DIR)/$(BINARY_GUI)
 
 # Some aliases
 $(BINARY): ./$(BLD_DIR)/$(BINARY)
-$(BINARY_CORNER): ./$(BLD_DIR)/$(BINARY_CORNER)
+$(BINARY_GUI): ./$(BLD_DIR)/$(BINARY_GUI)
 
 
 #######################################################
@@ -108,14 +107,14 @@ $(BINARY_CORNER): ./$(BLD_DIR)/$(BINARY_CORNER)
 install: build
 	@rm -rf $(OBJ_FILES)
 	@rm -rf $(OBJ_MAIN)
-	@rm -rf $(OBJ_CORNER)
+	@rm -rf $(OBJ_GUI)
 
 install_nosudo: $(OBJ_FILES)
 	@mkdir -p $(BLD_DIR)
 	$(CC) $(CPPFLAGS) $(OBJ_FILES) -o $(BLD_DIR)/$(BINARY) $(LIBS_NOSUDO)
 	@rm -f $(OBJ_FILES)
 	@rm -rf $(OBJ_MAIN)
-	@rm -rf $(OBJ_CORNER)
+	@rm -rf $(OBJ_GUI)
 
 
 #######################################################
@@ -125,8 +124,8 @@ install_nosudo: $(OBJ_FILES)
 run: ./$(BLD_DIR)/$(BINARY)
 	./$(BLD_DIR)/$(BINARY) $(ARGS)
 
-runui: ./$(BLD_DIR)/$(BINARY_CORNER)
-	./$(BLD_DIR)/$(BINARY_CORNER) $(ARGS_CORNER)
+rungui: ./$(BLD_DIR)/$(BINARY_GUI)
+	./$(BLD_DIR)/$(BINARY_GUI) $(ARGS_GUI)
 
 #######################################################
 ###				MAKE RUN WITH GDB

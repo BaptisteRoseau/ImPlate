@@ -16,7 +16,6 @@ using namespace cv;
 #define BORDER_MARGIN 50
 
 //OpenCV blur: https://www.tutorialkart.com/opencv/python/opencv-python-gaussian-image-smoothing/
-
 void blur_pixel(Mat picture, unsigned int filter_size, int i, int j, int k){
     int top = _max((int) (i - filter_size/2), 0);
     int bot = _min((int) (i + filter_size/2), picture.rows);
@@ -102,6 +101,7 @@ int blur(const Mat picture, Mat blured, const vector<Point> &corners,
     }
 
     // Copying picture and blur area
+    //#pragma omp parallel for collapse(2) //Already blured pixels give false mean
     for (int i = top; i < bot; i++){
         for(int j = left; j < right; j++){
             for(int k = 0; k < 3; k++){

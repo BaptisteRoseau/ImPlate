@@ -9,6 +9,8 @@
 #include <stack>
 #include <cstdlib>
 
+//TODO: add FILE and LINE into errors
+
 // Macro for stdout messages for verbose-only mode, and log save
 #define DISPLAY(stream) if (verbose){cout << stream << endl;}\
 if (save_log){log_ostream << stream << endl;}
@@ -20,6 +22,12 @@ if (save_log){log_ostream << "ERROR: " << stream << endl;}
 // Macro for stderr messages for verbose-only mode, and log save
 #define DISPLAY_WAR(stream) if (verbose){cerr << "\033[1;35mWARNING:\033[0m " << stream << endl;}\
 if (save_log){log_ostream << "WARNING: " << stream << endl;}
+
+// Macro for stderr messages for critical errors. Exits after prompt.
+#define DISPLAY_ERR_EXIT(stream) cerr << "\033[1;31mERROR:\033[0m " << stream << endl;}\
+if (save_log){log_ostream << "ERROR: " << stream <<                                    \
+" at file " << __FILE__ << " line " << __LINE__ << endl;                               \
+exit(EXIT_FAILURE);
 
 #define _min(a, b) ((a) < (b) ? (a) : (b))
 #define _max(a, b) ((a) > (b) ? (a) : (b))
@@ -46,6 +54,15 @@ bool is_supported_file(std::filesystem::path path);
  * @return std::stack<std::string>* contains the path to all the files to compute
  */
 std::stack<std::string> *list_files(const char *path);
+
+/**
+ * @brief Copy top of s1 onto s2.
+ * 
+ * @param s1 Non-empty stack
+ * @param s2 Stack that will receive the top of s1
+ * @return false for failure, true for success
+ */
+bool copy_top(std::stack<std::string> *s1, std::stack<std::string> *s2);
 
 /**
  * @brief return the top element of the stack, then pop it

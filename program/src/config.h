@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+//TODO: Use .json config file
 #define DFLT_OUTPUT_ADDON "_blured"
 #define DFLT_JSON_ADDON "_info"
 #define DFLT_BACKUP_ADDON "_backup"

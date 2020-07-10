@@ -100,6 +100,17 @@ stack<string> *list_files(const char *path){
 	return NULL;
 }
 
+bool copy_top(stack<string> *s1, stack<string> *s2){
+	if (s1->empty()){
+		DISPLAY_ERR("Empty stack.");
+		return true;
+	}
+	s2->push(s1->top());
+
+	return false;
+}
+
+
 Mat open_picture(const string path){
 	Mat ret = imread(path);
     if (ret.empty()){
