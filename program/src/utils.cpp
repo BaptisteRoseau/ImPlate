@@ -3,6 +3,7 @@
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
+#include <alpr.h>
 
 #include <filesystem>
 #include <sys/types.h>
@@ -22,6 +23,7 @@
 
 using namespace std;
 using namespace cv;
+using namespace alpr;
 namespace fs = filesystem;
 
 #define PI 3.14159265358979323846264338327950288419716939937510
@@ -138,7 +140,7 @@ void save_picture(const Mat &picture, string dir, string name){
 		DISPLAY("Wrote picture " << tmp);
 	}
 	else{
-		DISPLAY("Failed to write picture " << tmp);
+		DISPLAY_ERR("Failed to write picture " << tmp);
 	}
 }
 
@@ -148,7 +150,46 @@ void save_picture(const Mat &picture, string path){
 		DISPLAY("Wrote picture " << path);
 	}
 	else{
-		DISPLAY("Failed to write picture " << path);
+		DISPLAY_ERR("Failed to write picture " << path);
+	}
+}
+
+void rename(string from, string to){
+	if (fs::exists(fs::path(from)) && fs::exists(fs::path(to))){
+        fs::rename(fs::path(from), fs::path(to));
+		DISPLAY("Moved " << from << " to " << to);
+	} else {
+        DISPLAY_ERR(from << " and/or " << to << " do not exist");
+	}
+}
+
+void remove(string path){
+	if (fs::exists(fs::path(path))){
+		if (fs::remove(fs::path(path))){
+			DISPLAY("Removed " << path);
+		} else {
+			DISPLAY_ERR("Unable to remove " << path);
+		}
+	} else {
+		DISPLAY_ERR(path << " does not exist");
+	}
+}
+
+void remove_empty_directories(string path){ 
+	if (fs::is_directory(fs::path(path))){
+		while (fs::is_empty(path)){
+			//if (!fs::remove(fs::path(path))){
+			DISPLAY("DEBUG: " << path)
+			if (false){
+				DISPLAY_ERR("Unable to remove empty directory " << path);
+				break;
+			}
+			if (fs::path(path).has_parent_path()){
+				path = fs::path(path).parent_path().string();
+			} else { break;}
+		}
+	} else {
+		DISPLAY_ERR(path << " is not empty");
 	}
 }
 
@@ -343,4 +384,22 @@ vector<vector<Point> > parse_location(const string str_location){
 		exit(EXIT_FAILURE);
 	}
 	return buffer;
+}
+
+void plate_corners(const vector<AlprPlateResult> &results,
+				 vector<vector<Point> > &corners,
+				 vector<string> &numbers){
+	size_t i, j;
+	vector<Point> tmp_vect;
+	Point tmp_pt;
+	for (i = 0; i < results.size(); i++){
+		for (j = 0; j < 4; j++){
+			tmp_pt.x = results[i].plate_points[j].x;
+			tmp_pt.y = results[i].plate_points[j].y;
+			tmp_vect.push_back(tmp_pt);
+		}
+		corners.push_back(tmp_vect); 
+		numbers.push_back(results[i].bestPlate.characters);
+		tmp_vect.clear();
+	}
 }

@@ -16,7 +16,7 @@ using namespace cv;
 #define BORDER_MARGIN 50
 
 //OpenCV blur: https://www.tutorialkart.com/opencv/python/opencv-python-gaussian-image-smoothing/
-void blur_pixel(Mat picture, unsigned int filter_size, int i, int j, int k){
+void blur_pixel(Mat picture, Mat blured, unsigned int filter_size, int i, int j, int k){
     int top = _max((int) (i - filter_size/2), 0);
     int bot = _min((int) (i + filter_size/2), picture.rows);
     int left = _max((int) (j - filter_size/2), 0);
@@ -34,7 +34,7 @@ void blur_pixel(Mat picture, unsigned int filter_size, int i, int j, int k){
 
     // Submatrix sum calculation
     Scalar sum_vector = sum(submat);
-    picture.data[picture.step*i + j*picture.channels() + k]
+    blured.data[picture.step*i + j*picture.channels() + k]
         = (unsigned char) (sum_vector[k] / (submat.rows*submat.cols));
 }
 
@@ -101,12 +101,12 @@ int blur(const Mat picture, Mat blured, const vector<Point> &corners,
     }
 
     // Copying picture and blur area
-    //#pragma omp parallel for collapse(2) //Already blured pixels give false mean
+    #pragma omp parallel for collapse(2)
     for (int i = top; i < bot; i++){
         for(int j = left; j < right; j++){
             for(int k = 0; k < 3; k++){
                 if (in_area(i, j, corners)){
-                    blur_pixel(blured, filter_size, i, j, k);
+                    blur_pixel(picture, blured, filter_size, i, j, k);
                 }
             }
         }

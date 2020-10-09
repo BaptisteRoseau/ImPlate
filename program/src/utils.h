@@ -2,6 +2,7 @@
 #define UTILS_HPP
 
 #include <opencv4/opencv2/core/mat.hpp>
+#include <alpr.h>
 
 #include <filesystem>
 #include <fstream>
@@ -116,6 +117,28 @@ void save_picture(const cv::Mat &picture, std::string dir, std::string name);
 void save_picture(const cv::Mat &picture, std::string path);
 
 /**
+ * @brief Rename file or empty directory.
+ * 
+ * @param from is the source path
+ * @param to is the destination path
+ */
+void rename(std::string from, std::string to);
+
+/**
+ * @brief Remove a file or an empty directory.
+ * 
+ * @param path is the path to the file or the empty directory
+ */
+void remove(std::string path);
+
+/**
+ * @brief Recursuvely removes empty directories from path to its first non-empty parent (not included)
+ * 
+ * @param path is the path to an empty directory
+ */
+void remove_empty_directories(std::string path);
+
+/**
  * @brief Get the name of the file without path nor extension.
  * 
  * @param filepath the path to the file.
@@ -174,5 +197,16 @@ void sort_corners(std::vector<cv::Point> &corners);
  * @return a vector having the good format to be used by blur function.
  */
 std::vector<std::vector<cv::Point> > parse_location(const std::string str_location);
+
+/**
+ * @brief Retrieves the plate(s) corners and number from results to corners and numbers
+ * 
+ * @param results the returned value of the alpr process
+ * @param corners a buffer where to write corners (from top-left following the chronological order)
+ * @param numbers a buffer where to write the detected plates
+ */
+void plate_corners(const std::vector<alpr::AlprPlateResult> &results,
+				 std::vector<std::vector<cv::Point> > &corners,
+				 std::vector<std::string> &numbers);
 
 #endif

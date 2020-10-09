@@ -28,43 +28,17 @@ using namespace alpr;
 
 namespace fs = filesystem;
 
-#define BUFFSIZE 200
-//TODO: Option "blur manuel des images ratées" -> call l'executable blur_ui
+#define ARGS_BUFFSIZE 200
 
 bool verbose; /// Whether or not information should be displayed
 bool save_log; /// Whether or not logs should be saved (default: false)
 ofstream log_ostream; /// Stream to the file where the logs will be saved
 
-/**
- * @brief Retireves the plate(s) corners and number from results to corners and numbers
- * 
- * @param results the returned value of the alpr process
- * @param corners a buffer where to write corners (from top-left following the chonological order)
- * @param numbers a buffer where to write the detected plates
- */
-void plate_corners(const vector<AlprPlateResult> &results,
-				 vector<vector<Point> > &corners,
-				 vector<string> &numbers){
-	size_t i, j;
-	vector<Point> tmp_vect;
-	Point tmp_pt;
-	for (i = 0; i < results.size(); i++){
-		for (j = 0; j < 4; j++){
-			tmp_pt.x = results[i].plate_points[j].x;
-			tmp_pt.y = results[i].plate_points[j].y;
-			tmp_vect.push_back(tmp_pt);
-		}
-		corners.push_back(tmp_vect); 
-		numbers.push_back(results[i].bestPlate.characters);
-		tmp_vect.clear();
-	}
-}
-
 // * @param respect_input_path whether or not the initial input path should be resected
 /**
  * @brief Main process
  * 
- * @param in_path the path to the inpu directory or picture file
+ * @param in_path the path to the input directory or picture file
  * @param out_path the path to the output file if input is a file, output directory else
  * @param output_name_addon the characters added before the extensions on rendered images
  * @param timeout a timeout in seconds
@@ -159,7 +133,7 @@ int process(const char* in_path, const char* out_path,
 
 		// Buffers to get ALPR results
 		vector<vector<Point> > corners = vector<vector<Point> >(); /// Detected plates : [plate1: [tl, tr, br, bl], plate2: ...]
-		vector<string> numbers = vector<string>();;
+		vector<string> numbers = vector<string>();
 		Alpr detector = Alpr(country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
 		AlprResults alpr_results;
 
@@ -200,7 +174,7 @@ int process(const char* in_path, const char* out_path,
 		blured = picture.clone();
 		error = 0;
 		for (auto&& corn: corners){
-			error += _max(blur(picture, blured, corn, blur_filter_size), error);
+			error += blur(picture, blured, corn, blur_filter_size);
 		}
 		if (error){
 			DISPLAY_ERR("Couldn't blur" << error << " times out of " << corners.size() << " on " << filename);
@@ -362,21 +336,21 @@ int main(int argc, char** argv){
 	save_log = false;
 	verbose  = false;
 
-	// Argument declaration and defaul value
-	char* in_path = new char[BUFFSIZE];
-	char* out_path = new char[BUFFSIZE];
-	char *output_name_addon = new char[BUFFSIZE];
+	// Argument declaration and default value
+	char* in_path = new char[ARGS_BUFFSIZE];
+	char* out_path = new char[ARGS_BUFFSIZE];
+	char *output_name_addon = new char[ARGS_BUFFSIZE];
 	strcpy(output_name_addon, DFLT_OUTPUT_ADDON);
 	double timeout = 0;
 	unsigned int blur_filter_size = DFLT_BLUR;
 	bool respect_input_path = false;
-	char *log_file = new char[BUFFSIZE];
-	char *country = new char[BUFFSIZE];
+	char *log_file = new char[ARGS_BUFFSIZE];
+	char *country = new char[ARGS_BUFFSIZE];
 	strcpy(country, DFLT_COUNTRY);
 	bool save_plate_info = false;
 	char *plate_info_save_path = NULL; // Dynamically allocated if argument provided
 	bool blur_only = false;
-	char *blur_only_location = new char[BUFFSIZE];
+	char *blur_only_location = new char[ARGS_BUFFSIZE];
 	bool replace_input_file = false;
 
 	// Parsing command line
