@@ -27,6 +27,7 @@ public:
     bool isLastImage(void);
     bool isPictureStateChanged(void);
     cv::Mat getBluredPicture(void);
+    std::string getFilepath(void);
     int currentPictureIdx(void);
     int maximumPictureIdx(void);
 

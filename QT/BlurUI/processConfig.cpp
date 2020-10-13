@@ -218,11 +218,15 @@ Mat ProcessConfig::getBluredPicture(void){
     return this->blured;
 }
 
+string ProcessConfig::getFilepath(void){
+    return this->filepath;
+}
+
 bool ProcessConfig::isPictureStateChanged(void){
     Mat diff;
     absdiff(this->picture, this->blured, diff);
     cvtColor(diff, diff, COLOR_BGR2GRAY);
-    return  !!countNonZero(diff);
+    return  countNonZero(diff) != 0;
 }
 
 int ProcessConfig::currentPictureIdx(void){
@@ -294,14 +298,13 @@ int ProcessConfig::blurImage(vector<vector<Point> > corners){
         }    
     }
 
-    // Bluring a copy of the initial picture
-    this->blured = picture.clone();
+    // Bluring this->blured based on this->picture pixels
     int error = 0;
     for (auto&& corn: corners){
         error += blur(this->picture, this->blured, corn, this->blur_filter_size);
     }
     if (error){
-        DISPLAY_ERR("Couldn't blur" << error << " times out of " << corners.size() << " on " << filename);
+        DISPLAY_ERR("Couldn't blur " << error << " times out of " << corners.size() << " on " << filename);
         //if ((unsigned int) error == corners.size()){ //Skip only if every blur failed
             failed_pictures->insert(filepath);
             return EXIT_FAILURE;
@@ -397,73 +400,69 @@ int ProcessConfig::saveImage(void){
 }
 
 int ProcessConfig::cancel(void){
-
-    // NOT DONE BEGIN =====================================
-
-    // If input is a file, output will be directly out_path, not a directory
-    if (fs::directory_entry(in_path).is_regular_file()){
-            if (fs::path(out_path).has_extension()){
-                savedir = (string) fs::path(out_path).parent_path();
-                if (replace_input_file){
-                    // Getting input file back to its original path
-                    rename(out_path, filepath);
+    // If blured picture has already been saved on disk, then remove it
+    if (!this->isPictureStateChanged()){
+        // If input is a file, output will be directly out_path, not a directory
+        if (fs::directory_entry(in_path).is_regular_file()){
+                if (fs::path(out_path).has_extension()){
+                    savedir = (string) fs::path(out_path).parent_path();
+                    if (replace_input_file){
+                        // Getting input file back to its original path
+                        rename(out_path, filepath);
+                    } else {
+                        // Removing blured picture from the output directory
+                        remove(out_path);
+                    }
                 } else {
-                    // Removing blured picture from the output directory
-                    remove(out_path);
+                    savedir = out_path;
+                    if (replace_input_file){
+                        // Getting input file back to its original path
+                        rename((string)out_path+"/"+filename+output_name_addon+fileext, filepath);
+                    } else {
+                        // Removing blured picture from the output directory
+                        remove(out_path+'/'+filename+output_name_addon+fileext);
+                    }
                 }
-            } else {
-                savedir = out_path;
-                if (replace_input_file){
-                    // Getting input file back to its original path
-                    rename((string)out_path+"/"+filename+output_name_addon+fileext, filepath);
-                } else {
-                    // Removing blured picture from the output directory
-                    remove(out_path+'/'+filename+output_name_addon+fileext);
-                }
-            }
-    // If input is a directory, 
-    } else {
-        // Selecting output directory
-        savedir = select_output_dir(out_path, in_path, filepath, respect_input_path);
-        if (replace_input_file){
-            // Getting input file back to its original path
-            rename(savedir+"/"+filename+output_name_addon+fileext, filepath);
+        // If input is a directory, 
         } else {
-            // Removing blured picture from the output directory
-            remove(savedir+'/'+filename+output_name_addon+fileext);
-        }
-    }
-
-
-    // NOT DONE END =====================================
-
-    // Removing plate info if exist
-    if (save_plate_info){
-        string plate_file = savedir+"/"+filename+DFLT_JSON_ADDON+".json";
-        // If -s option has a path given, behavior is the same as above
-        if (fs::directory_entry(in_path).is_regular_file() && plate_info_save_path != NULL){
-            if (fs::path(plate_info_save_path).has_extension()){
-                plate_file = plate_info_save_path;
+            // Selecting output directory
+            savedir = select_output_dir(out_path, in_path, filepath, respect_input_path);
+            if (replace_input_file){
+                // Getting input file back to its original path
+                rename(savedir+"/"+filename+output_name_addon+fileext, filepath);
             } else {
-                plate_file = ((string) plate_info_save_path)+"/"+filename+DFLT_JSON_ADDON+".json";
+                // Removing blured picture from the output directory
+                remove(savedir+'/'+filename+output_name_addon+fileext);
             }
         }
-        if (fs::exists(fs::path(plate_file))){
-            if (fs::remove(fs::path(plate_file))){
-                DISPLAY("Removed " << plate_file);
-            } else {
-                DISPLAY_ERR("Unable to remove " << plate_file);
+
+        // Removing plate info if exist
+        if (save_plate_info){
+            string plate_file = savedir+"/"+filename+DFLT_JSON_ADDON+".json";
+            // If -s option has a path given, behavior is the same as above
+            if (fs::directory_entry(in_path).is_regular_file() && plate_info_save_path != NULL){
+                if (fs::path(plate_info_save_path).has_extension()){
+                    plate_file = plate_info_save_path;
+                } else {
+                    plate_file = ((string) plate_info_save_path)+"/"+filename+DFLT_JSON_ADDON+".json";
+                }
+            }
+            if (fs::exists(fs::path(plate_file))){
+                if (fs::remove(fs::path(plate_file))){
+                    DISPLAY("Removed " << plate_file);
+                } else {
+                    DISPLAY_ERR("Unable to remove " << plate_file);
+                }
             }
         }
-    }
 
-    // Revmoving all empty directories above the saving one
-    remove_empty_directories(savedir);
+        // Revmoving all empty directories above the saving one
+        remove_empty_directories(savedir);
+    }
 
     // Updating pictures
     this->updatePathAndPicture();
     this->success_pictures->erase(filepath);
-    //TODO: clean les 4 points selectionés
 
     return EXIT_SUCCESS;
 }
@@ -496,8 +495,3 @@ int ProcessConfig::autoBlur(void){
 
 //TODO: Save ""coordinates":[{"x":204,"y":352},{"x":330,"y":352},{"x":330,"y":375},{"x":204,"y":375}]"
 //TODO: adapter l'image à la taille de l'écran si besoin (/!\ au ratio pour le floutage)
-
-
-//TODO MEGAIMPORTANT: Ne sauvegarder QUE les images ayant eu une modification (blured != picture)
-// et ne mettre dans success_pictures SEULEMENT celles-là, car ce sont celles qui vont être
-// upload !!

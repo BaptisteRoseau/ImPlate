@@ -35,6 +35,7 @@ set(TS_FILES BlurUI_fr_FR.ts)
 
 if(ANDROID)
   add_library(BlurUI SHARED
+    customlabel.cpp
     main.cpp
     mainwindow.cpp
     mainwindow.ui
@@ -48,6 +49,7 @@ if(ANDROID)
   )
 else()
   add_executable(BlurUI
+    customlabel.cpp
     main.cpp
     mainwindow.cpp
     mainwindow.ui

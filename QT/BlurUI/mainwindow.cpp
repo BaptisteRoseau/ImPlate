@@ -1,14 +1,17 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "processConfig.h"
+#include "customlabel.h"
+
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QLabel>
 
 #include <opencv4/opencv2/opencv.hpp>
 #include <opencv4/opencv2/core/mat.hpp>
 
-//using namespace std;
 using namespace cv;
-
-// Display OpenCV Image: https://amin-ahmadi.com/2015/12/16/how-to-display-a-mat-image-in-qt/
+using namespace std;
 
 
 /* =====================================================
@@ -20,6 +23,11 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    connect(ui->LabelImageCar, SIGNAL(myMousePressed()), this, SLOT(mousePressed()));
+    connect(ui->LabelImageCar, SIGNAL(myMousePos()), this, SLOT(mouseCurrentPos()));
+    connect(ui->LabelImageCar, SIGNAL(myMouseLeft()), this, SLOT(mouseLeft()));
+    blurCorners  = vector<vector<Point> >();
+    cornerBuffer = vector<Point>();
 }
 
 MainWindow::~MainWindow()
@@ -36,7 +44,7 @@ void MainWindow::initProcess(char *argv[]){
     // Displaying the first image
     this->procConf->firstImage();
     this->updateButtonState();
-    this->updatePictureLabel();
+    this->updatePictureAndTextLabel();
 
     if (ui->CheckboxAlwaysTryAutoblur->isChecked()){
         this->on_ButtonAutoBlur_clicked();
@@ -48,13 +56,27 @@ void MainWindow::finalizeProcess(void){
 }
 
 
+
 /* =====================================================
                         METHODS
    =====================================================*/
 
-void MainWindow::updatePictureLabel(void){
+//TODO: colorier les contours avec OpenCV et pas QT
+/* QPainter painter(&pixmap);
+QPen Green((QColor(0,255,0)),1);
+painter.setPen(Green);
+painter.drawLine(50,50,250,250); */
+
+void MainWindow::updatePictureAndTextLabel(void){
+    // Getting image and drawing lines onto it
     Mat img = this->procConf->getBluredPicture();
-    ui->ImageLabel->setPixmap(QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888)));
+    QPixmap pixmap = QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_BGR888));
+
+    // Updating image and text labels
+    ui->LabelImageCar->setFixedWidth(img.cols);
+    ui->LabelImageCar->setFixedHeight(img.rows);
+    ui->LabelImageCar->setPixmap(pixmap);
+    ui->LabelTextFileName->setText(QString::fromStdString(this->procConf->getFilepath()));
 }
 
 void MainWindow::initProgressBar(void){
@@ -81,17 +103,46 @@ void MainWindow::updateButtonState(void){
     }
 }
 
+void MainWindow::mousePressed(){
+    // Adding point to corner buffer
+    this->cornerBuffer.push_back(Point(ui->LabelImageCar->x, ui->LabelImageCar->y));
+
+    // Adding last 4 corners to 4 corners list
+    if (this->cornerBuffer.size() >= 4){
+        this->blurCorners.push_back(this->cornerBuffer);
+        this->cornerBuffer.clear();
+    }
+
+    // Bluring if CheckboxBlurEveryFour is checked
+    if (ui->CheckboxBlurEveryFour->isChecked() && !this->blurCorners.empty()){
+        this->on_ButtonBlur_clicked();
+    }
+}
+
+void MainWindow::mouseCurrentPos(){
+
+}
+
+
+void MainWindow::mouseLeft(){
+
+}
+
+
 /* =====================================================
                     BUTTON METHODS
    =====================================================*/
 
-//TODO: check errors
+//TODO: check errors on functions return
 void MainWindow::on_ButtonPrevious_clicked()
 {
+    this->cornerBuffer.clear();
+    this->blurCorners.clear();
     this->procConf->previousImage();
-    this->updatePictureLabel();
+    this->updatePictureAndTextLabel();
     this->updateProgressBar();
     this->updateButtonState();
+    
 }
 
 void MainWindow::on_ButtonNext_clicked()
@@ -100,8 +151,10 @@ void MainWindow::on_ButtonNext_clicked()
         this->on_ButtonSave_clicked();
     }
 
+    this->cornerBuffer.clear();
+    this->blurCorners.clear();
     this->procConf->nextImage();
-    this->updatePictureLabel();
+    this->updatePictureAndTextLabel();
     this->updateProgressBar();
     this->updateButtonState();
 
@@ -112,8 +165,10 @@ void MainWindow::on_ButtonNext_clicked()
 
 void MainWindow::on_ButtonBlur_clicked()
 {
-    //this->procConf->blurImage(std::vector<std::vector<cv::Point> >);
-    this->updatePictureLabel();
+    this->procConf->blurImage(this->blurCorners);
+    this->cornerBuffer.clear();
+    this->blurCorners.clear();
+    this->updatePictureAndTextLabel();
 }
 
 void MainWindow::on_ButtonSave_clicked()
@@ -125,12 +180,14 @@ void MainWindow::on_ButtonSave_clicked()
 
 void MainWindow::on_ButtonCancel_clicked()
 {
+    this->cornerBuffer.clear();
+    this->blurCorners.clear();
     this->procConf->cancel();
-    this->updatePictureLabel();
+    this->updatePictureAndTextLabel();
 }
 
 void MainWindow::on_ButtonAutoBlur_clicked()
 {
     this->procConf->autoBlur();
-    this->updatePictureLabel();
+    this->updatePictureAndTextLabel();
 }
