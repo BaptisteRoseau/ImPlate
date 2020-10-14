@@ -87,6 +87,7 @@ ProcessConfig::ProcessConfig(char *argv[]){
 	this->success_pictures = new set<string>();
     this->failed_pictures  = new set<string>();
     this->detector = new Alpr(this->country, DFLT_CONFIG_FILE, DFLT_RUNTIME_DIR);
+    this->alpr_results = AlprResults();
 }
 
 
@@ -210,6 +211,8 @@ int ProcessConfig::updatePathAndPicture(void){
         return EXIT_FAILURE;
     }
     this->blured = this->picture.clone();
+    this->clearCornersVector();
+    this->clearAutoblurPlateInfo();
 
     return EXIT_SUCCESS;
 }
@@ -237,6 +240,17 @@ int ProcessConfig::maximumPictureIdx(void){
     return this->stack_files->size() + this->stack_files_done->size();
 }
 
+void ProcessConfig::setCornersVector(vector<Point> v){
+    this->corners = v;
+}
+
+void ProcessConfig::clearCornersVector(void){
+    this->corners.clear();
+}
+
+void ProcessConfig::clearAutoblurPlateInfo(void){
+    this->alpr_results = AlprResults();
+}
 
 /* =====================================================
                     BUTTON METHODS
@@ -320,8 +334,8 @@ int ProcessConfig::saveImage(void){
         if (build_directories(out_path)){
             if (fs::path(out_path).has_extension()){
                 if (replace_input_file){
-                    // Replacing input file if "--rename" option
-                    fs::rename(filepath, out_path);
+                    // Replacing input file if "--rename" option and it doesn't exist yet
+                    if (!fs::exists(fs::path(out_path))) { fs::rename(filepath, out_path); }
                     savedir = (string) fs::path(out_path).parent_path(); //Used for save-info
                     save_picture(blured, filepath);
                 } else {
@@ -331,8 +345,9 @@ int ProcessConfig::saveImage(void){
                 }
             } else {
                 if (replace_input_file){
-                    // Replacing input file if "--rename" option
-                    fs::rename(filepath, (string)out_path+"/"+filename+output_name_addon+fileext);
+                    // Replacing input file if "--rename" option and it doesn't exist yet
+                    string tmp = (string)out_path+"/"+filename+output_name_addon+fileext;
+                    if (!fs::exists(fs::path(tmp))) { rename(filepath, tmp); }
                     savedir = (string) out_path; //Used for save-info
                     save_picture(blured, filepath);
                 } else {
@@ -356,17 +371,14 @@ int ProcessConfig::saveImage(void){
         }
         if (replace_input_file){
             // Replacing input file
-            fs::rename(filepath, savedir+"/"+filename+output_name_addon+fileext);
+            string tmp = savedir+"/"+filename+output_name_addon+fileext;
+            if (!fs::exists(fs::path(tmp))) { rename(filepath, tmp); }
             save_picture(blured, filepath);
         } else {
             // Writing blured picture into the directory
             save_picture(blured, savedir, filename+output_name_addon+fileext);
         }
     }
-
-    // Picture was successfully saved
-    success_pictures->insert(filepath);
-    DISPLAY("Saved" << filepath);
 
     // Saving the plate information if necessary
     if (save_plate_info){
@@ -386,17 +398,33 @@ int ProcessConfig::saveImage(void){
         if (!plate_ostream){
             DISPLAY_ERR("Couldn't open " << plate_file);
         } else {
-             if (!this->alpr_results.plates.empty()){ // Saving info from ALPR
+            if (!this->alpr_results.plates.empty()){ // Saving info from ALPR
                 plate_ostream << this->detector->toJson(this->alpr_results);
-             } else if (false) { // Saving info from picture info and clicked corners
-                // TODO
-             }
-            DISPLAY("Wrote plate info " << plate_file)
+                DISPLAY("Wrote plate info " << plate_file)
+            } else if (!this->corners.empty()) { // Saving info from picture info and clicked corners
+                // Yeah, I know this is disgusting, but it was so much faster than a dictionary and an API :/
+                plate_ostream << "{\"version\":2,\"data_type\":\"blur_gui\",\"img_width\":"
+                << this->blured.cols << ",\"img_height\":" << this->blured.rows << 
+                ",\"regions_of_interest\":[{\"x\":0,\"y\":0,\"width\":" << this->blured.cols
+                << ",\"height\":" << this->blured.rows << "}],\"results\":[{\"coordinates\":[{\"x\":"
+                << this->corners[0].x << ",\"y\":" << this->corners[0].y << "},{\"x\":"
+                << this->corners[1].x << ",\"y\":" << this->corners[1].y << "},{\"x\":"
+                << this->corners[2].x << ",\"y\":" << this->corners[2].y << "},{\"x\":"
+                << this->corners[3].x << ",\"y\":" << this->corners[3].y << "}]}]}";
+                DISPLAY("Wrote plate info " << plate_file)
+            } else {
+                DISPLAY_WAR("No plate coordinate info to be saved: "
+                << "Removing previous plate info results.");
+                remove(plate_file);
+            }
         }
         plate_ostream.close();
     }
+
+    // Picture was successfully saved
+    success_pictures->insert(filepath);
     
-    return EXIT_SUCCESS;
+    return this->updatePathAndPicture();;
 }
 
 int ProcessConfig::cancel(void){
@@ -406,38 +434,44 @@ int ProcessConfig::cancel(void){
         if (fs::directory_entry(in_path).is_regular_file()){
                 if (fs::path(out_path).has_extension()){
                     savedir = (string) fs::path(out_path).parent_path();
-                    if (replace_input_file){
-                        // Getting input file back to its original path
-                        rename(out_path, filepath);
-                    } else {
-                        // Removing blured picture from the output directory
-                        remove(out_path);
+                    if (fs::exists(fs::path(savedir))){
+                        if (replace_input_file){
+                            // Getting input file back to its original path
+                            rename(out_path, filepath);
+                        } else {
+                            // Removing blured picture from the output directory
+                            remove(out_path);
+                        }
                     }
                 } else {
                     savedir = out_path;
-                    if (replace_input_file){
-                        // Getting input file back to its original path
-                        rename((string)out_path+"/"+filename+output_name_addon+fileext, filepath);
-                    } else {
-                        // Removing blured picture from the output directory
-                        remove(out_path+'/'+filename+output_name_addon+fileext);
+                    if (fs::exists(fs::path(savedir))){
+                        if (replace_input_file){
+                            // Getting input file back to its original path
+                            rename((string)out_path+"/"+filename+output_name_addon+fileext, filepath);
+                        } else {
+                            // Removing blured picture from the output directory
+                            remove((string)out_path+"/"+filename+output_name_addon+fileext);
+                        }
                     }
                 }
         // If input is a directory, 
         } else {
             // Selecting output directory
             savedir = select_output_dir(out_path, in_path, filepath, respect_input_path);
-            if (replace_input_file){
-                // Getting input file back to its original path
-                rename(savedir+"/"+filename+output_name_addon+fileext, filepath);
-            } else {
-                // Removing blured picture from the output directory
-                remove(savedir+'/'+filename+output_name_addon+fileext);
+            if (fs::exists(fs::path(savedir))){
+                if (replace_input_file){
+                    // Getting input file back to its original path
+                    rename(savedir+"/"+filename+output_name_addon+fileext, filepath);
+                } else {
+                    // Removing blured picture from the output directory
+                    remove(savedir+'/'+filename+output_name_addon+fileext);
+                }
             }
         }
 
         // Removing plate info if exist
-        if (save_plate_info){
+        if (save_plate_info && fs::exists(fs::path(savedir))){
             string plate_file = savedir+"/"+filename+DFLT_JSON_ADDON+".json";
             // If -s option has a path given, behavior is the same as above
             if (fs::directory_entry(in_path).is_regular_file() && plate_info_save_path != NULL){
@@ -456,15 +490,14 @@ int ProcessConfig::cancel(void){
             }
         }
 
-        // Revmoving all empty directories above the saving one
-        remove_empty_directories(savedir);
+        // Removing all empty directories above the saving one
+        if (fs::exists(fs::path(savedir))) remove_empty_directories(savedir);
     }
 
     // Updating pictures
-    this->updatePathAndPicture();
     this->success_pictures->erase(filepath);
 
-    return EXIT_SUCCESS;
+    return this->updatePathAndPicture();;
 }
 
 int ProcessConfig::autoBlur(void){
@@ -492,6 +525,3 @@ int ProcessConfig::autoBlur(void){
 
     return this->blurImage(corners);
 }
-
-//TODO: Save ""coordinates":[{"x":204,"y":352},{"x":330,"y":352},{"x":330,"y":375},{"x":204,"y":375}]"
-//TODO: adapter l'image à la taille de l'écran si besoin (/!\ au ratio pour le floutage)

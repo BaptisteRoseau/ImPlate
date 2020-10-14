@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(BlurUI LANGUAGES CXX)
+project(blur_gui LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -26,15 +26,15 @@ set(COMMON_SOURCE_DIR ../../program/src/)
 #    endif()
 #endif()
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets LinguistTools REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets LinguistTools REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 find_package(OpenCV REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS} ${COMMON_SOURCE_DIR})
-
-set(TS_FILES BlurUI_fr_FR.ts)
+find_package(OpenMP)
+include_directories(${OpenCV_INCLUDE_DIRS} /usr/local/include ${COMMON_SOURCE_DIR})
+message(STATUS "OpenCV_INCLUDE_DIRS = ${OpenCV_INCLUDE_DIRS}")
 
 if(ANDROID)
-  add_library(BlurUI SHARED
+  add_library(blur_gui SHARED
     customlabel.cpp
     main.cpp
     mainwindow.cpp
@@ -45,10 +45,9 @@ if(ANDROID)
     ${COMMON_SOURCE_DIR}/gopt/gopt-errors.cpp
     ${COMMON_SOURCE_DIR}/options.cpp
     ${COMMON_SOURCE_DIR}/utils.cpp
-    ${TS_FILES}
   )
 else()
-  add_executable(BlurUI
+  add_executable(blur_gui
     customlabel.cpp
     main.cpp
     mainwindow.cpp
@@ -59,10 +58,10 @@ else()
     ${COMMON_SOURCE_DIR}/gopt/gopt-errors.cpp
     ${COMMON_SOURCE_DIR}/options.cpp
     ${COMMON_SOURCE_DIR}/utils.cpp
-    ${TS_FILES}
   )
 endif()
 
-target_link_libraries(BlurUI PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${OpenCV_LIBS} openalpr)
-
-qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+target_link_libraries(blur_gui PRIVATE Qt${QT_VERSION_MAJOR}::Widgets ${OpenCV_LIBS} openalpr)
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(blur_gui PUBLIC OpenMP::OpenMP_CXX)
+endif()

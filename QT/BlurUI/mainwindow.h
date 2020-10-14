@@ -13,6 +13,10 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+/**
+ * @brief Main window of the GUI
+ * 
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -38,8 +42,6 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QCheckBox *cbAlwaysTryAutoBlur = new QCheckBox("cbAlwaysTryAutoBlur", this);
-    QCheckBox *cbSaveOnNext        = new QCheckBox("cbSaveOnNext", this);
     ProcessConfig *procConf        = NULL;
     std::vector<std::vector<cv::Point> > blurCorners;
     std::vector<cv::Point> cornerBuffer;
@@ -48,6 +50,7 @@ private:
     void initProgressBar();
     void updateProgressBar();
     void updateButtonState();
+    void drawLines(cv::Mat &img);
     
 };
 #endif // MAINWINDOW_H

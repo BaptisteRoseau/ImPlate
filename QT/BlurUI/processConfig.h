@@ -31,6 +31,10 @@ public:
     int currentPictureIdx(void);
     int maximumPictureIdx(void);
 
+    void setCornersVector(std::vector<cv::Point> v);
+    void clearCornersVector(void);
+    void clearAutoblurPlateInfo(void);
+
     int firstImage(void);
     int previousImage(void);
     int nextImage(void);
@@ -59,6 +63,7 @@ private:
 	cv::Mat picture, blured;
 	std::string filepath, filename, fileext, savedir;
 	unsigned int loop_idx, nb_files;
+    std::vector<cv::Point> corners;
     alpr::Alpr *detector;
     alpr::AlprResults alpr_results;
 

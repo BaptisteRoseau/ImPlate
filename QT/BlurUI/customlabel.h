@@ -5,6 +5,10 @@
 #include <QEvent>
 #include <QMouseEvent>
 
+/**
+ * @brief A custom class to manage mouse events on a QLabel
+ * 
+ */
 class CustomLabel : public QLabel
 {
     Q_OBJECT
