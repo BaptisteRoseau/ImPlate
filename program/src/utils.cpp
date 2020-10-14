@@ -155,11 +155,11 @@ void save_picture(const Mat &picture, string path){
 }
 
 void rename(string from, string to){
-	if (fs::exists(fs::path(from)) && fs::exists(fs::path(to))){
+	if (fs::exists(fs::path(from))){
         fs::rename(fs::path(from), fs::path(to));
 		DISPLAY("Moved " << from << " to " << to);
 	} else {
-        DISPLAY_ERR(from << " and/or " << to << " do not exist");
+        DISPLAY_ERR(from << " does not exist");
 	}
 }
 
@@ -178,9 +178,7 @@ void remove(string path){
 void remove_empty_directories(string path){ 
 	if (fs::is_directory(fs::path(path))){
 		while (fs::is_empty(path)){
-			//if (!fs::remove(fs::path(path))){
-			DISPLAY("DEBUG: " << path)
-			if (false){
+			if (!fs::remove(fs::path(path))){
 				DISPLAY_ERR("Unable to remove empty directory " << path);
 				break;
 			}
