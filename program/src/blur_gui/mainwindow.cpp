@@ -219,17 +219,18 @@ void MainWindow::on_ButtonBlur_clicked(){
 }
 
 void MainWindow::on_ButtonSave_clicked(){
-    // User feedback
-    ui->LabelProgramStatus->setText("Saving...");
-    QCoreApplication::processEvents();
-
     // Saving picture only if something changed (ex: blured)
     if (this->procConf->isPictureStateChanged()){
+        // User feedback
+        ui->LabelProgramStatus->setText("Saving...");
+        QCoreApplication::processEvents();
+        
         this->procConf->saveImage();
+        
+        // Clearing user feedback
+        ui->LabelProgramStatus->setText("");
     }
 
-    // Clearing user feedback
-    ui->LabelProgramStatus->setText("");
 }
 
 void MainWindow::on_ButtonCancel_clicked(){

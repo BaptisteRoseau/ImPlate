@@ -23,7 +23,6 @@ RUN apt-get install -y \
         libgtk-3-dev \
         g++ \
         git \
-        qt5-default \
         unzip \
         wget
 
@@ -36,14 +35,15 @@ RUN wget https://github.com/opencv/opencv/archive/$OPENCV_VERSION.zip && \
 RUN mkdir -p opencv-$OPENCV_VERSION/build && \
     cd opencv-$OPENCV_VERSION/build && \
     cmake -DCMAKE_BUILD_TYPE=Release     \
-        -DENABLE_CXX11=ON                \
-        -DBUILD_PERF_TESTS=OFF           \
-        -DWITH_XINE=ON                   \
-        -DBUILD_TESTS=OFF                \
-        -DENABLE_PRECOMPILED_HEADERS=OFF \
-        -DCMAKE_SKIP_RPATH=ON            \
-        -DBUILD_WITH_DEBUG_INFO=OFF      \
-        -Wno-dev  .. && \
+          -DENABLE_CXX11=ON                \
+          -DBUILD_PERF_TESTS=OFF           \
+          -DWITH_XINE=ON                   \
+          -DBUILD_TESTS=OFF                \
+          -DENABLE_PRECOMPILED_HEADERS=OFF \
+          -DCMAKE_SKIP_RPATH=ON            \
+          -DBUILD_WITH_DEBUG_INFO=OFF      \
+          -DBUILD_EXAMPLES=OFF             \
+          -Wno-dev  .. && \
     make -j4 && \
     make -j4 install
 
@@ -65,6 +65,23 @@ RUN cd openalpr-opencv4 && \
     make -j4 && \
     make install
 
+#=================== QT 5.15
+RUN git clone git://code.qt.io/qt/qt5.git
+RUN cd qt5 && ./init-repository \
+     && mkdir -p build && cd build && \
+    ../configure -release -opensource -nomake tests -nomake examples -confirm-license && \
+    make -j4 && \
+    make install
+#-prefix $PWD/qtbase
+
+ENV PATH="/usr/local/Qt-5.15.2/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/Qt-5.15.2/lib:${LD_LIBRARY_PATH}"
+ENV INCLUDE_PATH="/usr/local/Qt-5.15.2/include:${INCLUDE_PATH}"
+
+RUN echo "PATH=/usr/local/Qt-%VERSION%/bin:\$PATH" >> ~/.profile
+RUN echo "export PATH" >> ~/.profile
+
+
 #=================== LICENCE PLATE BLUR
 
 RUN cd program && ./build.sh
@@ -79,8 +96,8 @@ RUN cd program && ./build.sh
 
 
 
-
-
+# https://medium.com/@SaravSun/running-gui-applications-inside-docker-containers-83d65c0db110
+# For GUI, use : docker run --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" gui-app
 
 
 
