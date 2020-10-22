@@ -1,5 +1,5 @@
 # CONFIGURATION   
-SCRIPT=$(dirname `readlink -f "$0"`)/run.sh # Path to run.sh
+SCRIPT=$(dirname $0)/run.sh # Path to run.sh
 INTERVAL_SEC=3600    #seconds Note: you need to put the exact value, not a calcul
 
 # Running periodically
