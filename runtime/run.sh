@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # CONFIGURATION 
-INPUT=Input/                  # The input file for the blur programm
-OUTPUT=backup/                # The output file used for backup, that will be copied on the server with the same name.
-SERV_ROOT=leasetrans34@167.114.230.96      # The ssh adress
-SSHFS_SERV_IMG_DIR=/net/TL_Server_Images/  # The sshfs "img" local directory (used to read the buffer only)
-IMG_DIR=www/public_valid/sites/default/files/img/ # The path to the "img" on the server (used to crop buffer files path)
+INPUT=/                  # The input file for the blur programm
+OUTPUT=/                # The output file used for backup, that will be copied on the server with the same name.
+SERV_ROOT=      # The ssh adress
+SSHFS_SERV_IMG_DIR=  # The sshfs "img" local directory (used to read the buffer only)
+IMG_DIR= # The path to the "img" on the server (used to crop buffer files path)
 DIST_SERV_IMG_DIR=$SERV_ROOT:$IMG_DIR             # The remote "img" directory
-BUFFER=$SSHFS_SERV_IMG_DIR/util/buffer.txt        # The path to the buffer
+BUFFER=$SSHFS_SERV_IMG_DIR/        # The path to the buffer
 
 SUCCESS_FILE=blur_success.txt  # Blur output success files
 FAILURE_FILE=blur_failures.txt # Blur output failure files
