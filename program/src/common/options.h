@@ -17,9 +17,9 @@
  * @param save_plate_info whether or not the plate's information have to be saved
  * @param plate_info_save_path the path to file or directory to save plate information.
  * @param blur_only whether or not only bluring should be done. Works only for one file.
- * @param blur_only_location the location of the areas to be blured. "x11_y11_x12_y12_...x21_y21...".
+ * @param blur_only_location the location of the areas to be blurred. "x11_y11_x12_y12_...x21_y21...".
  * 	      The order is TOP_LEFT, TOP_RIGHT_ BOTTOM_RIGTH, BOTTOM LEFT. Example: 100_150_200_145_250_213_145_200. There must be a multiple of 8 values.
- * @param replace_input_file whether or not you want to replace intput file by the blured image. A copy of the origin file is made with _origin.
+ * @param replace_input_file whether or not you want to replace intput file by the blurred image. A copy of the origin file is made with _origin.
  */
 void parse_argv(char **argv, char* in_path, char *out_dir,
 	char *output_name_addon,

@@ -95,7 +95,7 @@ void MainWindow::drawLines(Mat &img){
 
 void MainWindow::updatePictureAndTextLabel(void){
     // Getting image and drawing lines onto it
-    Mat img = this->procConf->getBluredPicture().clone();
+    Mat img = this->procConf->getblurredPicture().clone();
     this->drawLines(img);
     QPixmap pixmap = QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_BGR888));
 
@@ -219,7 +219,7 @@ void MainWindow::on_ButtonBlur_clicked(){
 }
 
 void MainWindow::on_ButtonSave_clicked(){
-    // Saving picture only if something changed (ex: blured)
+    // Saving picture only if something changed (ex: blurred)
     if (this->procConf->isPictureStateChanged()){
         // User feedback
         ui->LabelProgramStatus->setText("Saving...");

@@ -16,7 +16,7 @@ using namespace cv;
 #define BORDER_MARGIN 50
 
 //OpenCV blur: https://www.tutorialkart.com/opencv/python/opencv-python-gaussian-image-smoothing/
-void blur_pixel(Mat picture, Mat blured, unsigned int filter_size, int i, int j, int k){
+void blur_pixel(Mat picture, Mat blurred, unsigned int filter_size, int i, int j, int k){
     int top = _max((int) (i - filter_size/2), 0);
     int bot = _min((int) (i + filter_size/2), picture.rows);
     int left = _max((int) (j - filter_size/2), 0);
@@ -34,7 +34,7 @@ void blur_pixel(Mat picture, Mat blured, unsigned int filter_size, int i, int j,
 
     // Submatrix sum calculation
     Scalar sum_vector = sum(submat);
-    blured.data[picture.step*i + j*picture.channels() + k]
+    blurred.data[picture.step*i + j*picture.channels() + k]
         = (unsigned char) (sum_vector[k] / (submat.rows*submat.cols));
 }
 
@@ -74,7 +74,7 @@ bool in_area(int i, int j, const vector<Point> &corners){
 }
 
 //corners: [TOPLEFT, TOPRIGHT, BOTRIGHT, BOTLEFT]
-int blur(const Mat picture, Mat blured, const vector<Point> &corners,
+int blur(const Mat picture, Mat blurred, const vector<Point> &corners,
          unsigned int filter_size = 45){
     // Input verification (don't use assert as you don't want the whole program to stop)
     if (corners.size() != 4){
@@ -106,7 +106,7 @@ int blur(const Mat picture, Mat blured, const vector<Point> &corners,
         for(int j = left; j < right; j++){
             for(int k = 0; k < 3; k++){
                 if (in_area(i, j, corners)){
-                    blur_pixel(picture, blured, filter_size, i, j, k);
+                    blur_pixel(picture, blurred, filter_size, i, j, k);
                 }
             }
         }

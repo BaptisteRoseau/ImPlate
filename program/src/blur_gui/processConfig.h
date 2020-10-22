@@ -26,7 +26,7 @@ public:
     bool isFirstImage(void);
     bool isLastImage(void);
     bool isPictureStateChanged(void);
-    cv::Mat getBluredPicture(void);
+    cv::Mat getblurredPicture(void);
     std::string getFilepath(void);
     int currentPictureIdx(void);
     int maximumPictureIdx(void);
@@ -60,7 +60,7 @@ private:
     // Main process required variables
     std::stack<std::string> *stack_files, *stack_files_done;
     std::set<std::string> *success_pictures, *failed_pictures;
-	cv::Mat picture, blured;
+	cv::Mat picture, blurred;
 	std::string filepath, filename, fileext, savedir;
 	unsigned int loop_idx, nb_files;
     std::vector<cv::Point> corners;

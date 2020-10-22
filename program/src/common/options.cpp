@@ -23,14 +23,14 @@ Requiered argument:\n\
 Optional argument:\n\
 \t- -h or --help:           Displays this screen.\n\
 \t- -l or --save-log:       The path to a file where all the logs will be saved.Will be created if doesn't exist.\n\
-\t- -a or --out-name-addon: The name addon for every blured picture (default: '_rendered').\n\
+\t- -a or --out-name-addon: The name addon for every blurred picture (default: '_rendered').\n\
 \t- -t or --timeout:        A timeout in seconds.\n\
 \t- -b or --blur-power:     The size of the square box used to make a blur effect (default: 70).\n\
 \t- -v or --verbose:        Whether or not informations has to be displayed. This does not affect the logs.\n\
 \t- -c or --counry_code:    The country code of the car, to match the country's plate pattern. (\"eu\", \"us\", \"au\", \"br\", \"fr\", \"gb\", \"in\". Default: \"eu\")\n\
 \t- -s or --save-info:      Whether or not plate information sould be saved as well.\n\
-\t- -p or --respect-path:   Whether or not the path of output blured picture has to be similar to their path in the input directory.\n\
-\t- -r or --rename:         Rename input images with _origin and replace it with the blured image.\n\
+\t- -p or --respect-path:   Whether or not the path of output blurred picture has to be similar to their path in the input directory.\n\
+\t- -r or --rename:         Rename input images with _origin and replace it with the blurred image.\n\
 "
 //\t- -s or --save-info:      Whether or not plate information sould be saved as well. If the input is a file, and output path for this can be given.\n
 

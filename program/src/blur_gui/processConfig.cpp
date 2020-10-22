@@ -137,7 +137,7 @@ void ProcessConfig::init(void){
 
 	// Parameters initialisation
 	this->picture = Mat();
-	this->blured  = Mat();
+	this->blurred  = Mat();
     this->loop_idx = 0;
 	this->nb_files = stack_files->size();
 	//const vector country_code_vect = {"eu", "fr", "gb", "us", "au", "br", "in"};
@@ -151,7 +151,7 @@ void ProcessConfig::finalize(void){
 
 	// Displaying success pictures
 	if ((verbose || save_log) && !this->success_pictures->empty()){
-		DISPLAY("\nPictures successfully blured:")
+		DISPLAY("\nPictures successfully blurred:")
 
 		// Opening file containing success pictures only
 		ofstream successpic_stream;
@@ -210,15 +210,15 @@ int ProcessConfig::updatePathAndPicture(void){
         this->failed_pictures->insert(this->filepath);
         return EXIT_FAILURE;
     }
-    this->blured = this->picture.clone();
+    this->blurred = this->picture.clone();
     this->clearCornersVector();
     this->clearAutoblurPlateInfo();
 
     return EXIT_SUCCESS;
 }
 
-Mat ProcessConfig::getBluredPicture(void){
-    return this->blured;
+Mat ProcessConfig::getblurredPicture(void){
+    return this->blurred;
 }
 
 string ProcessConfig::getFilepath(void){
@@ -227,7 +227,7 @@ string ProcessConfig::getFilepath(void){
 
 bool ProcessConfig::isPictureStateChanged(void){
     Mat diff;
-    absdiff(this->picture, this->blured, diff);
+    absdiff(this->picture, this->blurred, diff);
     cvtColor(diff, diff, COLOR_BGR2GRAY);
     return  countNonZero(diff) != 0;
 }
@@ -312,10 +312,10 @@ int ProcessConfig::blurImage(vector<vector<Point> > corners){
         }    
     }
 
-    // Bluring this->blured based on this->picture pixels
+    // Bluring this->blurred based on this->picture pixels
     int error = 0;
     for (auto&& corn: corners){
-        error += blur(this->picture, this->blured, corn, this->blur_filter_size);
+        error += blur(this->picture, this->blurred, corn, this->blur_filter_size);
     }
     if (error){
         DISPLAY_ERR("Couldn't blur " << error << " times out of " << corners.size() << " on " << filename);
@@ -337,11 +337,11 @@ int ProcessConfig::saveImage(void){
                     // Replacing input file if "--rename" option and it doesn't exist yet
                     if (!fs::exists(fs::path(out_path))) { fs::rename(filepath, out_path); }
                     savedir = (string) fs::path(out_path).parent_path(); //Used for save-info
-                    save_picture(blured, filepath);
+                    save_picture(blurred, filepath);
                 } else {
                     // Saving file as in given
                     savedir = (string) fs::path(out_path).parent_path();
-                    save_picture(blured, out_path);
+                    save_picture(blurred, out_path);
                 }
             } else {
                 if (replace_input_file){
@@ -349,11 +349,11 @@ int ProcessConfig::saveImage(void){
                     string tmp = (string)out_path+"/"+filename+output_name_addon+fileext;
                     if (!fs::exists(fs::path(tmp))) { rename(filepath, tmp); }
                     savedir = (string) out_path; //Used for save-info
-                    save_picture(blured, filepath);
+                    save_picture(blurred, filepath);
                 } else {
                     // Saving file into the directory given
                     savedir = out_path;
-                    save_picture(blured, out_path, filename+output_name_addon+fileext);
+                    save_picture(blurred, out_path, filename+output_name_addon+fileext);
                 }
             }
         } else {
@@ -373,10 +373,10 @@ int ProcessConfig::saveImage(void){
             // Replacing input file
             string tmp = savedir+"/"+filename+output_name_addon+fileext;
             if (!fs::exists(fs::path(tmp))) { rename(filepath, tmp); }
-            save_picture(blured, filepath);
+            save_picture(blurred, filepath);
         } else {
-            // Writing blured picture into the directory
-            save_picture(blured, savedir, filename+output_name_addon+fileext);
+            // Writing blurred picture into the directory
+            save_picture(blurred, savedir, filename+output_name_addon+fileext);
         }
     }
 
@@ -404,9 +404,9 @@ int ProcessConfig::saveImage(void){
             } else if (!this->corners.empty()) { // Saving info from picture info and clicked corners
                 // Yeah, I know this is disgusting, but it was so much faster than a dictionary and an API :/
                 plate_ostream << "{\"version\":2,\"data_type\":\"blur_gui\",\"img_width\":"
-                << this->blured.cols << ",\"img_height\":" << this->blured.rows << 
-                ",\"regions_of_interest\":[{\"x\":0,\"y\":0,\"width\":" << this->blured.cols
-                << ",\"height\":" << this->blured.rows << "}],\"results\":[{\"coordinates\":[{\"x\":"
+                << this->blurred.cols << ",\"img_height\":" << this->blurred.rows << 
+                ",\"regions_of_interest\":[{\"x\":0,\"y\":0,\"width\":" << this->blurred.cols
+                << ",\"height\":" << this->blurred.rows << "}],\"results\":[{\"coordinates\":[{\"x\":"
                 << this->corners[0].x << ",\"y\":" << this->corners[0].y << "},{\"x\":"
                 << this->corners[1].x << ",\"y\":" << this->corners[1].y << "},{\"x\":"
                 << this->corners[2].x << ",\"y\":" << this->corners[2].y << "},{\"x\":"
@@ -428,7 +428,7 @@ int ProcessConfig::saveImage(void){
 }
 
 int ProcessConfig::cancel(void){
-    // If blured picture has already been saved on disk, then remove it
+    // If blurred picture has already been saved on disk, then remove it
     if (!this->isPictureStateChanged()){
         // If input is a file, output will be directly out_path, not a directory
         if (fs::directory_entry(in_path).is_regular_file()){
@@ -439,7 +439,7 @@ int ProcessConfig::cancel(void){
                             // Getting input file back to its original path
                             rename(out_path, filepath);
                         } else {
-                            // Removing blured picture from the output directory
+                            // Removing blurred picture from the output directory
                             remove(out_path);
                         }
                     }
@@ -450,7 +450,7 @@ int ProcessConfig::cancel(void){
                             // Getting input file back to its original path
                             rename((string)out_path+"/"+filename+output_name_addon+fileext, filepath);
                         } else {
-                            // Removing blured picture from the output directory
+                            // Removing blurred picture from the output directory
                             remove((string)out_path+"/"+filename+output_name_addon+fileext);
                         }
                     }
@@ -464,7 +464,7 @@ int ProcessConfig::cancel(void){
                     // Getting input file back to its original path
                     rename(savedir+"/"+filename+output_name_addon+fileext, filepath);
                 } else {
-                    // Removing blured picture from the output directory
+                    // Removing blurred picture from the output directory
                     remove(savedir+'/'+filename+output_name_addon+fileext);
                 }
             }
