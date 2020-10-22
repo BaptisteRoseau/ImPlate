@@ -59,15 +59,15 @@ if [ -f $SUCCESS_FILE ]; then
     echo "Copying original pictures.."
     scp -r $OUTPUT/ $DIST_SERV_IMG_DIR/
 
-    echo "Replacing original pictures with blured ones.."
+    echo "Replacing original pictures with blurred ones.."
     while IFS="" read -r p || [ -n "$p" ]
-    # Sending blured pictures
+    # Sending blurred pictures
     do
         echo "Replacing ${p#"$INPUT"}.."
         scp $p $DIST_SERV_IMG_DIR/${p#"$INPUT"}
     done < $SUCCESS_FILE
 else
-    echo "No picture were blured this time."
+    echo "No picture were blurred this time."
 fi
 
 # Sending logs
