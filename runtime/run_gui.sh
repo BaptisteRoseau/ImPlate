@@ -1,29 +1,64 @@
 #!/bin/bash
+set -e # Exit on error
 
 # CONFIGURATION 
-INPUT=/                  # The input file for the blur programm
-OUTPUT=/                # The output file used for backup, that will be copied on the server with the same name.
+INPUT=                 # The input file for the blur programm
+OUTPUT=                # The output file used for backup, that will be copied on the server with the same name.
 SERV_ROOT=      # The ssh adress
 SSHFS_SERV_IMG_DIR=  # The sshfs "img" local directory (used to read the buffer only)
 IMG_DIR= # The path to the "img" on the server (used to crop buffer files path)
 DIST_SERV_IMG_DIR=$SERV_ROOT:$IMG_DIR             # The remote "img" directory
-BUFFER=$SSHFS_SERV_IMG_DIR/        # The path to the buffer
+BUFFER_GUI=buffer_gui                             # Created during the listing process
 
 SUCCESS_FILE=blur_success.txt  # Blur output success files
 FAILURE_FILE=blur_failures.txt # Blur output failure files
 LOG_FILE=log.txt               # Blur logs
 
 # VARIABLES
-NOW=$(date +"%d-%m-%Y_%k-%M-%S") # Used for renaming logs, success and failures
+NOW=$(date +"%Y-%m-%d_%k-%M-%S") # Used for renaming logs, success and failures
 
 # ===============================
 
 # CLEANING
-rm -rf $INPUT $OUTPUT $SUCCESS_FILE $FAILURE_FILE $LOG_FILE
-mkdir -p $INPUT $OUTPUT
+#rm -rf $INPUT $OUTPUT $SUCCESS_FILE $FAILURE_FILE $LOG_FILE
+#mkdir -p $INPUT $OUTPUT
+
+###### NEW AREA BEGIN
+
+######## NOT DONE BEGIN
+
+rm -f $BUFFER_GUI
+
+# LISTING FILES
+STR_CMP="success_2020-01-07_15-59-55.txt" # On va donner ça en entrée du script bash sur le serveur: 2020-01-07_15-59-55
+FILE_LIST=""
+FILE_LIST_ALL=$(cat ../ls_example.txt | sort -r)
+for file in $FILE_LIST_ALL; do
+    if [[ $file < $STR_CMP ]]; then \
+        break;
+    fi
+    FILE_LIST=$(printf "$FILE_LIST\n$file")
+done
+
+exit
+######## NOT DONE END
+
+
+# CREATING BUFFER_GUI
+BUFFER_GUI=""
+for file in $FILE_LIST; do \
+    while IFS="" read -r p || [ -n "$p" ]; do
+        BUFFER_GUI=$(printf "$BUFFER_GUI\n$p")
+    done < $file
+done
+
+# Et on va afficher $BUFFER_GUI en sortie, donc cherche à le mettre en variable plutôt
+exit
+###### NEW AREA END
+
 
 # RETRIEVING FILES
-if [ -f $BUFFER ]; then
+if [ -f $BUFFER_GUI ]; then
     # Copying buffer data to input directory
     while IFS="" read -r p || [ -n "$p" ]
     do
@@ -31,8 +66,8 @@ if [ -f $BUFFER ]; then
         mkdir -p $INPUT/$(dirname $path)
         echo "Copying $path.."
         scp $SERV_ROOT:$p $INPUT/$path
-    done < $BUFFER
-    rm $BUFFER
+    done < $BUFFER_GUI
+    rm $BUFFER_GUI
 else 
     echo "ERROR: Buffer file not found."
     exit
@@ -52,6 +87,8 @@ while true; do
     esac
 done
 
+exit # Remove me when everything's fine
+
 
 # SENDING BLUR
 if [ -f $SUCCESS_FILE ]; then
@@ -70,7 +107,7 @@ else
     echo "No picture were blurred this time."
 fi
 
-# Sending logs
+# SENDING LOGS
 if [ -f $LOG_FILE ]; then
     scp $LOG_FILE $DIST_SERV_IMG_DIR/util/blur_log/log/log_$NOW.txt
     rm $LOG_FILE

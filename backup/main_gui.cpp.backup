@@ -150,7 +150,7 @@ int process(const char* in_path, const char* out_path,
 	stack<string> success_pictures = stack<string>();
 	stack<string> failed_pictures = stack<string>();
 	Mat picture = Mat();
-	Mat blured  = Mat();
+	Mat blurred  = Mat();
 	string filepath, filename, fileext, savedir, file_out_path;
 	int error;
 	unsigned int loop_idx = 0;
@@ -268,10 +268,10 @@ int process(const char* in_path, const char* out_path,
 		}
 
         // Bluring a copy of the initial picture DO NOT TOUCH
-        blured = picture.clone();
+        blurred = picture.clone();
         error = 0;
         for (auto&& corn: corners){
-            error += _max(blur(picture, blured, corn, blur_filter_size), error);
+            error += _max(blur(picture, blurred, corn, blur_filter_size), error);
         }
         if (error){
             DISPLAY_ERR("Couldn't blur" << error << " times out of " << corners.size() << " on " << filename);
@@ -282,7 +282,7 @@ int process(const char* in_path, const char* out_path,
         // Show results
         destroyAllWindows();
         namedWindow("Result", 1);
-        imshow("Result", blured);
+        imshow("Result", blurred);
         waitKey(3000);
 
 //~~ TO HERE
@@ -297,22 +297,22 @@ int process(const char* in_path, const char* out_path,
 						// Replacing input file if "--rename" option
 						fs::rename(filepath, out_path);
 						savedir = (string) fs::path(out_path).parent_path(); //Used for save-info
-						save_picture(blured, filepath);
+						save_picture(blurred, filepath);
 					} else {
 						// Saving file as in given
 						savedir = (string) fs::path(out_path).parent_path();
-						save_picture(blured, out_path);
+						save_picture(blurred, out_path);
 					}
 				} else {
 					if (replace_input_file){
 						// Replacing input file if "--rename" option
 						fs::rename(filepath, (string)out_path+"/"+filename+output_name_addon+fileext);
 						savedir = (string) out_path; //Used for save-info
-						save_picture(blured, filepath);
+						save_picture(blurred, filepath);
 					} else {
 						// Saving file into the directory given
 						savedir = out_path;
-						save_picture(blured, out_path, filename+output_name_addon+fileext);
+						save_picture(blurred, out_path, filename+output_name_addon+fileext);
 					}
 				}
 			} else {
@@ -330,10 +330,10 @@ int process(const char* in_path, const char* out_path,
 			if (replace_input_file){
 				// Replacing input file
 				fs::rename(filepath, savedir+"/"+filename+output_name_addon+fileext);
-				save_picture(blured, filepath);
+				save_picture(blurred, filepath);
 			} else {
-				// Writing blured picture into the directory
-				save_picture(blured, savedir, filename+output_name_addon+fileext);
+				// Writing blurred picture into the directory
+				save_picture(blurred, savedir, filename+output_name_addon+fileext);
 			}
 		}
 
@@ -375,7 +375,7 @@ int process(const char* in_path, const char* out_path,
 
 	// Displaying success pictures
 	if ((verbose || save_log) && !success_pictures.empty()){
-		DISPLAY("\nPictures successfully blured:")
+		DISPLAY("\nPictures successfully blurred:")
 
 		// Opening file containing success pictures only
 		ofstream successpic_stream;

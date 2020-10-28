@@ -1,8 +1,9 @@
 #!/bin/bash
+set -e # Exit on error
 
 # CONFIGURATION 
-INPUT=/                  # The input file for the blur programm
-OUTPUT=/                # The output file used for backup, that will be copied on the server with the same name.
+INPUT=                  # The input file for the blur programm
+OUTPUT=                # The output file used for backup, that will be copied on the server with the same name.
 SERV_ROOT=      # The ssh adress
 SSHFS_SERV_IMG_DIR=  # The sshfs "img" local directory (used to read the buffer only)
 IMG_DIR= # The path to the "img" on the server (used to crop buffer files path)
@@ -14,7 +15,7 @@ FAILURE_FILE=blur_failures.txt # Blur output failure files
 LOG_FILE=log.txt               # Blur logs
 
 # VARIABLES
-NOW=$(date +"%d-%m-%Y_%k-%M-%S") # Used for renaming logs, success and failures
+NOW=$(date +"%Y-%m-%d_%k-%M-%S") # Used for renaming logs, success and failures
 
 # ===============================
 
