@@ -172,7 +172,7 @@
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="layoutWidget1">
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="sizeConstraint">
           <enum>QLayout::SetMinimumSize</enum>
@@ -296,7 +296,7 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="layoutWidget2">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <property name="sizeConstraint">
           <enum>QLayout::SetMinimumSize</enum>
