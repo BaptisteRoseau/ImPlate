@@ -91,7 +91,7 @@ int process(const char* in_path, const char* out_path,
 	stack<string> failed_pictures = stack<string>();
 	stack<string> success_pictures = stack<string>();
 	Mat picture = Mat();
-	Mat blurred  = Mat();
+	Mat blurred = Mat();
 	string filepath, filename, fileext, savedir;
 	int error;
 	unsigned int loop_idx = 0;
@@ -219,7 +219,7 @@ int process(const char* in_path, const char* out_path,
 		// If input is a directory, 
 		} else {
 			// Selecting output directory and building requiered directories
-			savedir = select_output_dir(out_path, in_path, filepath, respect_input_path);
+			savedir = remove_dots(select_output_dir(out_path, in_path, filepath, respect_input_path));
 			if (!build_directories(savedir)){
 				DISPLAY_ERR("Couldn't build directories for " << savedir);
 				failed_pictures.push(filepath);

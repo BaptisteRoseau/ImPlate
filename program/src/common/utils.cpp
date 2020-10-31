@@ -5,6 +5,7 @@
 #include <opencv4/opencv2/core/mat.hpp>
 #include <alpr.h>
 
+#include <assert.h>
 #include <filesystem>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -12,7 +13,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
-#include <assert.h>
 #include <iostream>
 #include <cstring>
 #include <random>
@@ -63,6 +63,22 @@ bool is_supported_file(fs::path path){
     return false;
 }
 
+string str_normalize_except_last_dot(const string str){
+	// Do nothing if there is only 1 dot
+	if (count(str.begin(), str.end(), '.') <= 1){
+		return str;
+	}
+	
+	// Remove every dots except the last one
+	size_t last_dot_pos = str.find_last_of('.');
+	cout << "DEBUG substr: "
+	<< "\n\tstr" << str
+	<< "\n\tstr.substr(0, last_dot_pos): " << str.substr(0, last_dot_pos)
+	<< "\n\tstr.substr(last_dot_pos): " << str.substr(last_dot_pos)
+	<< "\n\tNormalized: " << str_normalize(remove_dots(str.substr(0, last_dot_pos)) + str.substr(last_dot_pos)) << "\n";
+	return str_normalize(remove_dots(str.substr(0, last_dot_pos)) + str.substr(last_dot_pos));
+}
+
 stack<string> *list_files(const char *path){
 	stack<string> *file_paths = new stack<string>();
 	fs::directory_entry f = fs::directory_entry(path);
@@ -76,12 +92,12 @@ stack<string> *list_files(const char *path){
 			string line;
 			while (getline(infile, line)){
 				file_paths->push(line);
-				DISPLAY("Added: " << line);	
+				DISPLAY("Added: " << file_paths->top());	
 			}
 		} else {
 			// Regular image file
 			file_paths->push((string) f.path());
-			DISPLAY("Added: " << f.path());
+			DISPLAY("Added: " << file_paths->top());
 		}
 		return file_paths;
 	}
@@ -91,7 +107,7 @@ stack<string> *list_files(const char *path){
 		for(auto& p: fs::recursive_directory_iterator(path)){
 			if (p.is_regular_file() && is_supported_file(p.path())){
                 file_paths->push((string) p.path());
-                DISPLAY("Added: " << p.path());
+                DISPLAY("Added: " << file_paths->top());
 			}
 		}
 		return file_paths;
@@ -191,7 +207,16 @@ void remove_empty_directories(string path){
 	}
 }
 
-string str_normalize(string &s){
+string remove_dots(const string str){
+	string s = str;
+	for (size_t i = 0; i < s.length(); i++){
+		if (s[i] == '.') { s[i] = '_'; } 
+	}
+    return s;
+}
+
+string str_normalize(const string str){
+	string s = str;
 	for (size_t i = 0; i < s.length(); i++){
 		switch (s[i]){
 			case ' ': s[i] = '_'; break;
@@ -228,6 +253,7 @@ string get_file_extension(const string &filepath){
 }
 
 bool replace(string& str, const std::string& from, const std::string& to) {
+	//TODO: replace every occurences, not only the first one
     size_t start_pos = str.find(from);
     if(start_pos == std::string::npos)
         return false;

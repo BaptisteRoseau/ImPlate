@@ -1,4 +1,4 @@
-FROM darkmattercoder/qt-build:latest
+FROM ubuntu:latest
 
 # Set the working directory.
 ENV WORKDIR_DIR=/usr/app
@@ -21,6 +21,7 @@ RUN ln -s /usr/share/zoneinfo/Europe/London /etc/localtime && \
 RUN apt-get install -y \
         cmake \
         libgtk-3-dev \
+        libxcb-xinerama0 \
         g++ \
         git \
         unzip \
@@ -66,25 +67,25 @@ RUN cd openalpr-opencv4 && \
     make install
 
 #=================== QT 5.15
-##~~##RUN git clone git://code.qt.io/qt/qt5.git
-##~~##RUN cd qt5 && ./init-repository \
-##~~##     && mkdir -p build && cd build && \
-##~~##    ../configure -release -opensource -nomake tests -nomake examples -confirm-license -prefix=/usr/local && \
-##~~##    make -j4 && \
-##~~##    make install
+RUN git clone git://code.qt.io/qt/qt5.git
+RUN cd qt5 && ./init-repository \
+     && mkdir -p build && cd build && \
+    ../configure -release -opensource -nomake tests -nomake examples -confirm-license --prefix=/usr/local && \
+    make -j4 && \
+    make install
 #-prefix $PWD/qtbase
 
-##~~##ENV PATH="/usr/local/Qt-5.15.2/bin:${PATH}"
-##~~##ENV LD_LIBRARY_PATH="/usr/local/Qt-5.15.2/lib:${LD_LIBRARY_PATH}"
-##~~##ENV INCLUDE_PATH="/usr/local/Qt-5.15.2/include:${INCLUDE_PATH}"
-##~~##
+ENV QT_ROOT="/usr/local/Qt-5.15.2"
+ENV PATH="${QT_ROOT}/bin:${PATH}"
+ENV LD_LIBRARY_PATH="${QT_ROOT}/lib:${LD_LIBRARY_PATH}"
+ENV INCLUDE_PATH="${QT_ROOT}/include:${INCLUDE_PATH}"
+
 ##~~##RUN echo "PATH=/usr/local/Qt-%VERSION%/bin:\$PATH" >> ~/.profile
 ##~~##RUN echo "export PATH" >> ~/.profile
 
 
 #=================== LICENCE PLATE BLUR
 
-RUN ls /usr/local
 RUN cd program && ./build.sh
 
 #========= Cleaning and setup environment

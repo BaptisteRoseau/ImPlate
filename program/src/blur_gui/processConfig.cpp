@@ -363,7 +363,7 @@ int ProcessConfig::saveImage(void){
     // If input is a directory, 
     } else {
         // Selecting output directory and building required directories
-        savedir = select_output_dir(out_path, in_path, filepath, respect_input_path);
+        savedir = remove_dots(select_output_dir(out_path, in_path, filepath, respect_input_path));
         if (!build_directories(savedir)){
             DISPLAY_ERR("Couldn't build directories for " << savedir);
             failed_pictures->insert(filepath);

@@ -48,6 +48,14 @@ extern std::ofstream log_ostream;
 bool is_supported_file(std::filesystem::path path);
 
 /**
+ * @brief Leave only the last dot and replace the others with "_"
+ * 
+ * @param str A path to a file as string
+ * @return std::string normalized by '_' except the last dot and its following
+ */
+std::string str_normalize_except_last_dot(std::string str);
+
+/**
  * @brief List every files in the given file/directory path recursively.
  * Results will be put into a stack.
  * 
@@ -91,13 +99,21 @@ bool build_dir(const char *path);
 cv::Mat open_picture(const std::string path);
 
 /**
+ * @brief Replace dots '.' by '_'
+ * 
+ * @param str the input string
+ * @return std::string copy of the input having '.' replaced by '_'
+ */
+std::string remove_dots(const std::string str);
+
+/**
  * @brief Replace every space, (, ), [ and ] by _
  * This function modify it's argument.
  * 
- * @param s the string to normalize.
- * @return std::string same as argument.
+ * @param str the string to normalize.
+ * @return std::string a copy of input, with spaces, (, ), [ and ] replaced by _.
  */
-std::string str_normalize(std::string &s);
+std::string str_normalize(const std::string str);
 
 /**
  * @brief Writes the picture from Mat object into the "dir/name" file.
