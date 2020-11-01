@@ -41,7 +41,7 @@ if [ -f $SUCCESS_FILE ]; then
     # Sending backup pictures first
     echo "Copying original pictures.."
     for dir in `ls $OUTPUT`; do \
-        scp -r $dir $DIST_SERV_IMG_DIR/backup/
+        scp -r $OUTPUT/$dir $DIST_SERV_IMG_DIR/backup/
     done
 
     echo "Replacing original pictures with blurred ones.."
