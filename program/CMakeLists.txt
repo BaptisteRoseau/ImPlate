@@ -49,11 +49,16 @@ add_executable(blur_gui
   src/common/gopt/gopt-errors.cpp
 )
 
-  target_link_libraries(blur_gui PUBLIC
-                      Qt${QT_VERSION_MAJOR}::Core
-                      Qt${QT_VERSION_MAJOR}::Widgets
-                      ${OpenCV_LIBS}
-                      openalpr)
+target_compile_options(blur_gui PRIVATE
+  -DDFLT_FAILURE_PIC_FILE="blur_failures_gui.txt"
+  -DDFLT_SUCCESS_PIC_FILE="blur_success_gui.txt"
+)
+
+target_link_libraries(blur_gui PUBLIC
+                    Qt${QT_VERSION_MAJOR}::Core
+                    Qt${QT_VERSION_MAJOR}::Widgets
+                    ${OpenCV_LIBS}
+                    openalpr)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(blur_gui PUBLIC OpenMP::OpenMP_CXX)
 endif()
