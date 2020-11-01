@@ -360,7 +360,7 @@ int ProcessConfig::saveImage(void){
             DISPLAY_ERR("An error occurred during saving.");
             return EXIT_FAILURE;
         }
-    // If input is a directory, 
+    // If input is a directory
     } else {
         // Selecting output directory and building required directories
         savedir = remove_dots(select_output_dir(out_path, in_path, filepath, respect_input_path));

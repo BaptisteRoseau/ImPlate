@@ -54,6 +54,7 @@ void MainWindow::initProcess(char *argv[]){
     this->procConf = new ProcessConfig(argv);
     this->procConf->init();
     this->initProgressBar();
+    ui->LabelImageCar->setScaledContents(true);
 
     // Displaying the first image
     this->procConf->firstImage();
@@ -100,8 +101,7 @@ void MainWindow::updatePictureAndTextLabel(void){
     QPixmap pixmap = QPixmap::fromImage(QImage(img.data, img.cols, img.rows, img.step, QImage::Format_BGR888));
 
     // Updating image and text labels
-    ui->LabelImageCar->setFixedWidth(img.cols);
-    ui->LabelImageCar->setFixedHeight(img.rows);
+    ui->LabelImageCar->resize(pixmap.size());
     ui->LabelImageCar->setPixmap(pixmap);
     ui->LabelTextFileName->setText(QString::fromStdString(this->procConf->getFilepath()));
 }
