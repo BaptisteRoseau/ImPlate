@@ -1,73 +1,34 @@
 #!/bin/bash
-set -e # Exit on error
-
-# CONFIGURATION 
-INPUT=                 # The input file for the blur programm
-OUTPUT=                # The output file used for backup, that will be copied on the server with the same name.
-SERV_ROOT=      # The ssh adress
-SSHFS_SERV_IMG_DIR=  # The sshfs "img" local directory (used to read the buffer only)
-IMG_DIR= # The path to the "img" on the server (used to crop buffer files path)
-DIST_SERV_IMG_DIR=$SERV_ROOT:$IMG_DIR             # The remote "img" directory
-BUFFER_GUI=buffer_gui                             # Created during the listing process
-
-SUCCESS_FILE=blur_success.txt  # Blur output success files
-FAILURE_FILE=blur_failures.txt # Blur output failure files
-LOG_FILE=log.txt               # Blur logs
+cd $(dirname $0)
+source ./config.sh
 
 # VARIABLES
-NOW=$(date +"%Y-%m-%d_%k-%M-%S") # Used for renaming logs, success and failures
+#NOW=$(date +"%Y-%m-%d_%k-%M-%S") # Used for renaming logs, success and failures (SORTABLE MAIS IL FAUT MODIFIER LE FORMAT DES FICHIERS DE LOG SUR LE SERVEUR AVANT)
+NOW=$(date +"%d-%m-%Y_%k-%M-%S") # Used for renaming logs, success and failures
 
 # ===============================
 
 # CLEANING
-#rm -rf $INPUT $OUTPUT $SUCCESS_FILE $FAILURE_FILE $LOG_FILE
-#mkdir -p $INPUT $OUTPUT
+rm -rf $INPUT_GUI $OUTPUT_GUI $SUCCESS_FILE_GUI $FAILURE_FILE_GUI $LOG_FILE_GUI
+mkdir -p $INPUT_GUI $OUTPUT_GUI
 
-###### NEW AREA BEGIN
-
-######## NOT DONE BEGIN
-
-rm -f $BUFFER_GUI
-
-# LISTING FILES
-STR_CMP="success_2020-01-07_15-59-55.txt" # On va donner ça en entrée du script bash sur le serveur: 2020-01-07_15-59-55
-FILE_LIST=""
-FILE_LIST_ALL=$(cat ../ls_example.txt | sort -r)
-for file in $FILE_LIST_ALL; do
-    if [[ $file < $STR_CMP ]]; then \
-        break;
-    fi
-    FILE_LIST=$(printf "$FILE_LIST\n$file")
-done
-
-exit
-######## NOT DONE END
-
-
-# CREATING BUFFER_GUI
-BUFFER_GUI=""
-for file in $FILE_LIST; do \
-    while IFS="" read -r p || [ -n "$p" ]; do
-        BUFFER_GUI=$(printf "$BUFFER_GUI\n$p")
-    done < $file
-done
-
-# Et on va afficher $BUFFER_GUI en sortie, donc cherche à le mettre en variable plutôt
-exit
-###### NEW AREA END
-
+# If buffer was cleaned, lat execution was successful
+if [ ! -f $BUFFER_GUI ]; then
+    # RETRIEVING AND CLEANING BUFFER
+    scp $SERV_ROOT:$BUFFER_GUI_SERV $BUFFER_GUI
+    ssh $SERV_ROOT rm $BUFFER_GUI_SERV
+fi
 
 # RETRIEVING FILES
 if [ -f $BUFFER_GUI ]; then
-    # Copying buffer data to input directory
+    # Copying buffer data to INPUT_GUI directory
     while IFS="" read -r p || [ -n "$p" ]
     do
         path=${p#"./$IMG_DIR"}
-        mkdir -p $INPUT/$(dirname $path)
+        mkdir -p $INPUT_GUI/$(dirname $path)
         echo "Copying $path.."
-        scp $SERV_ROOT:$p $INPUT/$path
+        scp $SERV_ROOT:$p $INPUT_GUI/$path
     done < $BUFFER_GUI
-    rm $BUFFER_GUI
 else 
     echo "ERROR: Buffer file not found."
     exit
@@ -75,51 +36,50 @@ fi
 
 # EXECUTING BLUR
 echo "Executing blur..."
-blur_gui -i $INPUT -o $OUTPUT -l $LOG_FILE -r -v -s -p -b 150
+$BLUR_GUI -i $INPUT_GUI -o $OUTPUT_GUI -l $LOG_FILE_GUI -r -v -s -p -b 150
 
-# Asking for user before sending pictures, if an error occured during blur
+# Asking user to send back images just in case of crash
 while true; do
-    read -p "Do you wish to send the pictures back to the server (y/n) ?" yn
+    read -p "Do you want to send back images to the server ?" yn
     case $yn in
         [Yy]* ) break;;
-        [Nn]* ) echo "Exiting program."; exit;;
+        [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
 done
 
-exit # Remove me when everything's fine
-
-
 # SENDING BLUR
-if [ -f $SUCCESS_FILE ]; then
+if [ -f $SUCCESS_FILE_GUI ]; then
     # Sending backup pictures first
     echo "Copying original pictures.."
-    scp -r $OUTPUT/ $DIST_SERV_IMG_DIR/
+    for dir in `ls $OUTPUT_GUI`; do \
+        scp -r $dir $DIST_SERV_IMG_DIR/backup/
+    done
 
-    echo "Replacing original pictures with blurred ones.."
+    echo "Replacing original pictures with blured ones.."
     while IFS="" read -r p || [ -n "$p" ]
-    # Sending blurred pictures
+    # Sending blured pictures
     do
-        echo "Replacing ${p#"$INPUT"}.."
-        scp $p $DIST_SERV_IMG_DIR/${p#"$INPUT"}
-    done < $SUCCESS_FILE
+        echo "Replacing ${p#"$INPUT_GUI"}.."
+        scp $p $DIST_SERV_IMG_DIR/${p#"$INPUT_GUI"}
+    done < $SUCCESS_FILE_GUI
 else
-    echo "No picture were blurred this time."
+    echo "No picture were blured this time."
 fi
 
-# SENDING LOGS
-if [ -f $LOG_FILE ]; then
-    scp $LOG_FILE $DIST_SERV_IMG_DIR/util/blur_log/log/log_$NOW.txt
-    rm $LOG_FILE
+# Sending logs
+if [ -f $LOG_FILE_GUI ]; then
+    scp $LOG_FILE_GUI $DIST_SERV_IMG_DIR/util/blur_log/log/log_$NOW.txt
+    rm $LOG_FILE_GUI
 fi
-if [ -f $SUCCESS_FILE ]; then
-    scp $SUCCESS_FILE $DIST_SERV_IMG_DIR/util/blur_log/success/success_$NOW.txt
-    rm $SUCCESS_FILE
+if [ -f $SUCCESS_FILE_GUI ]; then
+    scp $SUCCESS_FILE_GUI $DIST_SERV_IMG_DIR/util/blur_log/success/success_$NOW.txt
+    rm $SUCCESS_FILE_GUI
 fi
-if [ -f $FAILURE_FILE ]; then
-    scp $FAILURE_FILE $DIST_SERV_IMG_DIR/util/blur_log/failure/failure_$NOW.txt
-    rm $FAILURE_FILE
+if [ -f $FAILURE_FILE_GUI ]; then
+    scp $FAILURE_FILE_GUI $DIST_SERV_IMG_DIR/util/blur_log/failure/failure_$NOW.txt
+    rm $FAILURE_FILE_GUI
 fi
 
-rm -rf $INPUT
-rm -rf $OUTPUT
+# CLEANING
+rm -rf $INPUT_GUI $OUTPUT_GUI $BUFFER_GUI $LOG_FILE_GUI $SUCCESS_FILE_GUI $FAILURE_FILE_GUI

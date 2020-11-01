@@ -1,27 +1,20 @@
 #!/bin/bash
-set -e # Exit on error
-
-# CONFIGURATION 
-INPUT=                  # The input file for the blur programm
-OUTPUT=                # The output file used for backup, that will be copied on the server with the same name.
-SERV_ROOT=      # The ssh adress
-SSHFS_SERV_IMG_DIR=  # The sshfs "img" local directory (used to read the buffer only)
-IMG_DIR= # The path to the "img" on the server (used to crop buffer files path)
-DIST_SERV_IMG_DIR=$SERV_ROOT:$IMG_DIR             # The remote "img" directory
-BUFFER=$SSHFS_SERV_IMG_DIR/        # The path to the buffer
-
-SUCCESS_FILE=blur_success.txt  # Blur output success files
-FAILURE_FILE=blur_failures.txt # Blur output failure files
-LOG_FILE=log.txt               # Blur logs
+cd $(dirname $0)
+source ./config.sh
 
 # VARIABLES
-NOW=$(date +"%Y-%m-%d_%k-%M-%S") # Used for renaming logs, success and failures
+#NOW=$(date +"%Y-%m-%d_%k-%M-%S") # Used for renaming logs, success and failures (SORTABLE MAIS IL FAUT MODIFIER LE FORMAT DES FICHIERS DE LOG SUR LE SERVEUR AVANT)
+NOW=$(date +"%d-%m-%Y_%k-%M-%S") # Used for renaming logs, success and failures
 
 # ===============================
 
 # CLEANING
 rm -rf $INPUT $OUTPUT $SUCCESS_FILE $FAILURE_FILE $LOG_FILE
 mkdir -p $INPUT $OUTPUT
+
+# RETRIEVING AND CLEANING BUFFER
+scp $SERV_ROOT:$BUFFER_SERV $BUFFER
+ssh $SERV_ROOT rm $BUFFER_SERV
 
 # RETRIEVING FILES
 if [ -f $BUFFER ]; then
@@ -41,13 +34,15 @@ fi
 
 # EXECUTING BLUR
 echo "Executing blur..."
-blur -i $INPUT -o $OUTPUT -l $LOG_FILE -r -v -s -p -b 150
+$BLUR -i $INPUT -o $OUTPUT -l $LOG_FILE -r -v -s -p -b 150
 
 # SENDING BLUR
 if [ -f $SUCCESS_FILE ]; then
     # Sending backup pictures first
     echo "Copying original pictures.."
-    scp -r $OUTPUT/ $DIST_SERV_IMG_DIR/
+    for dir in `ls $OUTPUT`; do \
+        scp -r $dir $DIST_SERV_IMG_DIR/backup/
+    done
 
     echo "Replacing original pictures with blurred ones.."
     while IFS="" read -r p || [ -n "$p" ]
@@ -74,5 +69,4 @@ if [ -f $FAILURE_FILE ]; then
     rm $FAILURE_FILE
 fi
 
-rm -rf $INPUT
-rm -rf $OUTPUT
+rm -rf $INPUT $OUTPUT $BUFFER $LOG_FILE $SUCCESS_FILE $FAILURE_FILE
